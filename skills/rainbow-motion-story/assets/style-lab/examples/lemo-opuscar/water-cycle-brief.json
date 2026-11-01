@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "topic": "用纸片与水彩解释水循环",
+  "mainStyle": "paper-popup",
+  "secondaryCandidates": [
+    "watercolor"
+  ],
+  "selection": [
+    {
+      "schemaVersion": 1,
+      "source": "lemomo-ai/lemo-opuscar",
+      "commit": "3961ddb3d24d8876e0e2754f7790d66908acee51",
+      "styleId": "paper-popup",
+      "topic": "用纸片与水彩解释水循环",
+      "look": "真实房间光下的立体书，所有景物是有白纸芯与灰纸边的薄卡；绘画平面与微距真实投影形成反差。",
+      "motion": "卡片绕底边铰链立起，开场按层次错开；翻页用分段弯曲，行走相位读路程，房间保持稳定。",
+      "camera": "从人类尺度下降入书，翻页前升到三分之四看全跨页；纸片与房间可移焦交接。",
+      "type": "标题做书封或悬挂纸牌，气泡尾巴逐帧指回角色；中文增词后检查字体子集。",
+      "story": "示例翻页是真转场，拉杆、折页、翻片成为故事事件，最终跨过书页边缘。",
+      "avoid": "每张卡的深度材质必须用alpha裁剪，不能投矩形影；纸片不当圆体旋转，容器需前后卡分层。",
+      "exercise": "原创立体书展示水循环：山、云、河分层立起，同一滴水在纸槽上移动，拉杆切换日夜且光照仍来自房间。",
+      "trial": "lab/modules/lemo-trials.js",
+      "requirements": [
+        "先写三个不同的故事结构，再选择风格。",
+        "为当前主题写开场—变化—结果；同一对象贯穿镜头。",
+        "先验三个实际代码静帧和最难连续动作。",
+        "采用当前用户的 TTS 与音乐工作流；音效只跟有意义的动作。",
+        "原始资料、示意和计算结果分开标记。",
+        "原片未逐片听审；候选需在当前项目重新校验。"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "source": "lemomo-ai/lemo-opuscar",
+      "commit": "3961ddb3d24d8876e0e2754f7790d66908acee51",
+      "styleId": "watercolor",
+      "topic": "用纸片与水彩解释水循环",
+      "look": "一张温暖纤维纸上铺透明色带，重叠处变深；不依赖外轮廓，靠可变压力的笔带和约 3–9 条断续笔毛产生飞白。",
+      "motion": "笔画先建立结构再添细节，源码沿中心线逐段显露带宽与毛刷轨迹，完成后缓存为图块；后续只让植物等对象轻摆，静态颜料不无故沸腾。",
+      "camera": "长横移把不同生态区域串成同一张野外记录，局部标本与注释短暂停留；雾和空纸可以收回景物，而非每次使用交叉溶解。",
+      "type": "文字像实地笔记，与标本、地名和尺度靠近；色带承担环境梯度，明确的数据注释补足水彩不能精读的数值。",
+      "story": "顺着一个空间或环境梯度观察变化，画面的生长顺序引导观众先看结构、后看差异；示意古地图须与实际测量分开。",
+      "avoid": "不要给所有对象加均匀描边、使用光滑彩虹渐变或让随机数在每帧重生成；湿润感来自透明叠色与笔触结构。",
+      "exercise": "绘制山坡海拔样带，按实际采样点展示温度和植被，随着横移逐段作画；画面颜色表达区域，标签明确测量值和插值范围。",
+      "trial": "lab/modules/lemo-trials.js",
+      "requirements": [
+        "先写三个不同的故事结构，再选择风格。",
+        "为当前主题写开场—变化—结果；同一对象贯穿镜头。",
+        "先验三个实际代码静帧和最难连续动作。",
+        "采用当前用户的 TTS 与音乐工作流；音效只跟有意义的动作。",
+        "原始资料、示意和计算结果分开标记。",
+        "原片未逐片听审；候选需在当前项目重新校验。"
+      ]
+    }
+  ],
+  "sourceAttribution": "LemoLab / lemo-opuscar; documents MIT; reference stills CC BY 4.0; source audio not included",
+  "scope": {
+    "readyNotes": 59,
+    "archiveNotes": 98,
+    "staticContactSheets": 8,
+    "fullSourceFilmsViewed": 0,
+    "sourceAudioReviewed": false,
+    "staticFramesReviewed": 157
+  }
+}

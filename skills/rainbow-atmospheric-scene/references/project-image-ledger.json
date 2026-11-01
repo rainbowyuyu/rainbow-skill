@@ -1,0 +1,65 @@
+{
+  "purpose": "actual project render examples; not third-party reference images",
+  "comparisonType": "iteration comparison, not controlled single-variable A/B",
+  "sourceFrames": [
+    {
+      "path": "work/v03/lookdev-clouds/frame-00000.jpg",
+      "sha256": "1f5e63c29df8d731d95ebb691d7235740f8cf64114972c49bd763fbf89143414",
+      "frame": 0,
+      "size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        0,
+        120,
+        1920,
+        810
+      ]
+    },
+    {
+      "path": "work/v03/bridge-endpoint/frame-00000.jpg",
+      "sha256": "9b6e1204720f918d1a58c242070e831590018b41545c5a409e52ae1e359b8f87",
+      "frame": 0,
+      "size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        0,
+        120,
+        1920,
+        810
+      ]
+    }
+  ],
+  "annotationExample": {
+    "path": "work/v03/final-check/frame-07240.jpg",
+    "sha256": "d46f9363735ae0e416f34ded8cff7896a5c315b7a380851bb96ee574e1ba579d",
+    "frame": 7240,
+    "size": [
+      1920,
+      1080
+    ]
+  },
+  "images": [
+    {
+      "path": "assets/spacex-v03-cloud-iterations.jpg",
+      "sha256": "2bb6e2b2291547f9fd376d31c88353d10209fd599d12bdc26bb99c74ea6f7ae0",
+      "width": 1000,
+      "height": 788
+    },
+    {
+      "path": "assets/spacex-v03-structure-readability.jpg",
+      "sha256": "7deedef496c519b3272719df75e1013d4d5cc556dc45b0c1a4b0dd64b59cf8b3",
+      "width": 1000,
+      "height": 562
+    }
+  ],
+  "boundaries": [
+    "Earlier screenshot contains UI; crop excludes its top band. Current frame is clean render.",
+    "Camera/frame align, but more than cloud shader may differ. No single-variable causality claim.",
+    "Examples demonstrate still-frame readability and cloud shape, not whole-film motion/occlusion QA.",
+    "Background clouds do not implement generic opaque-ray-distance truncation."
+  ]
+}

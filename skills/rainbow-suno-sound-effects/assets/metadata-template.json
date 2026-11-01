@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "provider": "Suno.cn",
+  "status": "planned",
+  "modelRequested": null,
+  "modelReturned": null,
+  "taskId": null,
+  "prompt": null,
+  "requestParameters": {},
+  "soundRole": null,
+  "evidenceType": "designed",
+  "sourcePage": null,
+  "requestedDurationSeconds": null,
+  "actualDurationSeconds": null,
+  "sampleRate": null,
+  "channels": null,
+  "assetSyncSeconds": null,
+  "license": {"status": "unverified", "basis": null},
+  "modifications": [],
+  "review": {
+    "decoded": false,
+    "visualAnchorVerified": false,
+    "speechIntelligibilityListened": false,
+    "musicCompatibilityListened": false,
+    "monoChecked": false,
+    "finalEncodeChecked": false
+  }
+}

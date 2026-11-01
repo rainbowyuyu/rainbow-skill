@@ -1,0 +1,4 @@
+interface:
+  display_name: "rainbow鱼 · 科普短片"
+  short_description: "从生活问题出发，用真实仿真、三维场景和连续叙事制作五分钟科普视频"
+  default_prompt: "使用 $rainbow-science-short，先检索通俗讲法，从生活问题做成约五分钟的连续科普短片。使用图片Logo、少量大字和rainbow鱼个人音色，按题材选新配乐，交付完整成片。"

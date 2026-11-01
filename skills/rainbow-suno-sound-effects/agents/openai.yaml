@@ -1,0 +1,6 @@
+interface:
+  display_name: "苏诺 · 画面音效"
+  short_description: "按画面事件选择苏诺声音、同步混音，并归档到 TTS 音效库"
+  default_prompt: "使用 $rainbow-suno-sound-effects 为当前视频配置与画面同步的音效，并保存到 TTS 音效库。"
+policy:
+  allow_implicit_invocation: true

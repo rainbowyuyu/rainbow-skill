@@ -1,0 +1,6 @@
+interface:
+  display_name: "科学ML研究与实验复盘"
+  short_description: "结合领域文献提出可检验假设，用实验反馈和策略复盘推进科学机器学习研究"
+  default_prompt: "使用 $science-ml-research，结合当前项目证据制定可检验的研究假设，并接入现有实验与审计流程。"
+policy:
+  allow_implicit_invocation: false

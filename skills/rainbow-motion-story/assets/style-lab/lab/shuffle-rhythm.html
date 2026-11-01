@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>洗牌的声音与停顿 · Motion Atelier</title><link rel="stylesheet" href="./shuffle-rhythm.css"></head>
+<body>
+<header><a class="brand" href="./index.html"><img src="./brand.png" alt="rainbow鱼"><span>镜头与节奏<small>MOTION ATELIER / SOUND STUDY</small></span></a><nav><a href="./shuffle-story.html">视觉与讲稿</a><a href="./sound-design.html">音效时机</a><a href="./emotion-motion.html">运动情绪</a><a href="./index.html">返回方法库 ↗</a></nav></header>
+<main>
+<section class="intro"><div><span class="eyebrow">一副牌，三种声音的分寸</span><h1>让动作被听见。<br>也让停顿留下来。</h1><p>交织时密，合拢时重，读懂时静。保持同一段画面，比较声音密度与尾音怎样组织节奏。</p></div><div class="study-tag"><strong>18<span> SEC</span></strong><span>52 个固定身份 · 同一条时间线</span><a href="../studies/shuffle-rhythm.md">原片拆解与观察范围 ↗</a></div></section>
+<div class="workspace">
+<section class="player" aria-label="洗牌声画播放器">
+<div class="scene-bar"><span id="sceneStage">正在载入</span><span>原创动作 / 原创合成音效</span></div>
+<canvas id="scene" width="1440" height="810" role="img" tabindex="0" aria-label="洗牌动画，空格播放，左右方向键逐帧定位"></canvas>
+<div class="transport"><button id="replay" aria-label="从头播放">↺</button><button id="play" class="primary" aria-label="播放">▶ 播放</button><button id="previous" aria-label="上一帧">‹</button><button id="next" aria-label="下一帧">›</button><button id="mute" aria-pressed="false">声音开</button><output id="time">0.000 / 18.000 s</output></div>
+<label class="seek-label" for="seek">观察时刻 <span id="frame">第 0 帧 / 30 fps</span></label><input id="seek" aria-label="定位画面时间" type="range" min="0" max="18" step="0.001" value="0">
+<div id="chapters" class="chapters" aria-label="动作章节"></div>
+<div class="timeline-heading"><h2>声音落点与阅读留白</h2><span>金色：声音 · 青色：停留</span></div><canvas id="score" width="1440" height="230" role="img" tabindex="0" aria-label="音效事件时间线，点击定位"></canvas>
+<div class="status"><span id="audioStatus" role="status">点击播放后启用声音</span><span id="cueCount">正在读取事件</span></div>
+</section>
+<aside aria-label="配声方案">
+<div class="aside-title"><span class="eyebrow">同画面对照</span><h2>选择声音的性格</h2></div><div id="modes" class="modes" role="group" aria-label="配声方案"></div>
+<section class="controls"><label for="gain">试听与导出音量 <output id="gainValue">65%</output></label><input id="gain" aria-label="音量" type="range" min="0" max="1" step="0.01" value="0.65"><label class="check"><input type="checkbox" id="listenOnly">只听声音，收起画面</label><p>切换方案保留当前时刻，短交叉淡化衔接。静音不改变导出音量。</p></section>
+<section class="takeaway"><h3>这一版怎样安排</h3><p id="modeDescription"></p><div class="reading-note">停住供阅读时，音效也退场。</div></section>
+<section class="exports"><button id="json">下载声音事件表 JSON ↗</button><button id="wav">下载当前配声 WAV ↗</button><output id="exportStatus">48 kHz · 双声道 · 18 秒</output><a href="../examples/shuffle-rhythm/API.md">接口与接入示例 ↗</a></section>
+</aside>
+</div>
+<section class="notes"><article><span>01 / 动作先有结构</span><h2>密集的过程，需要一个出口</h2><p>拆开、交织、合拢各有自己的时间。合拢后保持排列，让观众认出变化，再进入下一次动作。</p></article><article><span>02 / 配声有选择</span><h2>52 张牌，不必响 52 次</h2><p>可以选取动作的关键接触，也可以把一串细声组织成一段摩擦。密集方案用来比较，不能直接套给所有讲解。</p></article><article><span>03 / 把方法带走</span><h2>同一事件，驱动画面和声音</h2><p>接触、归拢和重排读同一份事件表；尾音与留白窗口一同导出。接入真实旁白后，再检查弱字和句尾。</p></article></section>
+</main>
+<footer><span>参考：世界的暗线《你洗的这副牌，很可能是人类历史第一次》。本页演示为原创拟声，不含原片音频采样。</span><div><a href="../guides/shuffle-rhythm.md">配声方法</a><a href="../studies/shuffle-rhythm.md">研究记录</a><a href="./shuffle-rhythm.js">源码</a></div></footer>
+<pre id="diagnostics" hidden aria-hidden="true"></pre><script type="module" src="./shuffle-rhythm-studio.js"></script>
+</body></html>

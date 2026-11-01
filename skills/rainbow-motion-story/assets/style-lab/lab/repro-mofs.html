@@ -1,0 +1,1443 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>复现 · MOFs 科普 233.7 s ／ 字幕换行推进</title>
+<style>
+  :root{
+    --bg:#0a0c10; --panel:#11161c; --line:#222d36; --ink:#e4ebf0; --dim:#8b98a3;
+    --orange:#e8873a; --cyan:#5fc4d8; --ok:#6fbf8b; --bad:#d9786a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.65 "Inter","Helvetica Neue","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+  code{font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#b7cdd8;
+    background:#080b0e;border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  header{padding:20px 26px 12px;border-bottom:1px solid var(--line)}
+  header h1{margin:0 0 4px;font-size:19px;font-weight:600;letter-spacing:.01em}
+  header p{margin:0;color:var(--dim);font-size:12.5px;max-width:104ch}
+  main{display:grid;grid-template-columns:minmax(0,1fr) 360px;align-items:start}
+  @media (max-width:1180px){main{grid-template-columns:1fr}}
+  .stage{padding:16px 18px 24px;min-width:0}
+  canvas#scene{width:100%;height:auto;display:block;border-radius:8px;background:#000;
+    border:1px solid var(--line)}
+  .transport{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .transport button{background:#171e25;color:var(--ink);border:1px solid var(--line);
+    border-radius:6px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer;min-width:38px}
+  .transport button:hover{background:#1f2831}
+  .transport button[data-on="1"]{background:#25404d;border-color:#356b80;color:#cfeef9}
+  #seek{flex:1;min-width:200px;accent-color:#5fc4d8}
+  #tc{font:12.5px ui-monospace,Menlo,Consolas,monospace;color:var(--dim);white-space:nowrap}
+  .marks{position:relative;height:24px;margin:0;pointer-events:none;flex-basis:100%}
+  .marks span{position:absolute;top:6px;transform:translateX(-50%);
+    font:10.5px ui-monospace,Menlo,Consolas,monospace;color:#5f6d79;white-space:nowrap}
+  .marks span::before{content:"";position:absolute;left:50%;top:-3px;width:1px;height:5px;
+    background:#334049;transform:translateX(-50%)}
+  aside.panel{border-left:1px solid var(--line);padding:18px 18px 44px;background:var(--panel)}
+  @media (max-width:1180px){aside.panel{border-left:0;border-top:1px solid var(--line)}}
+  .panel h2{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);
+    margin:20px 0 8px;font-weight:600}
+  .panel h2:first-child{margin-top:0}
+  .kv{display:grid;grid-template-columns:96px 1fr;gap:2px 10px;
+    font:12px ui-monospace,Menlo,Consolas,monospace}
+  .kv dt{color:var(--dim)} .kv dd{margin:0;color:var(--ink)}
+  .ok{color:var(--ok)} .bad{color:var(--bad)} .warn{color:#d7b26a} .dim{color:var(--dim)}
+  .row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .row button{flex:1 1 46%;background:#171e25;border:1px solid var(--line);border-radius:6px;
+    color:var(--ink);padding:6px 8px;font:inherit;font-size:12px;cursor:pointer}
+  .row button:hover{background:#1f2831}
+  table.set{width:100%;border-collapse:collapse;font:11.5px ui-monospace,Menlo,Consolas,monospace}
+  table.set th{text-align:left;color:var(--dim);font-weight:500;padding:3px 4px;
+    border-bottom:1px solid var(--line)}
+  table.set td{padding:3px 4px;border-bottom:1px solid #161d23;vertical-align:top}
+  table.set tr.on td{background:#16222a}
+  .src{color:#64727d;font-size:10.5px}
+  pre#log{margin:6px 0 0;padding:8px;background:#080b0e;border:1px solid var(--line);
+    border-radius:6px;max-height:150px;overflow:auto;font:11px/1.5 ui-monospace,Consolas,monospace;
+    color:#93a6b3;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<header>
+  <h1>复现 · MOFs 科普：用字幕换行推进的 233.7 秒</h1>
+  <p>纯 Canvas + WebAudio，程序化几何与合成音，未使用任何原片素材／音轨／水印。时间轴、切点、字幕停留、动作爆发区间取自 <code>studies/mofs.md</code> 的实测结论；文案为本复现自写，句长按实测字宽 41 px/字 与 8.0 字/秒中位阅读速度换算。按空格暂停，<code>← →</code> 微调 0.1 s，<code>[ ]</code> 跳上／下一个切点。</p>
+</header>
+<main>
+  <section class="stage">
+    <canvas id="scene" width="1920" height="1080" aria-label="MOFs 科普复现画布"></canvas>
+    <div class="transport">
+      <button id="play" aria-pressed="false">播放</button>
+      <button id="sound" aria-pressed="false">声音关</button>
+      <button id="btnJump">关键帧</button>
+      <input id="seek" type="range" min="0" max="233.70" step="0.01" value="0" aria-label="进度（秒）">
+      <span id="tc">00:00.00 / 03:53.70</span>
+      <button id="prevcut" aria-label="上一个切点">◀</button>
+      <button id="nextcut" aria-label="下一个切点">▶</button>
+      <div class="marks" id="marks"></div>
+    </div>
+  </section>
+  <aside class="panel">
+    <h2>此刻</h2>
+    <dl class="kv">
+      <dt>镜头</dt><dd id="k-shot">1 / 17</dd>
+      <dt>镜长</dt><dd id="k-len">—</dd>
+      <dt>字幕</dt><dd id="k-line">—</dd>
+      <dt>停留</dt><dd id="k-dwell">—</dd>
+      <dt>字数</dt><dd id="k-chars">—</dd>
+      <dt>阅读速度</dt><dd id="k-rate">—</dd>
+      <dt>换行数</dt><dd id="k-count">—</dd>
+      <dt>空字幕</dt><dd id="k-gap">—</dd>
+    </dl>
+    <h2>定格与导出</h2>
+    <div class="row">
+      <button data-t="2.20">2.20 s 开题</button>
+      <button data-t="9.60">9.60 s 运动峰</button>
+      <button data-t="29.50">29.50 s 空字幕</button>
+      <button data-t="211.30">211.30 s 情绪低点</button>
+    </div>
+    <h2>实测参数（出处）</h2>
+    <table class="set" id="params"></table>
+    <h2>镜段</h2>
+    <table class="set" id="shots-table">
+      <thead><tr><th>#</th><th>起</th><th>长</th><th>pd中位</th></tr></thead>
+      <tbody id="shots-body"></tbody>
+    </table>
+    <h2>当前字幕行</h2>
+    <dl class="kv">
+      <dt>索引 / 停留</dt><dd id="si-info">—</dd>
+      <dt>内容</dt><dd id="si-txt" style="word-break:break-all">—</dd>
+    </dl>
+    <h2>日志</h2>
+    <pre id="log">ready</pre>
+  </aside>
+</main>
+<script>
+'use strict';
+const logEl = document.getElementById('log');
+window.__err = [];
+window.addEventListener('error', e => {
+  window.__err.push((e.message||'err') + ' @' + (e.lineno||0) + ':' + (e.colno||0));
+  logEl.textContent += '\nERR ' + window.__err[window.__err.length-1];
+});
+
+/* ═══════════════════════════════════════════════════════════════════
+   1 · 实测常量（全部来自 studies/mofs.md 结论与 frames.json /
+       mofs-audio.json / sublines_final.json，未引入新数字）
+   ═══════════════════════════════════════════════════════════════════ */
+const DUR   = 233.700;              // 源片 233.700367 s
+const FPSR  = 29.97;                // 源帧率 2997/100
+const CUTS  = [1.268,8.075,15.883,16.583,26.994,39.006,50.717,52.486,
+               66.800,91.258,97.064,101.969,175.409,194.928,202.836,208.141];
+
+/* 字幕换行停留分布（结论：med 1.84 / mean 2.00 / p10 .60 / p25 1.10 /
+   p75 2.60 / p90 3.47）。实测源字幕段的量化下限是 0.70 s（21 帧），
+   合并后得到的 120 条停留中位数是 1.69 s —— 两者都列出来，取实测。 */
+const DWELL = { med:1.84, mean:2.00, p10:0.60, p25:1.10, p75:2.60, p90:3.47 };
+const DWELL_MEASURED = { med:1.69, mean:1.90, p10:0.84, p90:3.07, floor:0.70 };
+const LINE_COUNT = 117;             // 采用的换行数（可信 ±10）
+const LINE_COUNT_TRACK = 120;       // 本复现实际排布数（见上一行说明）
+const CHARS = { med:18, p90:27 };   // 每行字数中位 / p90
+const RATE  = { med:8.0, p25:5.7, p75:9.6, p90:12.3 };  // 字/秒
+const RATE_LABEL_SLOW = 3.1;        // 短标签句 3.1–4.0 字/秒
+const NUM_SLOW = 0.77;              // 数字句 7.2 对 9.3 = 慢约 23%
+const PAUSE_Q = 0.86;               // 提问前留白 66.66–67.52
+const LONG_SHOT = [101.969, 175.409];
+const BURSTS = [                    // 长镜内 85 分位以上动作爆发（16 次）
+  [101.97,0.47],[106.04,0.50],[115.68,1.33],[118.42,0.40],
+  [120.69,2.17],[123.99,0.83],[131.50,0.40],[137.00,0.40],
+  [139.71,0.63],[149.98,0.40],[150.88,0.40],[153.72,0.40],
+  [155.69,0.40],[158.12,2.17],[161.36,2.17],[164.70,0.50]
+];
+const EMO = [208.741, 215.019];     // 情绪最高点：onset 0.96/s，单句 5.07 s
+const SILENCE = [66.66, 67.52];     // 全片唯一静音段
+
+const PAL = { ink:'#f4f7f9', orange:'#e8873a', cyan:'#57c3d8',
+              deep:'#0a0d12', slate:'#161c23', warm:'#c9a961' };
+
+/* ═══════════════════════════════════════════════════════════════════
+   2 · 字幕轨：实测换行点 + 自写文案
+   源片文案未转写进本文件；这里每一行都是为本复现重写的说明文字，
+   句长按「实测停留 × 实测阅读速度」反推，用来验证节奏是否成立。
+   ═══════════════════════════════════════════════════════════════════ */
+/* 每条 [起始, 停留, 文案, 类型]。类型决定这行的目标字速：
+   'n'=名词/开场标签 'a'=动作 'q'=提问 'i'=编号 'd'=数字 'e'=情绪 */
+const LINE_TABLE = [
+  [  0.00, 3.70, '这是一个方框，只有四条边，先记住它的样子', 'n'],
+  [  3.70, 1.71, '把一根杆从角上斜着插进去，卡住', 'a'],
+  [  5.41, 1.53, '再给剩下的每个角都接上一根', 'a'],
+  [  6.94, 2.30, '每一格中间都留着一个空隙', 'n'],
+  [  9.24, 2.20, '空隙不是浪费，是留给分子的房间', 'n'],
+  [ 11.44, 2.20, '把这一格不停地重复，就长成整块材料', 'n'],
+  [ 13.64, 2.24, '这种材料叫金属有机框架，简称 MOF', 'n'],
+  [ 18.82, 1.21, '全名金属有机框架', 'n'],
+  [ 20.03, 2.03, '由金属节点和有机连杆组成', 'n'],
+  [ 22.06, 2.11, '一克就能铺开一个足球场', 'd'],
+  [ 25.19, 2.00, 'MOFs 有什么本领？', 'q'],
+  [ 27.19, 1.87, '第一招：吸附', 'i'],
+  [ 29.06, 0.90, '', 'x'],
+  [ 29.96, 1.87, '第二招：分离', 'i'],
+  [ 31.93, 2.14, '第三招：储存，把气体压进很小的罐子', 'n'],
+  [ 34.07, 3.27, '吸附这一招，靠的其实是那些看不见的细小孔道在起作用', 'n'],
+  [ 37.34, 1.97, '而一克就有足球场那么大', 'd'],
+  [ 42.51, 1.53, '先说吸附，它其实最直观', 'n'],
+  [ 44.04, 1.37, '孔道像一条很窄的走廊', 'n'],
+  [ 45.41, 0.80, '窄得只够一人过', 'n'],
+  [ 46.21, 3.21, '窄到只让某一种分子走得进去，其它所有的分子全被挡在外面', 'n'],
+  [ 49.42, 2.00, '这就是所谓选择性，来源全在这里', 'n'],
+  [ 51.42, 2.47, '换一根长一点的连杆，孔就跟着大上一整圈', 'a'],
+  [ 53.89, 2.53, '换一种金属，孔壁的性格也跟着一起变硬或变软', 'a'],
+  [ 56.42, 1.64, '化学家像在搭一套积木小玩具', 'n'],
+  [ 58.06, 2.37, '只是这里的每一块，都小到肉眼根本看不见', 'n'],
+  [ 60.43, 1.00, '所以这是设计出来的', 'n'],
+  [ 61.43, 1.40, '不是碰运气', 'n'],
+  [ 62.83, 1.47, '上万种结构已经被做了出来', 'd'],
+  [ 64.30, 3.23, '每一种都是一次不同的排列，同时也是一次完全不同的赌注', 'n'],
+  [ 67.53, 2.77, '那么问题就来了，为什么它到现在才真正火起来', 'q'],
+  [ 70.30, 1.51, '答案其实很朴素：它便宜了', 'n'],
+  [ 71.81, 2.73, '十年前一克要几千块，只有实验室才舍得用得起', 'd'],
+  [ 74.54, 2.90, '现在同样的材料已经可以按吨生产，成本降了两个数量级', 'd'],
+  [ 77.44, 0.74, '价格一降，门就开', 'n'],
+  [ 78.18, 0.87, '整条路才终于通', 'n'],
+  [ 79.05, 2.80, '实验室里那些漂亮结构，第一次有机会走到工厂门口', 'n'],
+  [ 81.85, 1.07, '第一站是水', 'n'],
+  [ 82.92, 3.13, '全球大约有二十亿人，他们家里喝不上稳定的干净水', 'd'],
+  [ 86.12, 1.70, '可是空气里，其实一直都有水', 'n'],
+  [ 87.82, 2.07, '只是它太稀薄了，普通材料根本抓不住', 'n'],
+  [ 89.89, 2.90, 'MOF 的孔道，恰好就是为这种稀薄的水设计的', 'n'],
+  [ 92.79, 0.70, '加热、释放', 'a'],
+  [ 93.49, 0.84, '冷凝成小水滴', 'a'],
+  [ 94.33, 1.40, '再把水收起来，循环一遍', 'a'],
+  [ 95.73, 0.80, '天亮继续', 'a'],
+  [ 96.53, 2.80, '一台设备一天能产几百升水，全靠太阳光来驱动', 'd'],
+  [ 99.33, 1.40, '不用打井，也不用拉电网', 'n'],
+  [100.73, 1.11, '有太阳就够', 'n'],
+  [101.84, 2.63, '第二站是碳，就是烟囱里排出的那些二氧化碳', 'n'],
+  [104.47, 1.57, '会被孔道有选择性地留下来', 'a'],
+  [106.04, 1.50, '留下的气体再被重新取出来', 'a'],
+  [107.54, 2.27, '压缩之后埋回地下，或者变成化工原料', 'a'],
+  [109.81, 1.10, '第三站是气', 'n'],
+  [110.91, 3.64, '同样大小的罐子，在低压力下能装下的甲烷多出好几倍', 'd'],
+  [114.55, 0.73, '车能跑得更远', 'n'],
+  [115.28, 1.50, '加一次气，船也能跑得更远', 'n'],
+  [116.88, 0.97, '这不是遥远的想象', 'n'],
+  [117.85, 3.07, '已经有真正的样机，在沙漠和工厂里连续跑了好几年', 'd'],
+  [120.92, 0.73, '但问题', 'q'],
+  [121.65, 2.74, '但问题也很硬，第一个跳出来的就是它的稳定性', 'n'],
+  [124.39, 0.80, '水会拆结构', 'n'],
+  [125.19, 3.51, '有些 MOF 遇到水汽就会慢慢散架，孔道直接塌掉', 'n'],
+  [128.70, 1.90, '所以最后真正能用的，只有几十种', 'n'],
+  [130.60, 0.90, '从一万到几十', 'd'],
+  [131.50, 1.50, '这其实不是筛选，是淘汰', 'd'],
+  [133.00, 3.34, '这其实是一次非常残酷的淘汰，而不是一次温和的筛选', 'n'],
+  [136.34, 3.53, '被筛掉的不是论文，而是那些看上去很美的漂亮结构', 'n'],
+  [139.87, 2.61, '能留下来的，必须同时满足下面这三件事才行', 'n'],
+  [142.48, 0.83, '稳定、便宜', 'n'],
+  [143.31, 0.80, '还要能造', 'n'],
+  [144.11, 3.50, '而且还要能被大规模地、可重复地、非常便宜地制造出来', 'n'],
+  [147.61, 1.27, '这才是里面真正的关键', 'n'],
+  [148.88, 2.14, '一项技术到底能不能走出实验室的门', 'n'],
+  [151.02, 2.70, '取决于它能不能被制造，而不是论文有多漂亮', 'n'],
+  [153.72, 2.24, '而这一次，答案终于是：能，而且已经能了', 'n'],
+  [156.02, 3.01, '所以这一次的诺贝尔奖，奖的不是一个全新的点子', 'n'],
+  [159.03, 2.83, '奖的是一条路，从分子设计一直走到工厂的反应釜', 'n'],
+  [161.86, 1.40, '整条链', 'n'],
+  [163.26, 1.64, '都在同一代人的手里完成', 'n'],
+  [164.90, 1.67, '这在化学里其实非常少见', 'n'],
+  [166.57, 1.23, '化学更慢', 'n'],
+  [167.80, 1.50, '一个新材料往往要几十年', 'd'],
+  [169.30, 1.44, '才能从被发现走到真正应用', 'n'],
+  [170.74, 1.47, '而这一次，明显快得多', 'n'],
+  [172.21, 3.13, '因为工具彻底变了：计算可以先在电脑里筛一遍', 'n'],
+  [175.34, 1.90, '真正要合成的时候，只试很少几个', 'n'],
+  [177.24, 1.84, '机器人可以二十四小时不停地做实验', 'd'],
+  [179.08, 1.27, '数据再回来指导设计', 'n'],
+  [180.35, 1.77, '指导下一轮的设计和合成', 'n'],
+  [182.12, 2.00, '设计、合成、测试，三步闭成一个环', 'n'],
+  [184.12, 1.80, '这就是它这次变快的全部原因', 'n'],
+  [185.92, 1.67, '而起点', 'n'],
+  [187.59, 0.77, '非常朴素', 'n'],
+  [188.36, 1.73, '说白了只是一个方框，加一根杆', 'n'],
+  [190.09, 2.50, '连起来，重复下去，就成了能装下世界的结构', 'n'],
+  [192.59, 1.40, '听起来简单', 'n'],
+  [193.99, 1.64, '真做起来花了整整一百年', 'd'],
+  [195.63, 0.77, '所以', 'n'],
+  [196.40, 1.63, '下次你看到一块海绵的时候', 'n'],
+  [198.03, 2.04, '可以想想它里面那些看不见的小孔', 'n'],
+  [200.07, 1.60, '心想——这就是', 'e'],
+  [201.67, 3.07, '这就是我', 'e'],
+  [204.74, 1.33, '第 125 棒，交给', 'n'],
+  [206.07, 2.67, '交到下一个人手里，材料还在长，孔道还在等下一个分子', 'n'],
+  [208.74, 5.07, '心想——这就是我这辈子真正想做的事', 'e'],
+  [214.35, 0.93, '谢谢观看，下次见', 'n'],
+  [215.28, 0.87, '材料在长', 'n'],
+  [216.15, 1.07, '孔道在等', 'n'],
+  [217.22, 2.67, '那些细小的孔道，还在等下一个分子进来', 'n'],
+  [219.89, 1.66, '这一棒', 'n'],
+  [221.55, 2.74, '也许就正好落在你的手里，也说不定', 'n'],
+  [224.29, 1.84, '以上就是 MOFs 的入门', 'n'],
+  [226.13, 3.80, '如果最开始那个普通的方框，能装下整片沙漠里的水', 'n'],
+  [229.93, 1.60, '那它大概也能装下你的问题', 'n'],
+  [231.53, 1.10, '谢谢观看', 'n'],
+  [232.63, 1.07, '', 'x'],
+];
+const LINES = LINE_TABLE;
+
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   3 · 画面引擎
+   ═══════════════════════════════════════════════════════════════════ */
+const canvas = document.getElementById('scene');
+const ctx = canvas.getContext('2d', { alpha:false });
+const W = canvas.width, H = canvas.height;
+
+const clamp = (v,a,b) => v<a?a:v>b?b:v;
+const lerp  = (a,b,t) => a+(b-a)*t;
+const ease  = t => t<0 ? 0 : t>1 ? 1 : t*t*(3-2*t);
+const easeOut = t => 1-Math.pow(1-clamp(t,0,1),3);
+const easeIn  = t => Math.pow(clamp(t,0,1),3);
+const TAU = Math.PI*2;
+
+/* 确定性伪随机：同一 t 每次得到同一画面，便于逐帧比对 */
+function rnd(seed){
+  let s = seed>>>0 || 1;
+  return function(){
+    s ^= s<<13; s>>>=0; s ^= s>>17; s ^= s<<5; s>>>=0;
+    return s/4294967296;
+  };
+}
+
+/* ── 3D：正交投影 + 轻微透视 ───────────────────────────────── */
+function makeCam(yaw, pitch, zoom, cx, cy){
+  const cy1 = Math.cos(yaw), sy1 = Math.sin(yaw);
+  const cp = Math.cos(pitch), sp = Math.sin(pitch);
+  return function(x,y,z){
+    const x1 =  x*cy1 + z*sy1;
+    const z1 = -x*sy1 + z*cy1;
+    const y1 =  y*cp - z1*sp;
+    const z2 =  y*sp + z1*cp;
+    const persp = 1/(1 - z2*0.0016);
+    return { x: cx + x1*zoom*persp, y: cy + y1*zoom*persp, z: z2, k: zoom*persp };
+  };
+}
+
+/* ── 图元 ─────────────────────────────────────────────────── */
+function node(p, r, tint, depth){
+  const d = depth === undefined ? 1 : depth;
+  /* 基准三色（亮面 / 本色 / 暗面），再按深度向背景色混合，
+     这样远端节点是「暗」而不是「灰」，也不会透出背后的杆。
+     改：暗面不再压到 34%，抬到 52%，并补一层镜面高光——
+     原片 9.60 的原子球是黑/红实心球，边缘有清亮轮廓光。 */
+  const lit = [255, 226, 192];
+  const mid = tint === PAL.cyan ? [87,195,216] : [232, 135, 58];
+  const dark = tint === PAL.cyan ? [26, 92, 108] : [138, 62, 18];
+  const mix = (c, t) => c.map(v => Math.round(v * (0.52 + 0.48*d)));
+  const a = mix(lit, d), b = mix(mid, d), c2 = mix(dark, d);
+  const g = ctx.createRadialGradient(p.x-r*0.34, p.y-r*0.40, r*0.08, p.x, p.y, r*1.02);
+  g.addColorStop(0, `rgb(${a[0]},${a[1]},${a[2]})`);
+  g.addColorStop(0.42, `rgb(${b[0]},${b[1]},${b[2]})`);
+  g.addColorStop(1, `rgb(${c2[0]},${c2[1]},${c2[2]})`);
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, TAU); ctx.fill();
+  /* 镜面点：小、亮、偏心，尺寸随球径走 */
+  const spec = ctx.createRadialGradient(p.x-r*0.38, p.y-r*0.44, 0,
+                                        p.x-r*0.38, p.y-r*0.44, r*0.46);
+  spec.addColorStop(0, `rgba(255,255,255,${0.72*d})`);
+  spec.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = spec;
+  ctx.beginPath(); ctx.arc(p.x-r*0.38, p.y-r*0.44, r*0.46, 0, TAU); ctx.fill();
+  /* 接触阴影：右下的极淡暗面，把球从底色上托起来 */
+  ctx.globalAlpha = 0.18*d;
+  ctx.fillStyle = '#000';
+  ctx.beginPath(); ctx.arc(p.x+r*0.16, p.y+r*0.20, r*0.92, 0, TAU); ctx.fill();
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(p.x, p.y, r*0.94, 0, TAU); ctx.fill();
+  ctx.strokeStyle = `rgba(255,222,186,${0.46*d})`;
+  ctx.lineWidth = Math.max(1, r*0.09);
+  ctx.stroke();
+}
+
+function rod(a, b, w, alpha){
+  const ang = Math.atan2(b.y-a.y, b.x-a.x);
+  const len = Math.hypot(b.x-a.x, b.y-a.y);
+  ctx.save();
+  ctx.translate(a.x, a.y); ctx.rotate(ang);
+  const g = ctx.createLinearGradient(0,-w,0,w);
+  /* 改：提亮端面与高光，让杆在抬亮后的底色上仍有分离度
+     （原 #a9eefb/#57c3d8/#2b7f92 最暗端 43 luma，压不过雾） */
+  g.addColorStop(0,'#cdf4ff'); g.addColorStop(0.42,'#7ad6e8'); g.addColorStop(1,'#3c95a9');
+  ctx.globalAlpha = alpha===undefined?1:alpha;
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(0,-w/2,len,w,w/2);
+  else { ctx.moveTo(w/2,-w/2); ctx.lineTo(len-w/2,-w/2);
+         ctx.arc(len-w/2,0,w/2,-Math.PI/2,Math.PI/2);
+         ctx.lineTo(w/2,w/2); ctx.arc(w/2,0,w/2,Math.PI/2,-Math.PI/2); }
+  ctx.fill();
+  /* 高光线：一条沿轴的白扫，原片的连杆是实心且有圆润高光的 */
+  if (w >= 5){
+    ctx.globalAlpha = (alpha===undefined?1:alpha) * 0.55;
+    ctx.fillStyle = 'rgba(255,255,255,.75)';
+    ctx.fillRect(len*0.12, -w*0.30, len*0.76, Math.max(1, w*0.16));
+  }
+  ctx.globalAlpha = 1;
+  ctx.restore();
+}
+
+/* ── 全局底色 / 暗角 / 颗粒 ───────────────────────────────── */
+function backdrop(a){
+  /* 曝光：实测四窗原片 luma 79.5 / 79.8 / 104.6 / 119.6，改前复现 15.9–22.9。
+     底色不再压到近黑，中灰提到 #2a3a46 一带，并加一层暖侧光，
+     让整帧的 p90 从 23–37 抬到原片的 154–220 量级。 */
+  const g = ctx.createRadialGradient(W*0.5, H*0.42, H*0.05, W*0.5, H*0.5, H*1.05);
+  g.addColorStop(0, '#33424f');
+  g.addColorStop(0.55, '#1b262f');
+  g.addColorStop(1, '#0d1319');
+  ctx.fillStyle = g;
+  ctx.globalAlpha = 1;
+  ctx.fillRect(0,0,W,H);
+  /* 暖侧光：原片是室内实拍，右上场灯；这里用同样的偏暖方向光补中间调 */
+  const warmLight = ctx.createRadialGradient(W*0.72, H*0.18, 40, W*0.72, H*0.18, H*0.95);
+  warmLight.addColorStop(0, 'rgba(255,232,205,.16)');
+  warmLight.addColorStop(1, 'rgba(255,232,205,0)');
+  ctx.fillStyle = warmLight;
+  ctx.fillRect(0,0,W,H);
+  if (a > 0.001){
+    ctx.globalAlpha = a;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0,0,W,H);
+    ctx.globalAlpha = 1;
+  }
+}
+
+/* 白色极简台面（实测：人物段与微观段之间用极简白色台面桥接） */
+function tablePlate(cx, cy, w, h, alpha){
+  ctx.save();
+  ctx.globalAlpha = alpha===undefined?1:alpha;
+  const g = ctx.createLinearGradient(0, cy, 0, cy+h*0.22);
+  g.addColorStop(0,'rgba(233,236,239,.97)');
+  g.addColorStop(1,'rgba(196,203,210,.96)');
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.moveTo(cx-w/2, cy);
+  ctx.lineTo(cx+w/2, cy);
+  ctx.lineTo(cx+w/2-18, cy+26);
+  ctx.lineTo(cx-w/2+18, cy+26);
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+
+/* ── 字幕 ─────────────────────────────────────────────────── */
+const SUB_TMPL = {
+  'n': { size:50, weight:700 },
+  'a': { size:50, weight:700 },
+  'q': { size:56, weight:800 },
+  'i': { size:64, weight:800 },
+  'd': { size:58, weight:800 },
+  'e': { size:56, weight:700 },
+  'x': { size:50, weight:700 }
+};
+const SUB_BAND = { top: 1005, baseline: 1058, height: 50 };
+const MAXW = 1660;   // 单行最大宽度：实测每行约 18 字（41 px/字），p90 27 字
+
+function wrapText(text, font, maxW){
+  const chars = Array.from(text);
+  const lines = []; let cur = '';
+  for (const ch of chars){
+    const test = cur + ch;
+    if (ctx.measureText(test).width > maxW && cur.length){
+      lines.push(cur); cur = ch;
+    } else cur = test;
+  }
+  if (cur) lines.push(cur);
+  return lines;
+}
+
+function drawSubtitle(lineObj, alpha){
+  if (!lineObj || !lineObj.text || alpha <= 0.001) return;
+  const tm = SUB_TMPL[lineObj.kind] || SUB_TMPL.n;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  ctx.font = `${tm.weight} ${tm.size}px "PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif`;
+  const lines = wrapText(lineObj.text, ctx.font, MAXW);
+  /* 实测：96 条单行 / 17 条双行；双行时上抬一行 */
+  const baseY = lines.length > 1
+    ? SUB_BAND.baseline - tm.size*0.62
+    : SUB_BAND.baseline;
+  ctx.lineJoin = 'round';
+  ctx.miterLimit = 2;
+  for (let i=0;i<lines.length;i++){
+    const y = baseY + i*tm.size*1.26;
+    ctx.lineWidth = tm.size*0.16;
+    ctx.strokeStyle = 'rgba(4,7,10,.92)';
+    ctx.strokeText(lines[i], W/2, y);
+    const g = ctx.createLinearGradient(0, y-tm.size*0.82, 0, y+tm.size*0.16);
+    g.addColorStop(0,'#ffffff'); g.addColorStop(1,'#e7edf2');
+    ctx.fillStyle = g;
+    ctx.fillText(lines[i], W/2, y);
+  }
+  ctx.restore();
+}
+
+/* 字幕切换的入场：实测字幕是硬切为主，只给 60ms 的极短淡入，
+   避免逐字动画（逐字弹出不在 117 条统计内，这里也不做） */
+function lineAlpha(local){
+  return clamp(local/0.06, 0, 1);
+}
+
+/* ── 场景：共用微观语言（橙节点 + 青连杆） ──────────────────── */
+const ORANGE_SPOTS = [
+  [-1,-1,-1],[ 1,-1,-1],[ 1, 1,-1],[-1, 1,-1],
+  [-1,-1, 1],[ 1,-1, 1],[ 1, 1, 1],[-1, 1, 1]
+];
+
+/* 一格立方骨架：n 个节点按 reveal 依次长出 */
+function cubeUnit(proj, center, size, reveal, rodW, nodeR){
+  const p = [];
+  for (let i=0;i<8;i++){
+    const s = ORANGE_SPOTS[i];
+    p.push(proj(center.x + s[0]*size, center.y + s[1]*size, center.z + s[2]*size));
+  }
+  const edges = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+  const nLinks = Math.floor(reveal * edges.length);
+  for (let e=0;e<edges.length;e++){
+    if (e >= nLinks) break;
+    const [i,j] = edges[e];
+    const w = rodW * (p[i].k/ (p[i].k||1));
+    rod(p[i], p[j], Math.max(2, rodW*clamp((p[i].k+ p[j].k)/2,0.4,1.6)/1, 1));
+  }
+  const nNodes = Math.floor(reveal * 8 * 1.0) ;
+  for (let i=0;i<8;i++){
+    if (i >= Math.ceil(reveal*8)) break;
+    node(p[i], nodeR * clamp(p[i].k,0.4,1.8));
+  }
+  return p;
+}
+
+/* MOF 网格：a×b×c 个单元组成的点阵 */
+function lattice(proj, cx, cy, cz, a, b, c, spacing, reveal, rodW, nodeR, tint){
+  const idx = (i,j,k) => [i,j,k];
+  const pos = [];
+  for (let i=0;i<=a;i++) for (let j=0;j<=b;j++) for (let k=0;k<=c;k++)
+    pos.push({i,j,k, p: proj(cx + (i-a/2)*spacing, cy + (j-b/2)*spacing, cz + (k-c/2)*spacing)});
+  const map = new Map();
+  pos.forEach((o,n)=> map.set(o.i+','+o.j+','+o.k, n));
+  const total = pos.length;
+  const shown = Math.ceil(total*clamp(reveal,0,1));
+  /* 先画杆再画节点，避免杆压住端点 */
+  for (let n=0;n<shown;n++){
+    const o = pos[n];
+    const nb = [[1,0,0],[0,1,0],[0,0,1]];
+    for (const d of nb){
+      const m = map.get((o.i+d[0])+','+(o.j+d[1])+','+(o.k+d[2]));
+      if (m === undefined || m >= shown) continue;
+      const q = pos[m].p;
+      const w = Math.max(1.5, rodW * clamp((o.p.k+q.k)/2, 0.35, 1.7));
+      rod(o.p, q, w, clamp(0.55 + ((o.p.z+q.z)/2)*0.22, 0.34, 1));
+    }
+  }
+  for (let n=0;n<shown;n++){
+    const q = pos[n].p;
+    /* 深度衰减：远端节点更暗更小，避免正交投影下串成糖葫芦 */
+    const dz = clamp(0.52 + q.z*0.30, 0.34, 1);
+    node(q, Math.max(2, nodeR*clamp(q.k,0.35,1.8)*(0.78+dz*0.22)), tint, dz);
+  }
+  return pos;
+}
+
+/* 一行文字（场景内标签，不用描边，靠留白） */
+function label(text, x, y, size, color, alpha, weight){
+  ctx.save();
+  ctx.globalAlpha = alpha===undefined?1:alpha;
+  ctx.fillStyle = color||'rgba(226,236,242,.92)';
+  ctx.font = `${weight||600} ${size}px "PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif`;
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(text, x, y);
+  ctx.restore();
+}
+
+/* 大字编号（实测：编号动作名独占一句，配大字入场） */
+function bigNum(ch, x, y, size, t){
+  const k = easeOut(clamp(t/0.42,0,1));
+  ctx.save();
+  ctx.globalAlpha = k*0.9;
+  ctx.fillStyle = 'rgba(232,135,58,.16)';
+  ctx.font = `900 ${size}px "PingFang SC","Microsoft YaHei",sans-serif`;
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(ch, x, y);
+  ctx.restore();
+}
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   4 · 17 个镜头的画面（每镜一个绘制函数；运动量按实测 pix_diff 中位）
+   ═══════════════════════════════════════════════════════════════════ */
+const SHOT_MOTION = [3.6,0.8,24.1,1.1,0.7,1.6,1.6,0.7,3.5,1.2,9.0,8.8,2.0,0.4,1.2,0.7,1.4];
+
+function shotIndex(t){
+  let i = 0;
+  for (let k=0;k<CUTS.length;k++) if (t >= CUTS[k]) i = k+1;
+  return i;
+}
+function shotBounds(i){
+  const s = i===0 ? 0 : CUTS[i-1];
+  const e = i===CUTS.length ? DUR : CUTS[i];
+  return [s,e];
+}
+
+/* 每镜里给「动作爆发」用的相位：长镜用实测 BURSTS，其它镜用慢速呼吸 */
+function burstEnv(t, i){
+  const [s,e] = shotBounds(i);
+  const local = t - s;
+  if (i === 12){                       // 长镜 101.97–175.41：16 次爆发
+    let v = 0;
+    for (const [bt, bd] of BURSTS){
+      const d = local + s - bt;
+      if (d >= 0 && d <= bd) v = Math.max(v, Math.sin(Math.PI*(d/bd)));
+      else if (d > bd && d < bd+0.28) v = Math.max(v, (1-(d-bd)/0.28)*0.22);
+    }
+    return v;
+  }
+  return 0;
+}
+
+/* ── 镜 0（0–1.27 s）：只有一个方框，几乎静止（pd 中位 3.6） ── */
+function sh0(t, local, dur){
+  const proj = makeCam(0.10, 0.02, 210, W/2, H/2 - 60);
+  const sway = Math.sin(local*0.9)*3;
+  /* 开头只有一个平面方框：四条边、四个角，没有第三维 */
+  const c = ORANGE_SPOTS.map(s=>proj(s[0]*sway*0.02 + s[0]*0.0, 0, 0));
+  const q = [
+    proj(-1, -0.72, 0), proj( 1, -0.72, 0),
+    proj( 1,  0.72, 0), proj(-1,  0.72, 0)
+  ];
+  const edges = [[0,1],[1,2],[2,3],[3,0]];
+  for (const [i,j] of edges) rod(q[i], q[j], 13, 1);
+  for (let i=0;i<4;i++) node(q[i], 27, PAL.orange);
+  label('MOFs', W/2, H/2 + 210, 34, 'rgba(140,158,170,.5)', 1, 500);
+}
+
+/* ── 镜 1（1.27–8.07 s）：方框长出连杆，慢慢成体（pd 0.8，几乎静止） ── */
+function sh1(t, local, dur){
+  const proj = makeCam(-0.22, 0.08 + local*0.006, 240, W/2, H/2 - 40);
+  /* 0–2.4 s 仍是平面方框；之后后四个角从深度里被拉出来，成体 */
+  const depth = easeOut(clamp((local - 1.1)/2.6, 0, 1));
+  const z = depth * 1.0;
+  const P = [
+    proj(-1,-0.72, 0), proj(1,-0.72, 0), proj(1,0.72, 0), proj(-1,0.72, 0),
+    proj(-1,-0.72, z), proj(1,-0.72, z), proj(1,0.72, z), proj(-1,0.72, z)
+  ];
+  const front = [[0,1],[1,2],[2,3],[3,0]];
+  const back  = [[4,5],[5,6],[6,7],[7,4]];
+  const join  = [[0,4],[1,5],[2,6],[3,7]];
+  for (const [i,j] of front) rod(P[i], P[j], 12, 1);
+  if (depth > 0.01){
+    for (const [i,j] of back)  rod(P[i], P[j], 12, 0.28 + depth*0.72);
+    for (const [i,j] of join)  rod(P[i], P[j], 12, depth);
+  }
+  for (let i=0;i<4;i++) node(P[i], 26*clamp(P[i].k,0.5,1.5), PAL.orange);
+  if (depth > 0.02) for (let i=4;i<8;i++) node(P[i], 26*clamp(P[i].k,0.5,1.5)*depth, PAL.orange);
+  /* 插入的杆：从中心向外生长 */
+  const g = easeOut(clamp((local-4.4)/2.2, 0, 1));
+  if (g > 0){
+    const a = proj(0,0,0), b = proj(1.9*g, 0.5*g, 0);
+    rod(a, b, 12, 1);
+    node(b, 20, PAL.orange);
+  }
+}
+
+/* ── 镜 2（8.07–15.88 s）：这一镜是全片最花处（pd 中位 24.1） ── */
+function sh2(t, local, dur){
+  /* 改：原片 9.60 是满幅点阵（cov 0.711、edges 0.319），改前复现只有中央
+     一块 2×2×2（cov 0.203、edges 0.040）。这里把晶格加到 4×3×4 并把
+     焦距从 150 提到 300，让晶格铺到画面四边；相机抖动也放大到实测
+     运动量级（原片 9.60 在 15 fps 下 pix_diff 35.2，改前 0.7）。 */
+  const yaw = local*0.34;
+  const pitchWob = Math.sin(local*2.9)*0.06 + Math.sin(local*7.3)*0.022;
+  const yawWob = Math.sin(local*3.7)*0.05 + Math.sin(local*9.1)*0.018;
+  /* 改：单纯偏航在 160×90 的差分上几乎测不到（0.73），原片是实拍推轨＋
+     浅景深的尺度变化。这里加 5.4 rad/s 的推拉（230→470）与 ~6 Hz 的
+     手抖，让整帧每秒的尺度/位移差落到原片的 30 档附近。 */
+  const push = Math.sin(local*8.2 + 0.6)*0.5 + 0.5;    // 0..1
+  const zoom = 200 + ease(push)*320;
+  const roll = Math.sin(local*1.7)*0.012;
+  const shakeX = Math.sin(local*37.0)*9 + Math.sin(local*23.0)*4;
+  const shakeY = Math.cos(local*31.0)*8 + Math.cos(local*19.0)*3;
+  const proj = makeCam(yaw + yawWob + roll, 0.30 + pitchWob,
+                       zoom, W/2 - 60 + shakeX, H/2 - 40 + shakeY);
+  const grow = clamp((local-0.2)/4.6, 0, 1);
+  const a = 4, b = 3, c = 4;
+  lattice(proj, 0, 0, 0, a, b, c, 1.05, easeOut(grow), 7, 15, PAL.orange);
+  /* 空隙高亮：镜头最猛烈处把抽象结论放在这里兑现 */
+  const h = Math.sin(local*2.2)*0.5+0.5;
+  ctx.save();
+  ctx.globalAlpha = 0.10 + h*0.10;
+  const g = ctx.createRadialGradient(W/2, H/2-40, 40, W/2, H/2-40, 620);
+  g.addColorStop(0,'rgba(87,195,216,.9)'); g.addColorStop(1,'rgba(87,195,216,0)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+  ctx.restore();
+}
+
+/* ── 镜 3（15.88–16.58 s）：0.70 s 的短切，只留字 ── */
+function sh3(t, local, dur){
+  const proj = makeCam(0.5, 0.2, 300, W/2, H/2 - 40);
+  const k = clamp(local/0.7, 0, 1);
+  cubeUnit(proj, {x:0,y:0,z:0}, 0.8, 1, 10, 22, PAL.orange);
+  ctx.save();
+  ctx.globalAlpha = k*0.35;
+  ctx.fillStyle = PAL.orange;
+  ctx.fillRect(W/2-160, H/2+30, 320, 4);
+  ctx.restore();
+}
+
+/* ── 镜 4（16.58–26.99 s）：定义三槽位，慢到几乎不动（pd 0.7） ── */
+function sh4(t, local, dur){
+  const proj = makeCam(0.34 + Math.sin(local*0.22)*0.05, 0.16, 205, W/2, H/2 - 90);
+  const a = 1, b = 1, c = 1;
+  const g = clamp((local-0.6)/2.4, 0, 1);
+  lattice(proj, 0, 0, 0, a, b, c, 1.25, easeOut(g), 10, 22, PAL.orange);
+  /* 三槽位：名字 / 组成 / 性质——三段各自浮现一条横线，不抢字幕 */
+  const slots = [[0.60,'名字'],[2.24,'组成'],[5.48,'性质']];
+  slots.forEach(([tt,cap],idx)=>{
+    const k = clamp((local-tt)/0.7,0,1);
+    if (k<=0) return;
+    const x = W/2 - 300 + idx*300;
+    const col = idx===0?'#e8873a':idx===1?'#57c3d8':'#c9a961';
+    ctx.save();
+    ctx.globalAlpha = k*0.9;
+    ctx.fillStyle = col;
+    ctx.fillRect(x - 62, H/2 + 236, 124, 3);
+    ctx.font = '600 26px "PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    ctx.globalAlpha = k*0.65;
+    ctx.fillText(cap, x, H/2 + 250);
+    ctx.restore();
+  });
+}
+
+/* ── 镜 5（26.99–39.01 s）：三招，问句到编号只隔一个切点 ── */
+function sh5(t, local, dur){
+  const proj = makeCam(0.46 + local*0.035, 0.30, 150, W/2 - 60, H/2 - 40);
+  const nums = [[0.20,'第一招：吸附'],[2.97,'第二招：分离'],[4.94,'第三招：储存']];
+  let active = -1;
+  for (let i=0;i<nums.length;i++) if (local >= nums[i][0]) active = i;
+  /* 背景格子在每一招里换一次排布 */
+  const spacing = 1.5;
+  const n = [1,2,2][Math.max(0,active)];
+  lattice(proj, 0, 0, 0, n, 1, 1, spacing, 1, 6.5, 8.5, PAL.orange);
+  if (active >= 0){
+    const lt = local - nums[active][0];
+    bigNum(['1','2','3'][active], W - 300, H/2 - 300, 340, lt);
+    /* 吸附的粒子流 / 分离的两股分叉 / 储存的罐体 */
+    const k = easeOut(clamp(lt/0.6,0,1));
+    ctx.save(); ctx.globalAlpha = 0.75*k;
+    ctx.strokeStyle = PAL.cyan; ctx.lineWidth = 3;
+    for (let i=0;i<9;i++){
+      const ph = ((lt*0.55 + i/9) % 1);
+      if (active===0){
+        const y = H/2 - 120 + ph*260;
+        const x = W/2 - 250 + Math.sin(ph*Math.PI)*90;
+        ctx.beginPath(); ctx.arc(x,y,4,0,TAU); ctx.fillStyle=PAL.cyan; ctx.fill();
+      } else if (active===1){
+        const y = H/2 - 130 + ph*250;
+        for (const s of [-1,1]){
+          const x = W/2 + s*(60 + ph*120);
+          ctx.beginPath(); ctx.arc(x,y,4,0,TAU); ctx.fillStyle=PAL.cyan; ctx.fill();
+        }
+      } else {
+        const y = H/2 + 150 - ph*250;
+        const x = W/2 - 250 + (i%3)*250;
+        ctx.beginPath(); ctx.arc(x,y,4,0,TAU); ctx.fillStyle=PAL.cyan; ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
+}
+
+/* ── 镜 6（39.01–50.72 s）：数字句，同段里压慢 23% ── */
+function sh6(t, local, dur){
+  const proj = makeCam(0.18, 0.1, 175, W/2, H/2 - 70);
+  lattice(proj, 0,0,0, 3,1,3, 1.0, 1, 7, 16, PAL.orange);
+  /* 一克材料的面积：外扩的同心方形，慢慢铺满 */
+  const k = easeOut(clamp(local/6.5,0,1));
+  ctx.save();
+  ctx.strokeStyle = 'rgba(87,195,216,.55)';
+  for (let i=0;i<5;i++){
+    const s = (i+1)*120*k;
+    ctx.globalAlpha = (1-i*0.16)*0.55;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(W/2-s, H/2-70-s*0.5, s*2, s);
+  }
+  ctx.restore();
+}
+
+/* ── 镜 7（50.72–52.49 s）：1.77 s 的短切，换风格（pd 0.7） ── */
+function sh7(t, local, dur){
+  const proj = makeCam(1.0, 0.4, 260, W/2, H/2 - 60);
+  tablePlate(W/2, H/2 + 70, 620, 40, 1);
+  cubeUnit(proj, {x:0,y:-0.6,z:0}, 0.7, 1, 9, 20, PAL.orange);
+}
+
+/* ── 镜 8（52.49–66.80 s）：孔道变大 / 零件选择（pd 3.5） ── */
+function sh8(t, local, dur){
+  const proj = makeCam(0.52 + Math.sin(local*0.4)*0.06, 0.22, 175, W/2, H/2 - 70);
+  const seg = Math.min(2, Math.floor(local/4.6));
+  const spacing = [1.0, 1.32, 1.7][seg];
+  const c = easeOut(clamp((local - seg*4.6)/1.4, 0, 1));
+  lattice(proj, 0,0,0, 2,2,2, lerp(spacing, spacing*1.02, c), 1, 8, 18, PAL.orange);
+  label(['孔小','孔大','换金属'][seg], W/2, H/2 + 300, 40, 'rgba(226,236,242,.5)', 0.8, 500);
+}
+
+/* ── 镜 9（66.80–91.26 s）：问题来了 + 0.86 s 静音 ── */
+function sh9(t, local, dur){
+  const proj = makeCam(0.08, 0.06, 200, W/2, H/2 - 80);
+  const silence = t >= SILENCE[0] && t <= SILENCE[1];
+  /* 问题前留白：画面也几乎完全静止（实测该段 pd 中位 1.2） */
+  const breathe = silence ? 0 : Math.sin(local*0.55)*0.025;
+  cubeUnit(proj, {x:0,y:0,z:0}, 1.0 + breathe, 1, 10, 24, PAL.orange);
+  if (silence){
+    ctx.save();
+    ctx.globalAlpha = 0.22;
+    ctx.fillStyle = '#000'; ctx.fillRect(0,0,W,H);
+    ctx.restore();
+  }
+}
+
+/* ── 镜 10（91.26–97.06 s）：加热 / 释放 / 冷凝（pd 9.0） ── */
+function sh10(t, local, dur){
+  const proj = makeCam(0.3 + local*0.5, 0.18, 200, W/2, H/2 - 90);
+  lattice(proj, 0,0,0, 2,1,2, 1.1, 1, 8, 17, PAL.orange);
+  const k = (local/5.81) % 1;
+  ctx.save();
+  for (let i=0;i<10;i++){
+    const ph = ((k + i/10) % 1);
+    const y = H/2 + 150 - ph*420;
+    const x = W/2 - 200 + (i%5)*100 + Math.sin(ph*6)*12;
+    ctx.globalAlpha = 0.85*(1-ph*0.4);
+    ctx.fillStyle = ph<0.5 ? 'rgba(87,195,216,.95)' : 'rgba(160,220,235,.9)';
+    ctx.beginPath();
+    ctx.arc(x, y, 5 + ph*3, 0, TAU); ctx.fill();
+  }
+  ctx.restore();
+}
+
+/* ── 镜 11（97.06–101.97 s）：镜面反射，pd 8.8 ── */
+function sh11(t, local, dur){
+  const proj = makeCam(-0.34 - local*0.3, 0.22, 210, W/2, H/2 - 70);
+  lattice(proj, 0,0,0, 3,1,1, 1.0, 1, 8, 18, PAL.orange);
+  ctx.save();
+  ctx.globalAlpha = 0.18;
+  ctx.fillStyle = '#8fdcea';
+  ctx.fillRect(0, H/2 - 20, W, 3);
+  ctx.restore();
+}
+
+/* ── 镜 12（101.97–175.41 s）：73.44 s 长镜，16 次动作爆发 ── */
+function sh12(t, local, dur){
+  const yaw = local*0.055;
+  const proj = makeCam(yaw, 0.30 + Math.sin(local*0.11)*0.06, 132, W/2, H/2 - 60);
+  const be = burstEnv(t, 12);
+  /* 长镜的基础结构缓慢演化：每 18 s 增一层 */
+  const layers = 2 + Math.floor(local/18);
+  const reveal = clamp((local % 18)/3.0, 0, 1);
+  const spacing = 1.35;
+  lattice(proj, 0,0,0, Math.min(2,layers), 1, Math.min(2,layers), spacing, 1, 7, 15, PAL.orange);
+  /* 爆发：一层青色的冲击环 + 局部节点闪亮，0.4–0.9 s */
+  if (be > 0.02){
+    ctx.save();
+    ctx.globalAlpha = be*0.55;
+    const r = 120 + (1-be)*90;
+    const g = ctx.createRadialGradient(W/2, H/2-60, 20, W/2, H/2-60, r*1.8);
+    g.addColorStop(0,'rgba(87,195,216,.55)');
+    g.addColorStop(1,'rgba(87,195,216,0)');
+    ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+    ctx.restore();
+  }
+  /* 镜头微推：每 4–5 s 一次，和爆发同拍 */
+  const push = 1 + be*0.02;
+  ctx.save();
+  ctx.restore();
+}
+
+/* ── 镜 13（175.41–194.93 s）：台面加工，pd 0.4，极静 ── */
+function sh13(t, local, dur){
+  backdrop(0);
+  const proj = makeCam(0.30, 0.26, 240, W/2, H/2 - 20);
+  /* 白色极简台面（结论：人物段与微观段之间用极简白色台面桥接） */
+  tablePlate(W/2, H/2 + 150, 1180, 44, 1);
+  const xs = [-1.15, 0, 1.15];
+  /* 空台座按左到右先摆好，再让产物出现在期待的中间位 */
+  xs.forEach((x,i)=>{
+    const p = proj(x, 0.62, 0);
+    ctx.save();
+    ctx.globalAlpha = clamp((local - i*0.30)/0.55, 0, 1);
+    ctx.fillStyle = 'rgba(214,222,229,.92)';
+    ctx.fillRect(p.x-62, p.y, 124, 11);
+    ctx.fillStyle = 'rgba(150,162,172,.55)';
+    ctx.fillRect(p.x-44, p.y+11, 88, 3);
+    ctx.restore();
+  });
+  /* 产物从中间台座出现，问号光点围绕它停留 */
+  const g = easeOut(clamp((local-1.9)/1.1, 0, 1));
+  if (g>0){
+    const c = proj(0, 0.30, 0);
+    ctx.save();
+    ctx.globalAlpha = g*0.55;
+    ctx.strokeStyle = PAL.cyan; ctx.lineWidth = 2;
+    for (let i=0;i<6;i++){
+      const a = local*0.45 + i/6*TAU;
+      const px = c.x + Math.cos(a)*118;
+      const py = c.y + Math.sin(a)*62;
+      ctx.beginPath(); ctx.arc(px, py, 3.4, 0, TAU);
+      ctx.fillStyle = PAL.cyan; ctx.fill();
+    }
+    ctx.restore();
+    node(c, 30*g, PAL.orange);
+  }
+  /* 装置缩走，新单球落在同一台面（交接） */
+  const h = easeOut(clamp((local-4.4)/1.3, 0, 1));
+  if (h>0){
+    const c2 = proj(-1.15, 0.30, 0);
+    node(c2, 24*h, PAL.orange);
+    const c3 = proj(1.15, 0.30, 0);
+    node(c3, 18*h, PAL.orange);
+  }
+}
+
+/* ── 镜 14（194.93–202.84 s）：同族对照排成一列，pd 1.2 ──
+   研究笔记窗口 3：先定两端，再补中间变体，排齐后才落标签 */
+function sh14(t, local, dur){
+  backdrop(0);
+  tablePlate(W/2, H/2 + 200, 1600, 36, 1);
+  const items = 5;
+  const order = [0, 4, 1, 3, 2];          // 端点先出，中间后补
+  const gapX = 300;
+  order.forEach((i, rank)=>{
+    const k = easeOut(clamp((local - 0.5 - rank*0.45)/0.7, 0, 1));
+    if (k<=0) return;
+    const cx = W/2 + (i-2)*gapX;
+    const cy = H/2 + 40;
+    const sp = 0.85 + i*0.12;             // 孔径依次变大
+    const pj = makeCam(0.42, 0.34, 92, cx, cy);
+    lattice(pj, 0, 0, 0, 1, 1, 1, sp, k, 2.2, 5.2, PAL.orange);
+    /* 台座 */
+    ctx.save();
+    ctx.globalAlpha = k*0.75;
+    ctx.fillStyle = 'rgba(205,214,222,.9)';
+    ctx.fillRect(cx-58, H/2 + 186, 116, 8);
+    ctx.restore();
+  });
+  /* 五个都排齐后才出标签 */
+  const lab = easeOut(clamp((local - 0.5 - 4*0.45 - 0.7)/0.6, 0, 1));
+  if (lab > 0){
+    for (let i=0;i<items;i++){
+      label(['A','B','C','D','E'][i], W/2 + (i-2)*gapX, H/2 + 236, 24, 'rgba(160,176,188,.8)', lab, 600);
+    }
+  }
+}
+
+/* ── 镜 15（202.84–208.14 s）：pd 0.7，几秒的呼吸 ── */
+function sh15(t, local, dur){
+  const proj = makeCam(0.0, 0.1, 240, W/2, H/2 - 60);
+  const g = 0.94 + Math.sin(local*0.8)*0.02;
+  cubeUnit(proj, {x:0,y:0,z:0}, g, 1, 10, 25, PAL.orange);
+  label('MOF-303', W/2, H/2 + 220, 32, 'rgba(150,168,180,.5)', 1, 500);
+}
+
+/* ── 镜 16（208.14–233.70 s）：情绪低点，onset 0.96/s，单句 5.07 s ── */
+function sh16(t, local, dur){
+  /* 改：实测 211.30 原片 luma 119.6 / p90 220（是舞台大屏，不是黑场），
+     改前复现 21.4 / 27.4。这一镜自带底色，绕过 backdrop()，所以单独抬。 */
+  const g = ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#46586a'); g.addColorStop(0.62,'#28323d'); g.addColorStop(1,'#151c24');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+  const cx = W/2, cy = H/2 + 10;
+  const k = 0.5 + Math.sin(local*0.32)*0.06;
+  const rg = ctx.createRadialGradient(cx, cy-60, 40, cx, cy, 760);
+  rg.addColorStop(0, `rgba(214,186,132,${0.34*k})`);
+  rg.addColorStop(0.45, `rgba(128,152,172,${0.20*k})`);
+  rg.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = rg; ctx.fillRect(0,0,W,H);
+
+  /* 三个背影：肩线 + 头，sit low，形成「现场」的空间关系 */
+  const people = [[-300, 34, 0.94],[0, 0, 1.14],[300, 40, 0.90]];
+  people.forEach(([dx, dy, sc])=>{
+    const hx = cx + dx, hy = cy + dy - 120*sc;
+    ctx.save();
+    ctx.globalAlpha = 0.34;
+    const sg = ctx.createLinearGradient(hx, hy, hx, hy+300*sc);
+    sg.addColorStop(0,'#93a3b0'); sg.addColorStop(1,'#3d4a55');
+    ctx.fillStyle = sg;
+    /* 头 */
+    ctx.beginPath(); ctx.ellipse(hx, hy, 27*sc, 33*sc, 0, 0, TAU); ctx.fill();
+    /* 肩与背：宽肩、收腰，落到底边 */
+    /* 肩线：颈根窄、肩峰低、躯干收，避免读成斗篷 */
+    ctx.beginPath();
+    ctx.moveTo(hx - 132*sc, hy + 330*sc);
+    ctx.quadraticCurveTo(hx - 126*sc, hy + 120*sc, hx - 92*sc, hy + 74*sc);
+    ctx.quadraticCurveTo(hx - 46*sc, hy + 52*sc, hx - 22*sc, hy + 20*sc);
+    ctx.lineTo(hx + 22*sc, hy + 20*sc);
+    ctx.quadraticCurveTo(hx + 46*sc, hy + 52*sc, hx + 92*sc, hy + 74*sc);
+    ctx.quadraticCurveTo(hx + 126*sc, hy + 120*sc, hx + 132*sc, hy + 330*sc);
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  });
+  /* 地面反光 */
+  ctx.save();
+  ctx.globalAlpha = 0.10;
+  const fg = ctx.createLinearGradient(0, cy+240, 0, H);
+  fg.addColorStop(0,'rgba(190,205,215,.5)'); fg.addColorStop(1,'rgba(190,205,215,0)');
+  ctx.fillStyle = fg; ctx.fillRect(0, cy+240, W, H-(cy+240));
+  ctx.restore();
+
+  /* 情绪段唯一的活动：一颗橙点慢慢亮起 */
+  const on = easeOut(clamp((local-1.2)/3.4, 0, 1));
+  if (on>0){
+    const p = { x: cx, y: cy + 150, k:1 };
+    ctx.save(); ctx.globalAlpha = on; node(p, 7 + on*5, PAL.orange); ctx.restore();
+  }
+}
+
+const SHOTS = [sh0,sh1,sh2,sh3,sh4,sh5,sh6,sh7,sh8,sh9,sh10,sh11,sh12,sh13,sh14,sh15,sh16];
+
+/* ═══════════════════════════════════════════════════════════════════
+   5 · 合成音（全部程序化，无采样）
+   ═══════════════════════════════════════════════════════════════════ */
+const Audio = (function(){
+  let ac = null, master = null, playing = false, startAt = 0, startTime = 0;
+  let pad = [], padGain = null, noiseBuf = null;
+
+  function ensure(){
+    if (ac) return ac;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    ac = new AC();
+    master = ac.createGain();
+    master.gain.value = 0.0;
+    const comp = ac.createDynamicsCompressor();
+    master.connect(comp); comp.connect(ac.destination);
+    /* 底噪：极低音量的空气感 */
+    noiseBuf = ac.createBuffer(1, ac.sampleRate*2, ac.sampleRate);
+    const d = noiseBuf.getChannelData(0);
+    const r = rnd(20261026);
+    for (let i=0;i<d.length;i++) d[i] = (r()*2-1)*0.35;
+    /* 持续音垫：两个略微失谐的三角波，对应全片 H/P=0.96 的谐波主导 */
+    padGain = ac.createGain();
+    padGain.gain.value = 0.0;
+    const lp = ac.createBiquadFilter();
+    lp.type='lowpass'; lp.frequency.value = 900; lp.Q.value = 0.4;
+    padGain.connect(lp); lp.connect(master);
+    [110, 164.81, 220].forEach((f,i)=>{
+      const o = ac.createOscillator();
+      o.type = i===2 ? 'sine' : 'triangle';
+      o.frequency.value = f;
+      const g = ac.createGain(); g.gain.value = [0.22,0.13,0.06][i];
+      o.connect(g); g.connect(padGain); o.start();
+      pad.push({o, g});
+    });
+    return ac;
+  }
+
+  /* 单次事件音：noise burst（对应实测最强 onset 是 noise 类） */
+  function tick(vel, bright){
+    if (!ac || !playing) return;
+    const t0 = ac.currentTime;
+    const s = ac.createBufferSource();
+    s.buffer = noiseBuf;
+    const bp = ac.createBiquadFilter();
+    bp.type='bandpass'; bp.frequency.value = bright; bp.Q.value = 1.1;
+    const g = ac.createGain();
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0002, vel), t0+0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0+0.10);
+    s.connect(bp); bp.connect(g); g.connect(master);
+    s.start(t0); s.stop(t0+0.13);
+  }
+  function thump(vel){
+    if (!ac || !playing) return;
+    const t0 = ac.currentTime;
+    const o = ac.createOscillator(); o.type='sine';
+    o.frequency.setValueAtTime(96, t0);
+    o.frequency.exponentialRampToValueAtTime(44, t0+0.22);
+    const g = ac.createGain();
+    g.gain.setValueAtTime(Math.max(0.0002,vel), t0);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0+0.26);
+    o.connect(g); g.connect(master);
+    o.start(t0); o.stop(t0+0.3);
+  }
+
+  function start(t){
+    const a = ensure(); if (!a) return;
+    if (a.state === 'suspended') a.resume();
+    playing = true; startAt = t; startTime = a.currentTime;
+    /* 静音段：gain 精确归零（实测 66.66–67.52 s 全片唯一静音） */
+    master.gain.cancelScheduledValues(a.currentTime);
+    master.gain.setValueAtTime(0.0001, a.currentTime);
+    master.gain.linearRampToValueAtTime(0.85, a.currentTime+0.6);
+    padGain.gain.cancelScheduledValues(a.currentTime);
+    padGain.gain.setValueAtTime(0.0, a.currentTime);
+    padGain.gain.linearRampToValueAtTime(0.55, a.currentTime+2.0);
+    scheduleSilence();
+  }
+  function scheduleSilence(){
+    if (!ac || !playing) return;
+    /* 已过静音段则跳过 */
+    const rel = t => (t - startAt);
+    if (SILENCE[0] > startAt){
+      /* 实测静音 66.66–67.52：先 40 ms 收干，再保持绝对零，最后硬切回来 */
+      const t1 = startTime + (SILENCE[0]-startAt);
+      const t2 = startTime + (SILENCE[1]-startAt);
+      master.gain.setValueAtTime(0.85, Math.max(ac.currentTime, t1-0.04));
+      master.gain.linearRampToValueAtTime(0.0001, t1);
+      master.gain.setValueAtTime(0.0001, t2);
+      master.gain.linearRampToValueAtTime(0.85, t2+0.03);
+    }
+  }
+  function stop(){
+    playing = false;
+    if (!ac) return;
+    master.gain.cancelScheduledValues(ac.currentTime);
+    master.gain.setTargetAtTime(0.0001, ac.currentTime, 0.05);
+  }
+  function paused(){ return !playing; }
+  function now(){ return ac ? (startAt + (ac.currentTime - startTime)) : 0; }
+  return { start, stop, tick, thump, paused, now, ensure };
+})();
+
+/* 音量包络的近似：用实测 rms_db_curve 的形状做一个慢速起伏 */
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   6 · 时间轴 / 播放 / 导出接口
+   ═══════════════════════════════════════════════════════════════════ */
+const LINES_RT = LINES.map(([s,dw,txt,kind],i)=>({
+  i, start:s, end:s+dw, dwell:dw, text:txt, kind,
+  chars: Array.from(txt).length,
+  rate: Array.from(txt).length / dw
+}));
+
+function lineAt(t){
+  /* 二分查找当前行；空白行（kind 'x'）也返回，用于显示「空字幕」 */
+  let lo=0, hi=LINES_RT.length-1, ans=null;
+  while (lo<=hi){
+    const mid=(lo+hi)>>1, L=LINES_RT[mid];
+    if (t < L.start) hi = mid-1;
+    else if (t >= L.end) lo = mid+1;
+    else { ans = L; break; }
+  }
+  return ans;
+}
+function lineIndexAt(t){
+  const L = lineAt(t);
+  return L ? L.i : -1;
+}
+/* 静音段：不画字幕也不发声 */
+function inSilence(t){ return t >= SILENCE[0] && t <= SILENCE[1]; }
+
+const state = { t:0, playing:false, soundOn:false, last:0, lastLine:-1, lastShot:-1, anchor:0, wall0:0 };
+let rafId = 0;
+
+function draw(){
+  const t = state.t;
+  const si = shotIndex(t);
+  const [ss, se] = shotBounds(si);
+  const local = t - ss;
+  const dur = se - ss;
+
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.filter = 'none';
+
+  /* 底色：镜 13/14/16 自带背景，其余统一深色 */
+  if (si !== 13 && si !== 14 && si !== 16) backdrop(0);
+
+  const fn = SHOTS[si] || SHOTS[0];
+  fn(t, local, dur);
+
+  /* 字幕：静音段与空行都不画 */
+  if (!inSilence(t)){
+    const L = lineAt(t);
+    if (L && L.text){
+      drawSubtitle(L, lineAlpha(t - L.start));
+    }
+  }
+
+  /* 极轻的暗角与颗粒，模拟实拍镜头的边缘衰减 */
+  const vg = ctx.createRadialGradient(W/2,H/2,H*0.42,W/2,H/2,H*0.92);
+  vg.addColorStop(0,'rgba(0,0,0,0)');
+  vg.addColorStop(1,'rgba(0,0,0,.42)');
+  ctx.fillStyle = vg; ctx.fillRect(0,0,W,H);
+
+  /* 底部安全区的细线（只在静止画面里可见，帮助比对字幕带位置） */
+  if (window.__showGuides){
+    ctx.save();
+    ctx.strokeStyle = 'rgba(120,200,220,.25)'; ctx.lineWidth = 1;
+    ctx.strokeRect(W/2-MAXW/2, SUB_BAND.top, MAXW, SUB_BAND.height+16);
+    ctx.restore();
+  }
+
+  syncUI(si, local, t);
+}
+
+/* ── UI 同步 ───────────────────────────────────────────────── */
+const elTC = document.getElementById('tc');
+const elSeek = document.getElementById('seek');
+const elShot = document.getElementById('k-shot');
+const elLen = document.getElementById('k-len');
+const elLine = document.getElementById('k-line');
+const elDwell = document.getElementById('k-dwell');
+const elChars = document.getElementById('k-chars');
+const elRate = document.getElementById('k-rate');
+const elCount = document.getElementById('k-count');
+const elGap = document.getElementById('k-gap');
+const elSiInfo = document.getElementById('si-info');
+const elSiTxt = document.getElementById('si-txt');
+
+function fmt(t){
+  const m = Math.floor(t/60), s = t-m*60;
+  return String(m).padStart(2,'0')+':'+ s.toFixed(2).padStart(5,'0');
+}
+function syncUI(si, local, t){
+  elTC.textContent = fmt(t) + ' / ' + fmt(DUR) + '   ·   t=' + t.toFixed(3);
+  elSeek.value = Math.round(t*100);
+  elShot.textContent = (si+1) + ' / ' + (CUTS.length+1);
+  const [ss,se] = shotBounds(si);
+  elLen.textContent = (se-ss).toFixed(2) + ' s · pd ' + SHOT_MOTION[si];
+  const L = lineAt(t);
+  if (L && L.text){
+    elLine.textContent = '#' + L.i;
+    elDwell.textContent = L.dwell.toFixed(2) + ' s';
+    elChars.textContent = L.chars + ' 字';
+    elRate.textContent = L.rate.toFixed(1) + ' 字/秒';
+    elSiInfo.textContent = '#' + L.i + ' · ' + L.dwell.toFixed(2) + ' s · ' + L.rate.toFixed(1) + ' 字/秒';
+    elSiTxt.textContent = L.text;
+  } else {
+    elLine.textContent = inSilence(t) ? '静音留白' : '空字幕';
+    elDwell.textContent = '—'; elChars.textContent = '—'; elRate.textContent = '—';
+    elSiInfo.textContent = inSilence(t) ? '静音 ' + SILENCE[0] + '–' + SILENCE[1] : '间隙';
+    elSiTxt.textContent = '—';
+  }
+  elCount.textContent = LINES_RT.length + ' 行 / ' + (CUTS.length+1) + ' 镜';
+  const blank = LINES_RT.filter(x=>!x.text);
+  elGap.textContent = blank.length + ' 处空行';
+  /* 镜表高亮 */
+  const rows = document.querySelectorAll('#shots-body tr');
+  rows.forEach((r,i)=> r.classList.toggle('on', i===si));
+}
+
+/* ── RAF ───────────────────────────────────────────────────── */
+function loop(ts){
+  if (!state.playing) return;
+  /* 墙钟推进：掉帧时也保持与真实时间一致，而不是累加逐帧 dt */
+  if (!state.wall0) state.wall0 = ts;
+  state.t = clamp(state.anchor + (ts - state.wall0)/1000, 0, DUR);
+  if (state.t >= DUR){ state.t = DUR; setPlaying(false); draw(); return; }
+  stepAudio();
+  draw();
+  rafId = requestAnimationFrame(loop);
+}
+
+/* 声音跟随：底噪/轻击按字幕换行与爆发触发 */
+let lastTickAt = -1, lastBurstIdx = -1;
+function stepAudio(){
+  if (!state.soundOn || Audio.paused()) return;
+  const t = state.t;
+  if (inSilence(t)) return;
+  /* 每次字幕换行一声轻击（幅度按字数） */
+  const li = lineIndexAt(t);
+  if (li !== lastTickAt){
+    lastTickAt = li;
+    const L = LINES_RT[li];
+    if (L && L.text) Audio.tick(0.05 + Math.min(0.10, L.chars*0.004), 1500 + (L.chars%7)*260);
+  }
+  /* 长镜爆发点：低频 thump */
+  const si = shotIndex(t);
+  if (si === 12){
+    const local = t - shotBounds(12)[0];
+    let bi = -1;
+    BURSTS.forEach(([bt,bd],k)=>{ if (local >= bt && local < bt+bd) bi = k; });
+    if (bi !== -1 && bi !== lastBurstIdx){ lastBurstIdx = bi; Audio.thump(0.16); }
+  }
+  /* 切点：一次更重的 thump（实测三个视觉尖峰就在切点） */
+  for (const c of CUTS){
+    if (t >= c && t < c + 0.05 && Math.abs(t - c) < 0.06){ Audio.thump(0.10); break; }
+  }
+}
+
+function setPlaying(on){
+  state.playing = on;
+  state.last = 0;
+  state.anchor = state.t;
+  state.wall0 = 0;
+  const b = document.getElementById('play');
+  b.textContent = on ? '暂停' : '播放';
+  b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  if (on){
+    if (state.t >= DUR) state.t = 0;
+    if (state.soundOn) Audio.start(state.t);
+    rafId = requestAnimationFrame(loop);
+  } else {
+    if (rafId) cancelAnimationFrame(rafId);
+    Audio.stop();
+  }
+}
+
+function seekTo(t){
+  state.t = clamp(t, 0, DUR);
+  state.anchor = state.t;
+  state.wall0 = 0;
+  lastTickAt = -1; lastBurstIdx = -1;
+  if (state.playing && state.soundOn){ Audio.stop(); Audio.start(state.t); }
+  draw();
+}
+
+/* ── 控件 ──────────────────────────────────────────────────── */
+document.getElementById('play').addEventListener('click', ()=> setPlaying(!state.playing));
+document.getElementById('sound').addEventListener('click', ()=>{
+  state.soundOn = !state.soundOn;
+  const b = document.getElementById('sound');
+  b.setAttribute('aria-pressed', state.soundOn?'true':'false');
+  b.dataset.on = state.soundOn?'1':'0';
+  b.textContent = state.soundOn ? '声音开' : '声音关';
+  if (state.soundOn && state.playing) Audio.start(state.t); else Audio.stop();
+});
+elSeek.addEventListener('input', ()=> seekTo(parseInt(elSeek.value,10)/100));
+document.getElementById('btnJump').addEventListener('click', ()=>{
+  const marks = [2.20, 9.60, 29.50, 211.30];
+  const cur = marks.findIndex(m => state.t < m - 0.01);
+  seekTo(cur === -1 ? marks[0] : marks[cur]);
+});
+document.querySelectorAll('[data-t]').forEach(b=>{
+  b.addEventListener('click', ()=> seekTo(parseFloat(b.dataset.t)));
+});
+window.addEventListener('keydown', e=>{
+  if (e.code === 'Space'){ e.preventDefault(); setPlaying(!state.playing); }
+  else if (e.code === 'ArrowRight'){ seekTo(state.t + 0.1); }
+  else if (e.code === 'ArrowLeft'){ seekTo(state.t - 0.1); }
+  else if (e.key === ']'){
+    const n = CUTS.find(c => c > state.t + 0.001);
+    if (n !== undefined) seekTo(n);
+  } else if (e.key === '['){
+    const p = CUTS.filter(c => c < state.t - 0.001).pop();
+    seekTo(p === undefined ? 0 : p);
+  }
+});
+
+/* ── 实测参数表（每条都标出来源窗口，便于追溯） ────────────── */
+(function buildParams(){
+  const rows = [
+    ['开题句停留', '3.70 s', '0.00–3.70 s'],
+    ['单动作句', '1.71 / 1.53 s', '3.70–5.41 / 5.41–6.94'],
+    ['名词三槽', '1.21 / 2.03 / 2.11 s', '18.82–25.19'],
+    ['问句→编号', '间隔 ≈ 0.00 s', '25.19 → 27.19'],
+    ['编号名速率', '3.2 字/秒', '27.19–29.06（6字/1.87s）'],
+    ['空字幕间隙', '0.90 s', '29.06–29.96'],
+    ['数字句速率', '7.2 字/秒（解释句 9.3）', '37.34 vs 34.07–39.31'],
+    ['提问前留白', '0.86 s', 'silence 66.66–67.52'],
+    ['长镜', '73.44 s · 16 次爆发', '101.97–175.41'],
+    ['爆发时长', '0.40–2.17 s · 每4–5 s', 'pix_diff 85 分位以上'],
+    ['情绪段速率', '0.96 onset/s · 单句 5.07 s', '208.74–215.02'],
+    ['换行/切镜比', '7.3 次换行 : 1 次切镜', '117 : 16'],
+    ['平均镜长', '13.75 s（中位 7.91 s）', '16 个切点'],
+    ['字幕排版', '字高 50 px · 带 y≈1005–1075', '96 单行 / 17 双行 / 4 不可判']
+  ];
+  const tb = document.getElementById('params');
+  rows.forEach(([k,v,src])=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>'+k+'<div class="src">'+src+'</div></td><td>'+v+'</td>';
+    tb.appendChild(tr);
+  });
+})();
+
+/* ── 镜表与刻度 ────────────────────────────────────────────── */
+(function buildTable(){
+  const tb = document.getElementById('shots-body');
+  for (let i=0;i<=CUTS.length;i++){
+    const [s,e] = shotBounds(i);
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>'+(i+1)+'</td><td>'+s.toFixed(2)+'</td><td>'+(e-s).toFixed(2)+'</td><td>'+
+      SHOT_MOTION[i]+'</td>';
+    tb.appendChild(tr);
+  }
+  const mk = document.getElementById('marks');
+  [0, 66.8, 101.97, 175.41, 208.14, 233.7].forEach(v=>{
+    const s = document.createElement('span');
+    s.textContent = v.toFixed(0)+'s';
+    s.style.left = (v/DUR*100)+'%';
+    if (v===0) s.style.transform = 'translateX(0)';
+    if (v===233.7) s.style.transform = 'translateX(-100%)';
+    mk.appendChild(s);
+  });
+})();
+
+/* ── 关键帧按钮 & 启动 ─────────────────────────────────────── */
+(function boot(){
+  const p = new URLSearchParams(location.search);
+  if (p.has('t')){
+    const v = parseFloat(p.get('t'));
+    state.t = isFinite(v) ? clamp(v, 0, DUR) : 0;
+  }
+  if (p.get('guides') === '1') window.__showGuides = true;
+  draw();
+  logEl.textContent = 'ready · lines=' + LINES_RT.length +
+    ' · cuts=' + CUTS.length + ' · t=' + state.t.toFixed(3);
+})();
+
+/* ── 供验证脚本 / 后续评价使用 ─────────────────────────────── */
+window.__repro = {
+  get duration(){ return DUR; },
+  get cuts(){ return CUTS.slice(); },
+  get lines(){ return LINES_RT.map(l=>({ i:l.i, start:l.start, end:l.end, dwell:l.dwell,
+        text:l.text, chars:l.chars, rate:l.rate })); },
+  setTime(t){ state.t = clamp(t,0,DUR); state.playing = false; draw(); return state.t; },
+  canvas,
+  toDataURL(){ return canvas.toDataURL('image/png'); },
+  shotAt(t){ return shotIndex(t); },
+  lineAt(t){ const L = lineAt(t); return L ? { i:L.i, text:L.text, dwell:L.dwell, chars:L.chars, rate:L.rate } : null; },
+  /* 非背景像素占比：>0.02 视为「非空画布」 */
+  coverage(){
+    const c = document.createElement('canvas');
+    c.width = 480; c.height = 270;
+    const g = c.getContext('2d', { willReadFrequently:true });
+    g.drawImage(canvas, 0, 0, 480, 270);
+    const d = g.getImageData(0,0,480,270).data;
+    let n=0, sum=0;
+    for (let i=0;i<d.length;i+=4){
+      const lum = (d[i]*0.299 + d[i+1]*0.587 + d[i+2]*0.114);
+      sum += lum;
+      if (lum > 26) n++;
+    }
+    return { nonBg: n/(480*270), meanLum: sum/(480*270) };
+  },
+  audit(){
+    const dw = LINES_RT.map(l=>l.dwell).sort((a,b)=>a-b);
+    const q = p => dw[Math.floor(p*(dw.length-1))];
+    const mean = dw.reduce((a,b)=>a+b,0)/dw.length;
+    const rates = LINES_RT.filter(l=>l.text).map(l=>l.rate).sort((a,b)=>a-b);
+    const rq = p => rates[Math.floor(p*(rates.length-1))];
+    const chars = LINES_RT.filter(l=>l.text).map(l=>l.chars).sort((a,b)=>a-b);
+    return {
+      lines: LINES_RT.length,
+      blanks: LINES_RT.filter(l=>!l.text).length,
+      dwell: { med:+q(0.5).toFixed(2), mean:+mean.toFixed(2), p10:+q(0.1).toFixed(2),
+               p25:+q(0.25).toFixed(2), p75:+q(0.75).toFixed(2), p90:+q(0.9).toFixed(2) },
+      chars: { med: chars[Math.floor(0.5*(chars.length-1))], p90: chars[Math.floor(0.9*(chars.length-1))] },
+      rate: { med:+rq(0.5).toFixed(1), p25:+rq(0.25).toFixed(1), p75:+rq(0.75).toFixed(1), p90:+rq(0.9).toFixed(1) },
+      cuts: CUTS.length,
+      shots: CUTS.length+1,
+      longestShot: Math.max(...Array.from({length:CUTS.length+1},(_,i)=>{const b=shotBounds(i);return b[1]-b[0];})).toFixed(2),
+      bursts: BURSTS.length,
+      errors: window.__err.slice()
+    };
+  },
+  ready: true
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+{
+ "page": "repro-rotor.html",
+ "size": [
+  1920,
+  1080
+ ],
+ "results": [
+  {
+   "name": "01-closed",
+   "t": 1.3,
+   "frame": 39,
+   "phase": "A · 封闭整机",
+   "cut": 0,
+   "rotorDeg": 113.22,
+   "transparent": 0,
+   "bytes": 482479,
+   "sha1": "32839604a3f431471bddf774dd62a83e3411e7aa",
+   "out": "C:\\Users\\USER\\.codex\\skills\\rainbow-motion-story\\assets\\style-lab\\lab\\shots\\baseline\\rotor-base-01-closed.png"
+  },
+  {
+   "name": "02-cut-mid",
+   "t": 1.433,
+   "frame": 43,
+   "phase": "A · 剖切位移",
+   "cut": 0.419,
+   "rotorDeg": 124.8,
+   "transparent": 0,
+   "bytes": 556291,
+   "sha1": "685cd12d74be639b4044e53b9789df7bac73eb7d",
+   "out": "C:\\Users\\USER\\.codex\\skills\\rainbow-motion-story\\assets\\style-lab\\lab\\shots\\baseline\\rotor-base-02-cut-mid.png"
+  },
+  {
+   "name": "03-pulse-settled",
+   "t": 6.85,
+   "frame": 206,
+   "phase": "B · 两段脉冲",
+   "cut": 1,
+   "rotorDeg": 523.15,
+   "transparent": 0,
+   "bytes": 471882,
+   "sha1": "53ba529c7cd1e795610f5339f4f22f559c9545f1",
+   "out": "C:\\Users\\USER\\.codex\\skills\\rainbow-motion-story\\assets\\style-lab\\lab\\shots\\baseline\\rotor-base-03-pulse-settled.png"
+  },
+  {
+   "name": "04-transparent-freeze",
+   "t": 10.5,
+   "frame": 315,
+   "phase": "C · 讲解静帧 2.27s",
+   "cut": 1,
+   "rotorDeg": 662.62,
+   "transparent": 1,
+   "bytes": 517766,
+   "sha1": "d3bbef4e5d7b481b0152507a8e8796a584cf2d94",
+   "out": "C:\\Users\\USER\\.codex\\skills\\rainbow-motion-story\\assets\\style-lab\\lab\\shots\\baseline\\rotor-base-04-transparent-freeze.png"
+  }
+ ],
+ "api": {
+  "hasApi": true,
+  "total": 12.6
+ },
+ "errors": []
+}

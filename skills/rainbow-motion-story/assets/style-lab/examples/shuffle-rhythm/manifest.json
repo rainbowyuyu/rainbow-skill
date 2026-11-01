@@ -1,0 +1,220 @@
+{
+  "schema": "motion-atelier.shuffle-rhythm-media/v1",
+  "sampleRate": 48000,
+  "channels": 2,
+  "duration": 18,
+  "encoding": "PCM signed 16-bit little endian",
+  "source": "Original deterministic synthesis; no third-party recordings, voice, music or source-video assets.",
+  "level": "Module render gain 1.0; plan masterGain is retained. No UI volume scaling, normalization, compressor or limiter. Modes are not loudness matched.",
+  "sourceHashes": {
+    "lab/shuffle-rhythm.js": "7951226a68a172c8e4c9e71bef19e034a1ed1d33fe3431b8bc8d7e7bd0131a2f",
+    "lab/sound-design.js": "6d74ad99c70d1aa2493cb64a60ecdfe64d71fa2a749e5558d02387ff5d57735c"
+  },
+  "files": [
+    {
+      "mode": "restrained",
+      "filename": "shuffle-restrained-48k.wav",
+      "planFilename": "shuffle-restrained.plan.json",
+      "bytes": 3456044,
+      "sha256": "8012bbe3afc551f83bcb531aef6ae05cfdb9bd3cbcb22cce7c5145ded1bd81a7",
+      "codec": "pcm_s16le",
+      "sampleRate": 48000,
+      "channels": 2,
+      "samples": 864000,
+      "durationSeconds": 18,
+      "metrics": {
+        "samplePeak": 0.0753173828125,
+        "samplePeakDbFS": -22.462095591970275,
+        "samplePeakDbfs": -22.462095591970275,
+        "monoPeak": 0.074676513671875,
+        "stereoRms": 0.004020387707204183,
+        "monoRms": 0.003971576632024148,
+        "monoRatio": 0.987859112420285,
+        "dcLeft": 0.0000079686200177228,
+        "dcRight": 0.000009028646681043837,
+        "correlation": 0.9560828176771694,
+        "maxAdjacentSampleStep": 0.035430908203125,
+        "duration": 18,
+        "clippedSamples": 0
+      },
+      "levels": {
+        "integratedLUFS": -42.39,
+        "truePeakDbTP": -22.41,
+        "loudnessRangeLU": 7.9
+      },
+      "maxQuantizationError": 0.000016629695892333984,
+      "readHolds": [
+        {
+          "start": 6.95,
+          "end": 8.45,
+          "label": "归拢后读数",
+          "checkedSamples": 71999,
+          "peak": 0,
+          "rms": 0,
+          "passed": true
+        },
+        {
+          "start": 16.4,
+          "end": 18,
+          "label": "最终顺序阅读",
+          "checkedSamples": 76800,
+          "peak": 0,
+          "rms": 0,
+          "passed": true
+        }
+      ],
+      "checks": {
+        "fullDecode": true,
+        "pcm16": true,
+        "stereo": true,
+        "sampleRate48000": true,
+        "exactSampleCount": true,
+        "duration18": true,
+        "unclipped": true,
+        "conservativeTruePeak": true,
+        "finiteLoudness": true,
+        "readWindowsSilent": true,
+        "quantizationError": true,
+        "zeroEdges": true
+      },
+      "passed": true
+    },
+    {
+      "mode": "dense",
+      "filename": "shuffle-dense-48k.wav",
+      "planFilename": "shuffle-dense.plan.json",
+      "bytes": 3456044,
+      "sha256": "b01e9e9066ec3483c97e3dca58bb8ca7b507262f0fd47c4ce3ced8578da6b510",
+      "codec": "pcm_s16le",
+      "sampleRate": 48000,
+      "channels": 2,
+      "samples": 864000,
+      "durationSeconds": 18,
+      "metrics": {
+        "samplePeak": 0.098876953125,
+        "samplePeakDbFS": -20.098098495062118,
+        "samplePeakDbfs": -20.098098495062118,
+        "monoPeak": 0.0797576904296875,
+        "stereoRms": 0.005374568208778726,
+        "monoRms": 0.005311179144439543,
+        "monoRatio": 0.9882057382329534,
+        "dcLeft": 0.00007735877566867404,
+        "dcRight": 0.00007756978494149668,
+        "correlation": 0.9531013919903574,
+        "maxAdjacentSampleStep": 0.058563232421875,
+        "duration": 18,
+        "clippedSamples": 0
+      },
+      "levels": {
+        "integratedLUFS": -37.88,
+        "truePeakDbTP": -20.1,
+        "loudnessRangeLU": 6.9
+      },
+      "maxQuantizationError": 0.00001755356788635254,
+      "readHolds": [
+        {
+          "start": 6.95,
+          "end": 8.45,
+          "label": "归拢后读数",
+          "checkedSamples": 71999,
+          "peak": 0,
+          "rms": 0,
+          "passed": true
+        },
+        {
+          "start": 16.4,
+          "end": 18,
+          "label": "最终顺序阅读",
+          "checkedSamples": 76800,
+          "peak": 0,
+          "rms": 0,
+          "passed": true
+        }
+      ],
+      "checks": {
+        "fullDecode": true,
+        "pcm16": true,
+        "stereo": true,
+        "sampleRate48000": true,
+        "exactSampleCount": true,
+        "duration18": true,
+        "unclipped": true,
+        "conservativeTruePeak": true,
+        "finiteLoudness": true,
+        "readWindowsSilent": true,
+        "quantizationError": true,
+        "zeroEdges": true
+      },
+      "passed": true
+    },
+    {
+      "mode": "legato",
+      "filename": "shuffle-legato-48k.wav",
+      "planFilename": "shuffle-legato.plan.json",
+      "bytes": 3456044,
+      "sha256": "4f6d9dbb22b61287d294941073ca6fa8d7bb1f080d9a3f2e55b5220ace1bd8c8",
+      "codec": "pcm_s16le",
+      "sampleRate": 48000,
+      "channels": 2,
+      "samples": 864000,
+      "durationSeconds": 18,
+      "metrics": {
+        "samplePeak": 0.0650634765625,
+        "samplePeakDbFS": -23.733254692103664,
+        "samplePeakDbfs": -23.733254692103664,
+        "monoPeak": 0.052520751953125,
+        "stereoRms": 0.005819483733074222,
+        "monoRms": 0.005682304518003167,
+        "monoRatio": 0.976427597126629,
+        "dcLeft": 0.0000037792700308340567,
+        "dcRight": 0.000004756927490234375,
+        "correlation": 0.9261005350118887,
+        "maxAdjacentSampleStep": 0.039703369140625,
+        "duration": 18,
+        "clippedSamples": 0
+      },
+      "levels": {
+        "integratedLUFS": -37.52,
+        "truePeakDbTP": -23.2,
+        "loudnessRangeLU": 5.1
+      },
+      "maxQuantizationError": 0.000016380101442337036,
+      "readHolds": [
+        {
+          "start": 6.95,
+          "end": 8.45,
+          "label": "归拢后读数",
+          "checkedSamples": 71999,
+          "peak": 0,
+          "rms": 0,
+          "passed": true
+        },
+        {
+          "start": 16.4,
+          "end": 18,
+          "label": "最终顺序阅读",
+          "checkedSamples": 76800,
+          "peak": 0,
+          "rms": 0,
+          "passed": true
+        }
+      ],
+      "checks": {
+        "fullDecode": true,
+        "pcm16": true,
+        "stereo": true,
+        "sampleRate48000": true,
+        "exactSampleCount": true,
+        "duration18": true,
+        "unclipped": true,
+        "conservativeTruePeak": true,
+        "finiteLoudness": true,
+        "readWindowsSilent": true,
+        "quantizationError": true,
+        "zeroEdges": true
+      },
+      "passed": true
+    }
+  ],
+  "totalWavBytes": 10368132
+}

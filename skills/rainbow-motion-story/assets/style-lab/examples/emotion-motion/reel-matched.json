@@ -1,0 +1,545 @@
+{
+  "schema": "motion-atelier.emotion-motion/v1",
+  "id": "reel",
+  "title": "连起来看",
+  "duration": 15,
+  "options": {
+    "mode": "object",
+    "soundStyle": "matched",
+    "gain": 0.65
+  },
+  "fps": 30,
+  "events": [
+    {
+      "id": "fast:prepare",
+      "kind": "onset",
+      "time": 0.09,
+      "anchor": "onset",
+      "priority": 0.4,
+      "sourceId": "fast",
+      "localTime": 0.12,
+      "timeScale": 1.3333333333333333
+    },
+    {
+      "id": "fast:release",
+      "kind": "release",
+      "time": 0.2775,
+      "anchor": "onset",
+      "priority": 0.7,
+      "sourceId": "fast",
+      "localTime": 0.37,
+      "timeScale": 1.3333333333333333
+    },
+    {
+      "id": "fast:fastest",
+      "kind": "peak",
+      "time": 0.58125,
+      "anchor": "peak",
+      "priority": 0.5,
+      "sourceId": "fast",
+      "localTime": 0.775,
+      "timeScale": 1.3333333333333333
+    },
+    {
+      "id": "fast:arrive",
+      "kind": "arrival",
+      "time": 0.885,
+      "anchor": "end",
+      "priority": 1,
+      "sourceId": "fast",
+      "localTime": 1.18,
+      "timeScale": 1.3333333333333333
+    },
+    {
+      "id": "fast:read",
+      "kind": "reading",
+      "time": 1.065,
+      "anchor": "onset",
+      "priority": 0,
+      "sourceId": "fast",
+      "localTime": 1.42,
+      "timeScale": 1.3333333333333333
+    },
+    {
+      "id": "cut-1",
+      "kind": "cut",
+      "time": 3,
+      "anchor": "onset",
+      "priority": 0,
+      "from": "fast",
+      "to": "slow",
+      "continuity": "explicit editorial cut"
+    },
+    {
+      "id": "slow:start",
+      "kind": "onset",
+      "time": 3.2625,
+      "anchor": "onset",
+      "priority": 0.4,
+      "sourceId": "slow",
+      "localTime": 0.35,
+      "timeScale": 1.3333333333333333
+    },
+    {
+      "id": "slow:fastest",
+      "kind": "peak",
+      "time": 4.33125,
+      "anchor": "peak",
+      "priority": 0.4,
+      "sourceId": "slow",
+      "localTime": 1.775,
+      "timeScale": 1.3333333333333333
+    },
+    {
+      "id": "slow:arrive",
+      "kind": "arrival",
+      "time": 5.4,
+      "anchor": "end",
+      "priority": 1,
+      "sourceId": "slow",
+      "localTime": 3.2,
+      "timeScale": 1.3333333333333333
+    },
+    {
+      "id": "slow:read",
+      "kind": "reading",
+      "time": 5.640000000000001,
+      "anchor": "onset",
+      "priority": 0,
+      "sourceId": "slow",
+      "localTime": 3.52,
+      "timeScale": 1.3333333333333333
+    },
+    {
+      "id": "cut-2",
+      "kind": "cut",
+      "time": 6,
+      "anchor": "onset",
+      "priority": 0,
+      "from": "slow",
+      "to": "stop",
+      "continuity": "explicit editorial cut"
+    },
+    {
+      "id": "stop:start",
+      "kind": "onset",
+      "time": 6.2625,
+      "anchor": "onset",
+      "priority": 0.4,
+      "sourceId": "stop",
+      "localTime": 0.35,
+      "timeScale": 1.3333333333333333
+    },
+    {
+      "id": "stop:cruise",
+      "kind": "peak",
+      "time": 6.45,
+      "anchor": "peak",
+      "priority": 0.4,
+      "sourceId": "stop",
+      "localTime": 0.6,
+      "timeScale": 1.3333333333333333
+    },
+    {
+      "id": "stop:contact",
+      "kind": "contact",
+      "time": 7.0875,
+      "anchor": "contact",
+      "priority": 1,
+      "incomingVelocity": 0.8205128205128205,
+      "outgoingVelocity": 0,
+      "sourceId": "stop",
+      "localTime": 1.45,
+      "timeScale": 1.3333333333333333
+    },
+    {
+      "id": "stop:read",
+      "kind": "reading",
+      "time": 7.26,
+      "anchor": "onset",
+      "priority": 0,
+      "sourceId": "stop",
+      "localTime": 1.68,
+      "timeScale": 1.3333333333333333
+    },
+    {
+      "id": "cut-3",
+      "kind": "cut",
+      "time": 9,
+      "anchor": "onset",
+      "priority": 0,
+      "from": "stop",
+      "to": "bounce",
+      "continuity": "explicit editorial cut"
+    },
+    {
+      "id": "bounce:release",
+      "kind": "onset",
+      "time": 9.225,
+      "anchor": "onset",
+      "priority": 0.4,
+      "sourceId": "bounce",
+      "localTime": 0.3,
+      "timeScale": 1.3333333333333333
+    },
+    {
+      "id": "bounce:contact-1",
+      "kind": "contact",
+      "time": 9.807822143294317,
+      "anchor": "contact",
+      "priority": 1,
+      "incomingVelocity": 1.1324209410943915,
+      "outgoingVelocity": -0.6202524940286271,
+      "strength": 1,
+      "sourceId": "bounce",
+      "localTime": 1.0770961910590884,
+      "timeScale": 1.3333333333333333
+    },
+    {
+      "id": "bounce:contact-2",
+      "kind": "contact",
+      "time": 10.446271813085927,
+      "anchor": "contact",
+      "priority": 1,
+      "incomingVelocity": 0.6202524940286271,
+      "outgoingVelocity": -0.3397262823283174,
+      "strength": 0.5477225575051661,
+      "sourceId": "bounce",
+      "localTime": 1.9283624174479026,
+      "timeScale": 1.3333333333333333
+    },
+    {
+      "id": "bounce:contact-3",
+      "kind": "contact",
+      "time": 10.795965099062517,
+      "anchor": "contact",
+      "priority": 1,
+      "incomingVelocity": 0.33972628232831736,
+      "outgoingVelocity": -0.18607574820858813,
+      "strength": 0.29999999999999993,
+      "sourceId": "bounce",
+      "localTime": 2.394620132083355,
+      "timeScale": 1.3333333333333333
+    },
+    {
+      "id": "bounce:contact-4",
+      "kind": "contact",
+      "time": 10.9875,
+      "anchor": "contact",
+      "priority": 1,
+      "incomingVelocity": 0.18607574820858866,
+      "outgoingVelocity": 0,
+      "strength": 0.1643167672515498,
+      "sourceId": "bounce",
+      "localTime": 2.65,
+      "timeScale": 1.3333333333333333
+    },
+    {
+      "id": "bounce:read",
+      "kind": "reading",
+      "time": 11.129999999999999,
+      "anchor": "onset",
+      "priority": 0,
+      "sourceId": "bounce",
+      "localTime": 2.84,
+      "timeScale": 1.3333333333333333
+    },
+    {
+      "id": "cut-overview",
+      "kind": "cut",
+      "time": 12,
+      "anchor": "onset",
+      "priority": 0,
+      "from": "bounce",
+      "to": "overview",
+      "continuity": "explicit editorial cut"
+    },
+    {
+      "id": "overview-read",
+      "kind": "reading",
+      "time": 12.3,
+      "anchor": "onset",
+      "priority": 0
+    }
+  ],
+  "cues": [
+    {
+      "id": "reel:fast:fastest:air-motion",
+      "eventId": "fast:fastest",
+      "sound": "air-motion",
+      "sourceId": "fast",
+      "anchor": "peak",
+      "anchorTime": 0.58125,
+      "anchorOffset": 0.4912500000000001,
+      "start": 0.09,
+      "end": 0.885,
+      "duration": 0.795,
+      "priority": 0.5,
+      "gain": 0.0975,
+      "seed": 3707,
+      "clock": {
+        "offset": 0,
+        "scale": 1.3333333333333333
+      },
+      "pan": "follows-object",
+      "speedReference": 1.6,
+      "envelope": "actual speed / speedReference, clamped; 8ms edge ramps and 6ms contact gates",
+      "attackSeconds": 0.008,
+      "releaseSeconds": 0.008,
+      "contactTimes": []
+    },
+    {
+      "id": "reel:fast:arrive:wood-contact",
+      "eventId": "fast:arrive",
+      "sound": "wood-contact",
+      "sourceId": "fast",
+      "anchor": "end",
+      "anchorTime": 0.885,
+      "anchorOffset": 0,
+      "start": 0.885,
+      "end": 1.0050000000000001,
+      "duration": 0.1200000000000001,
+      "priority": 1,
+      "gain": 0.14950000000000002,
+      "seed": 5489,
+      "clock": {
+        "offset": 0,
+        "scale": 1.3333333333333333
+      },
+      "pan": 0,
+      "attackSeconds": 0.0015,
+      "params": {}
+    },
+    {
+      "id": "reel:slow:fastest:air-motion",
+      "eventId": "slow:fastest",
+      "sound": "air-motion",
+      "sourceId": "slow",
+      "anchor": "peak",
+      "anchorTime": 4.33125,
+      "anchorOffset": 1.0687499999999996,
+      "start": 3.2625,
+      "end": 5.4,
+      "duration": 2.1375,
+      "priority": 0.4,
+      "gain": 0.0975,
+      "seed": 19545,
+      "clock": {
+        "offset": 3,
+        "scale": 1.3333333333333333
+      },
+      "pan": "follows-object",
+      "speedReference": 1.6,
+      "envelope": "actual speed / speedReference, clamped; 8ms edge ramps and 6ms contact gates",
+      "attackSeconds": 0.008,
+      "releaseSeconds": 0.008,
+      "contactTimes": []
+    },
+    {
+      "id": "reel:slow:arrive:metal-contact",
+      "eventId": "slow:arrive",
+      "sound": "metal-contact",
+      "sourceId": "slow",
+      "anchor": "end",
+      "anchorTime": 5.4,
+      "anchorOffset": 0,
+      "start": 5.4,
+      "end": 5.61,
+      "duration": 0.20999999999999996,
+      "priority": 1,
+      "gain": 0.078,
+      "seed": 7509,
+      "clock": {
+        "offset": 3,
+        "scale": 1.3333333333333333
+      },
+      "pan": 0,
+      "attackSeconds": 0.0015,
+      "params": {
+        "decay": 0.09
+      }
+    },
+    {
+      "id": "reel:stop:cruise:air-motion",
+      "eventId": "stop:cruise",
+      "sound": "air-motion",
+      "sourceId": "stop",
+      "anchor": "peak",
+      "anchorTime": 6.45,
+      "anchorOffset": 0.1875,
+      "start": 6.2625,
+      "end": 7.0875,
+      "duration": 0.8250000000000002,
+      "priority": 0.4,
+      "gain": 0.0975,
+      "seed": 35383,
+      "clock": {
+        "offset": 6,
+        "scale": 1.3333333333333333
+      },
+      "pan": "follows-object",
+      "speedReference": 1.6,
+      "envelope": "actual speed / speedReference, clamped; 8ms edge ramps and 6ms contact gates",
+      "attackSeconds": 0.008,
+      "releaseSeconds": 0.008,
+      "contactTimes": [
+        7.0875
+      ]
+    },
+    {
+      "id": "reel:stop:contact:low-impact",
+      "eventId": "stop:contact",
+      "sound": "low-impact",
+      "sourceId": "stop",
+      "anchor": "contact",
+      "anchorTime": 7.0875,
+      "anchorOffset": 0,
+      "start": 7.0875,
+      "end": 7.2075000000000005,
+      "duration": 0.1200000000000001,
+      "priority": 1,
+      "gain": 0.169,
+      "seed": 5759,
+      "clock": {
+        "offset": 6,
+        "scale": 1.3333333333333333
+      },
+      "pan": 0,
+      "attackSeconds": 0.0015,
+      "params": {}
+    },
+    {
+      "id": "reel:bounce:release:air-motion",
+      "eventId": "bounce:release",
+      "sound": "air-motion",
+      "sourceId": "bounce",
+      "anchor": "onset",
+      "anchorTime": 9.225,
+      "anchorOffset": 0,
+      "start": 9.225,
+      "end": 10.9875,
+      "duration": 1.762500000000001,
+      "priority": 0.4,
+      "gain": 0.0975,
+      "seed": 51221,
+      "clock": {
+        "offset": 9,
+        "scale": 1.3333333333333333
+      },
+      "pan": "follows-object",
+      "speedReference": 1.6,
+      "envelope": "actual speed / speedReference, clamped; 8ms edge ramps and 6ms contact gates",
+      "attackSeconds": 0.008,
+      "releaseSeconds": 0.008,
+      "contactTimes": [
+        9.807822143294317,
+        10.446271813085927,
+        10.795965099062517,
+        10.9875
+      ]
+    },
+    {
+      "id": "reel:bounce:contact-1:wood-contact",
+      "eventId": "bounce:contact-1",
+      "sound": "wood-contact",
+      "sourceId": "bounce",
+      "anchor": "contact",
+      "anchorTime": 9.807822143294317,
+      "anchorOffset": 0,
+      "start": 9.807822143294317,
+      "end": 9.912822143294317,
+      "duration": 0.10500000000000043,
+      "priority": 1,
+      "gain": 0.14950000000000002,
+      "seed": 5386,
+      "clock": {
+        "offset": 9,
+        "scale": 1.3333333333333333
+      },
+      "pan": 0,
+      "attackSeconds": 0.0015,
+      "params": {}
+    },
+    {
+      "id": "reel:bounce:contact-2:wood-contact",
+      "eventId": "bounce:contact-2",
+      "sound": "wood-contact",
+      "sourceId": "bounce",
+      "anchor": "contact",
+      "anchorTime": 10.446271813085927,
+      "anchorOffset": 0,
+      "start": 10.446271813085927,
+      "end": 10.551271813085927,
+      "duration": 0.10500000000000043,
+      "priority": 1,
+      "gain": 0.08188452234702233,
+      "seed": 6237,
+      "clock": {
+        "offset": 9,
+        "scale": 1.3333333333333333
+      },
+      "pan": 0,
+      "attackSeconds": 0.0015,
+      "params": {}
+    },
+    {
+      "id": "reel:bounce:contact-3:wood-contact",
+      "eventId": "bounce:contact-3",
+      "sound": "wood-contact",
+      "sourceId": "bounce",
+      "anchor": "contact",
+      "anchorTime": 10.795965099062517,
+      "anchorOffset": 0,
+      "start": 10.795965099062517,
+      "end": 10.900965099062518,
+      "duration": 0.10500000000000043,
+      "priority": 1,
+      "gain": 0.044849999999999994,
+      "seed": 6704,
+      "clock": {
+        "offset": 9,
+        "scale": 1.3333333333333333
+      },
+      "pan": 0,
+      "attackSeconds": 0.0015,
+      "params": {}
+    },
+    {
+      "id": "reel:bounce:contact-4:wood-contact",
+      "eventId": "bounce:contact-4",
+      "sound": "wood-contact",
+      "sourceId": "bounce",
+      "anchor": "contact",
+      "anchorTime": 10.9875,
+      "anchorOffset": 0,
+      "start": 10.9875,
+      "end": 11.092500000000001,
+      "duration": 0.10500000000000043,
+      "priority": 1,
+      "gain": 0.0245653567041067,
+      "seed": 6959,
+      "clock": {
+        "offset": 9,
+        "scale": 1.3333333333333333
+      },
+      "pan": 0,
+      "attackSeconds": 0.0015,
+      "params": {}
+    }
+  ],
+  "units": {
+    "time": "seconds",
+    "position": "normalized-canvas",
+    "speed": "hypot(vx,vy), normalized-canvas/s"
+  },
+  "audio": {
+    "source": "original-deterministic-synthesis",
+    "sampleRate": 48000,
+    "channels": 2
+  },
+  "playbackOnly": {
+    "muted": true,
+    "listenOnly": false
+  },
+  "notice": "声音切换不改变动作。同一事件表驱动画面和音效；设计锚点不等于波形的实测主峰。"
+}

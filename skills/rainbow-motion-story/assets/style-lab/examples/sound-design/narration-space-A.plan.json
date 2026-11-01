@@ -1,0 +1,313 @@
+{
+  "id": "narration-space",
+  "title": "音效知道什么时候退后",
+  "question": "读字与讲解时，音效如何让出空间？",
+  "duration": 8,
+  "variants": [
+    {
+      "id": "A",
+      "title": "始终占满",
+      "description": "保留全部音效强度和低优先级装饰。"
+    },
+    {
+      "id": "B",
+      "title": "提前让位",
+      "description": "讲解前预降、结束后缓慢恢复；阅读时移除低优先级装饰。"
+    }
+  ],
+  "events": [
+    {
+      "id": "prepare",
+      "kind": "rise",
+      "onset": 0.35,
+      "peak": 0.95,
+      "contact": 0.95,
+      "end": 1.1,
+      "priority": 0.4
+    },
+    {
+      "id": "first-seat",
+      "kind": "metal",
+      "onset": 1.2,
+      "peak": 1.65,
+      "contact": 1.9,
+      "end": 2.35,
+      "priority": 0.9
+    },
+    {
+      "id": "decorative-pass",
+      "kind": "passby",
+      "onset": 2.75,
+      "peak": 3.35,
+      "contact": 3.35,
+      "end": 3.95,
+      "priority": 0.2
+    },
+    {
+      "id": "turn",
+      "kind": "servo",
+      "onset": 4.2,
+      "peak": 4.9,
+      "contact": 4.9,
+      "end": 5.7,
+      "priority": 0.75
+    },
+    {
+      "id": "done",
+      "kind": "confirm",
+      "onset": 6.1,
+      "peak": 6.4,
+      "contact": 6.5,
+      "end": 6.65,
+      "priority": 1
+    }
+  ],
+  "speechWindows": [
+    {
+      "start": 1.4,
+      "end": 2.6,
+      "label": "讲解窗口1"
+    },
+    {
+      "start": 4.35,
+      "end": 5.75,
+      "label": "讲解窗口2"
+    }
+  ],
+  "readWindows": [
+    {
+      "start": 2.85,
+      "end": 3.9,
+      "label": "公式阅读窗口"
+    }
+  ],
+  "placeholderNotice": "Optional surrogate is amplitude-modulated synthetic tones/noise, NOT voice, TTS or proof of intelligibility.",
+  "variant": "A",
+  "options": {
+    "sampleRate": 48000,
+    "offsetMs": 0,
+    "gainDb": 0,
+    "intensity": 1,
+    "includeSpeechPlaceholder": false
+  },
+  "cues": [
+    {
+      "id": "environment",
+      "sound": "room-air",
+      "eventId": null,
+      "anchor": "onset",
+      "anchorTime": 0,
+      "anchorOffset": 0,
+      "start": 0,
+      "duration": 8,
+      "priority": 0.1,
+      "gain": 0.026,
+      "pan": 0,
+      "seed": 45671,
+      "params": {},
+      "policy": "space",
+      "designSyncDelta": 0,
+      "end": 8
+    },
+    {
+      "id": "prepare:air-rise",
+      "sound": "air-rise",
+      "eventId": "prepare",
+      "anchor": "peak",
+      "anchorTime": 0.95,
+      "anchorOffset": 0.6,
+      "start": 0.35,
+      "duration": 0.7500000000000001,
+      "priority": 0.4,
+      "gain": 0.28,
+      "pan": 0,
+      "seed": 1709,
+      "params": {
+        "peakFraction": 0.7999999999999998,
+        "motionStart": 0.35,
+        "motionEnd": 1.1,
+        "mapping": false
+      },
+      "policy": "full",
+      "designSyncDelta": 0,
+      "end": 1.1
+    },
+    {
+      "id": "first-seat:metal-contact",
+      "sound": "metal-contact",
+      "eventId": "first-seat",
+      "anchor": "contact",
+      "anchorTime": 1.9,
+      "anchorOffset": 0,
+      "start": 1.9,
+      "duration": 0.55,
+      "priority": 0.9,
+      "gain": 0.28,
+      "pan": 0,
+      "seed": 9628,
+      "params": {
+        "peakFraction": 0,
+        "motionStart": 1.2,
+        "motionEnd": 2.35,
+        "mapping": false
+      },
+      "policy": "full",
+      "designSyncDelta": 0,
+      "end": 2.45
+    },
+    {
+      "id": "decorative-pass:air-passby",
+      "sound": "air-passby",
+      "eventId": "decorative-pass",
+      "anchor": "peak",
+      "anchorTime": 3.35,
+      "anchorOffset": 0.6000000000000001,
+      "start": 2.75,
+      "duration": 1.2000000000000002,
+      "priority": 0.2,
+      "gain": 0.16,
+      "pan": 0,
+      "seed": 17547,
+      "params": {
+        "peakFraction": 0.5,
+        "motionStart": 2.75,
+        "motionEnd": 3.95,
+        "mapping": false
+      },
+      "policy": "full",
+      "designSyncDelta": 0,
+      "end": 3.95
+    },
+    {
+      "id": "turn:servo",
+      "sound": "servo",
+      "eventId": "turn",
+      "anchor": "onset",
+      "anchorTime": 4.2,
+      "anchorOffset": 0,
+      "start": 4.2,
+      "duration": 1.5,
+      "priority": 0.75,
+      "gain": 0.12,
+      "pan": 0,
+      "seed": 25466,
+      "params": {
+        "peakFraction": 0,
+        "motionStart": 4.2,
+        "motionEnd": 5.7,
+        "mapping": false
+      },
+      "policy": "full",
+      "designSyncDelta": 0,
+      "end": 5.7
+    },
+    {
+      "id": "done:ui-confirm",
+      "sound": "ui-confirm",
+      "eventId": "done",
+      "anchor": "end",
+      "anchorTime": 6.65,
+      "anchorOffset": 0,
+      "start": 6.65,
+      "duration": 0.35,
+      "priority": 1,
+      "gain": 0.13,
+      "pan": 0,
+      "seed": 33385,
+      "params": {
+        "peakFraction": 0,
+        "motionStart": 6.1,
+        "motionEnd": 6.65,
+        "mapping": false
+      },
+      "policy": "full",
+      "designSyncDelta": 0,
+      "end": 7
+    }
+  ],
+  "excludedCues": [],
+  "masterGain": 0.82,
+  "soundOrigin": "Original deterministic synthesis; no third-party samples.",
+  "cueMeasurements": [
+    {
+      "id": "prepare:air-rise",
+      "sound": "air-rise",
+      "designAnchor": "peak",
+      "designAnchorTime": 0.95,
+      "designAnchorOffset": 0.6,
+      "designedSyncDelta": 0,
+      "measuredThreshold10PercentTime": 0.5656041666666667,
+      "measuredAbsolutePeakTime": 0.8669375,
+      "measured8msRmsPeakTime": 0.9725833333333334,
+      "peakDelayFromAnchor": -0.08306249999999993,
+      "thresholdDelayFromAnchor": -0.38439583333333327,
+      "sourcePeak": 0.31320199370384216,
+      "firstSample": 0,
+      "lastSample": 0
+    },
+    {
+      "id": "first-seat:metal-contact",
+      "sound": "metal-contact",
+      "designAnchor": "contact",
+      "designAnchorTime": 1.9,
+      "designAnchorOffset": 0,
+      "designedSyncDelta": 0,
+      "measuredThreshold10PercentTime": 1.90075,
+      "measuredAbsolutePeakTime": 1.9023958333333333,
+      "measured8msRmsPeakTime": 1.9053125,
+      "peakDelayFromAnchor": 0.0023958333333333748,
+      "thresholdDelayFromAnchor": 0.0007500000000000284,
+      "sourcePeak": 0.7231358885765076,
+      "firstSample": 0,
+      "lastSample": 0
+    },
+    {
+      "id": "decorative-pass:air-passby",
+      "sound": "air-passby",
+      "designAnchor": "peak",
+      "designAnchorTime": 3.35,
+      "designAnchorOffset": 0.6000000000000001,
+      "designedSyncDelta": 0,
+      "measuredThreshold10PercentTime": 2.9109375,
+      "measuredAbsolutePeakTime": 3.2862291666666668,
+      "measured8msRmsPeakTime": 3.38,
+      "peakDelayFromAnchor": -0.06377083333333333,
+      "thresholdDelayFromAnchor": -0.4390624999999999,
+      "sourcePeak": 0.3378326892852783,
+      "firstSample": 0,
+      "lastSample": 0
+    },
+    {
+      "id": "turn:servo",
+      "sound": "servo",
+      "designAnchor": "onset",
+      "designAnchorTime": 4.2,
+      "designAnchorOffset": 0,
+      "designedSyncDelta": 0,
+      "measuredThreshold10PercentTime": 4.206354166666667,
+      "measuredAbsolutePeakTime": 4.6835,
+      "measured8msRmsPeakTime": 4.398562500000001,
+      "peakDelayFromAnchor": 0.48350000000000026,
+      "thresholdDelayFromAnchor": 0.006354166666667105,
+      "sourcePeak": 0.2928493916988373,
+      "firstSample": 0,
+      "lastSample": 0
+    },
+    {
+      "id": "done:ui-confirm",
+      "sound": "ui-confirm",
+      "designAnchor": "end",
+      "designAnchorTime": 6.65,
+      "designAnchorOffset": 0,
+      "designedSyncDelta": 0,
+      "measuredThreshold10PercentTime": 6.652145833333334,
+      "measuredAbsolutePeakTime": 6.733604166666667,
+      "measured8msRmsPeakTime": 6.659083333333334,
+      "peakDelayFromAnchor": 0.08360416666666648,
+      "thresholdDelayFromAnchor": 0.0021458333333335133,
+      "sourcePeak": 0.4710911214351654,
+      "firstSample": 0,
+      "lastSample": 0
+    }
+  ]
+}

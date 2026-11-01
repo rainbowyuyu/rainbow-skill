@@ -1,0 +1,4 @@
+interface:
+  display_name: "rainbow鱼 · 镜头与节奏导演"
+  short_description: "研究参考视频，将文案、剪辑、音乐音效、运镜、文字与配色整理为可复用方法和代码候选。"
+  default_prompt: "使用 $rainbow-motion-story 研究我的视频参考，按当前任务选择模块，给出可运行候选、来源观察和检查结果。"

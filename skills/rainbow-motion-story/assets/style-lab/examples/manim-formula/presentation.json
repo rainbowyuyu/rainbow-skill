@@ -1,0 +1,275 @@
+{
+  "schemaVersion": 1,
+  "title": "公式有来处 · Manim 可视化研究室",
+  "implementation": "Original scenes in Manim Community 0.19.1",
+  "sourceStudy": "studies/3b1b-manim-source.md",
+  "code": "examples/manim-formula/scenes.py",
+  "fps": 24,
+  "dimensions": [
+    960,
+    540
+  ],
+  "scenes": [
+    {
+      "id": "semantic",
+      "className": "FormulaSemanticTransform",
+      "label": "符号保留身份",
+      "short": "从面积到分配律",
+      "kicker": "SEMANTIC TRANSFORM",
+      "question": "括号打开之后，两个 a 从哪里来？",
+      "formula": [
+        {
+          "text": "a",
+          "role": "a"
+        },
+        {
+          "text": "("
+        },
+        {
+          "text": "b",
+          "role": "b"
+        },
+        {
+          "text": " + "
+        },
+        {
+          "text": "c",
+          "role": "c"
+        },
+        {
+          "text": ") = "
+        },
+        {
+          "text": "a",
+          "role": "a"
+        },
+        {
+          "text": "b",
+          "role": "b"
+        },
+        {
+          "text": " + "
+        },
+        {
+          "text": "a",
+          "role": "a"
+        },
+        {
+          "text": "c",
+          "role": "c"
+        }
+      ],
+      "invariant": "同一高度 a；左右两种计算的总面积相等。",
+      "changing": "整体被分成两块；共同因子显式复制到两个乘积。",
+      "chapters": [
+        {
+          "start": 0,
+          "title": "建立整体",
+          "text": "让 a、b、c 对应真实边长。"
+        },
+        {
+          "start": 2.95,
+          "title": "拆开并追踪",
+          "text": "颜色与身份一起跨过变化。"
+        },
+        {
+          "start": 6.35,
+          "title": "合并读结果",
+          "text": "两块面积回到同一条等式。"
+        }
+      ],
+      "parameter": {
+        "label": "第二块宽度 c",
+        "min": 0.5,
+        "max": 3,
+        "step": 0.01,
+        "default": 2
+      },
+      "liveQuestion": "改变 c，左边的整体面积与右边的分块面积一起更新。",
+      "recipe": "先把因子映射到边长与面积，再按语义块建立公式。需要一项变成两项时显式复制，不让字形匹配替代数学关系。保留同一颜色、基线和末态阅读窗。",
+      "video": "assets/manim-formula/FormulaSemanticTransform.mp4",
+      "poster": "assets/manim-formula/FormulaSemanticTransform-poster.jpg",
+      "audio": false,
+      "renderStatus": "rendered",
+      "durationSeconds": 14,
+      "frameCount": 336,
+      "engine": "Manim Community 0.19.1 / Cairo"
+    },
+    {
+      "id": "derivative",
+      "className": "DerivativeLinkedView",
+      "label": "图形带着公式变",
+      "short": "割线如何靠近切线",
+      "kicker": "SHARED PARAMETER",
+      "question": "两点越靠越近，斜率在接近什么？",
+      "formula": [
+        {
+          "text": "Δy",
+          "role": "c"
+        },
+        {
+          "text": " / "
+        },
+        {
+          "text": "Δx",
+          "role": "a"
+        },
+        {
+          "text": " → "
+        },
+        {
+          "text": "f′(1) = 2",
+          "role": "mint"
+        }
+      ],
+      "invariant": "曲线 y = x²、固定点 x₀ = 1 和两点的定义保持不变。",
+      "changing": "Δx 同时改变移动点、增量三角形、割线与斜率。",
+      "chapters": [
+        {
+          "start": 0,
+          "title": "固定一个观察点",
+          "text": "先看曲线，再确定两个点。"
+        },
+        {
+          "start": 4,
+          "title": "让增量缩小",
+          "text": "点、线、公式读同一个 Δx。"
+        },
+        {
+          "start": 10.5,
+          "title": "读出极限",
+          "text": "小增量的近似与极限分开标明。"
+        }
+      ],
+      "parameter": {
+        "label": "横向增量 Δx",
+        "min": 0.08,
+        "max": 1.4,
+        "step": 0.01,
+        "default": 1.4
+      },
+      "liveQuestion": "把第二个点拉近固定点。观察斜率如何接近 2。",
+      "recipe": "建立唯一 ValueTracker，让点位、增量、割线、动态数字读取同一参数。先交代量的定义，再改变参数。有限差商不伪装成精确导数，切线与极限在结尾单独交代。",
+      "video": "assets/manim-formula/DerivativeLinkedView.mp4",
+      "poster": "assets/manim-formula/DerivativeLinkedView-poster.jpg",
+      "audio": false,
+      "renderStatus": "rendered",
+      "durationSeconds": 14,
+      "frameCount": 336,
+      "engine": "Manim Community 0.19.1 / Cairo"
+    },
+    {
+      "id": "matrix",
+      "className": "MatrixBasisMap",
+      "label": "让基向量带路",
+      "short": "矩阵如何改变空间",
+      "kicker": "BASIS → SPACE",
+      "question": "矩阵的两列，为什么能决定整张网格？",
+      "formula": [
+        {
+          "text": "A",
+          "role": "a"
+        },
+        {
+          "text": " = [ 2  1 ; 1  1 ]"
+        }
+      ],
+      "invariant": "同一组输入坐标与线性组合系数；位置随矩阵改变。",
+      "changing": "基向量的像、网格与测试向量同时接受同一矩阵。",
+      "chapters": [
+        {
+          "start": 0,
+          "title": "认出两根基",
+          "text": "用两种颜色区分两列的去向。"
+        },
+        {
+          "start": 3.1,
+          "title": "带动整个空间",
+          "text": "网格和向量应用同一线性映射。"
+        },
+        {
+          "start": 9.6,
+          "title": "把几何读回矩阵",
+          "text": "回看列向量与面积的变化。"
+        }
+      ],
+      "parameter": {
+        "label": "变换进度 t",
+        "min": 0,
+        "max": 1,
+        "step": 0.01,
+        "default": 0.65
+      },
+      "liveQuestion": "从单位矩阵逐渐走到 A。两根基向量牵动整个网格。",
+      "recipe": "先给基向量稳定颜色，再让网格、面积块和测试向量共用一个变换。固定公式作为参照，把矩阵列向量交接到对应几何对象。插值只用于观察过程，最终映射以给定矩阵为准。",
+      "video": "assets/manim-formula/MatrixBasisMap.mp4",
+      "poster": "assets/manim-formula/MatrixBasisMap-poster.jpg",
+      "audio": false,
+      "renderStatus": "rendered",
+      "durationSeconds": 14.458333333333334,
+      "frameCount": 347,
+      "engine": "Manim Community 0.19.1 / Cairo"
+    },
+    {
+      "id": "complex",
+      "className": "ComplexRotationProjection",
+      "label": "旋转长成波形",
+      "short": "圆与正弦共用相位",
+      "kicker": "ROTATION → PROJECTION",
+      "question": "绕着圆走，为什么能画出一条正弦？",
+      "formula": [
+        {
+          "text": "e",
+          "role": "c"
+        },
+        {
+          "text": "iθ",
+          "role": "c",
+          "sup": true
+        },
+        {
+          "text": " = cos θ + i "
+        },
+        {
+          "text": "sin θ",
+          "role": "b"
+        }
+      ],
+      "invariant": "单位圆半径为 1；圆上点与正弦读数使用同一 θ。",
+      "changing": "相位角、旋转向量、垂直投影和曲线描点同步前进。",
+      "chapters": [
+        {
+          "start": 0,
+          "title": "从一个方向出发",
+          "text": "先建立单位圆与相位。"
+        },
+        {
+          "start": 2.7,
+          "title": "投影留下轨迹",
+          "text": "圆上的高度成为波形的高度。"
+        },
+        {
+          "start": 11.7,
+          "title": "两种表达对齐",
+          "text": "让旋转、投影、公式同时落定。"
+        }
+      ],
+      "parameter": {
+        "label": "相位 θ",
+        "min": 0,
+        "max": 6.283185307179586,
+        "step": "any",
+        "default": 1.1
+      },
+      "liveQuestion": "拖动相位；圆上的高度，就是正弦图的高度。",
+      "recipe": "单位圆、投影线、正弦曲线和公式共用一个相位 tracker。用稳定的水平对应关系交接两幅图；轨迹只保留已走过的参数区间，任意定位时从状态重算。",
+      "video": "assets/manim-formula/ComplexRotationProjection.mp4",
+      "poster": "assets/manim-formula/ComplexRotationProjection-poster.jpg",
+      "audio": false,
+      "renderStatus": "rendered",
+      "durationSeconds": 14.333333333333334,
+      "frameCount": 344,
+      "engine": "Manim Community 0.19.1 / Cairo"
+    }
+  ]
+}

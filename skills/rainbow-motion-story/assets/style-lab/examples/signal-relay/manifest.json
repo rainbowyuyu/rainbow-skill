@@ -1,0 +1,61 @@
+{
+  "schema": "motion-atelier.signal-relay-media/v1",
+  "source": "Original procedural music and SFX. No reference-media samples.",
+  "files": [
+    {
+      "id": "pulse",
+      "name": "signal-pulse-48k.wav",
+      "bytes": 4608044,
+      "sha256": "b58118f9d8d1ae9d98aa4740d85d5ecb36e54b1185a81f7b044fb371c1456e01",
+      "sampleRate": 48000,
+      "duration": 24,
+      "channels": 2,
+      "fullDecode": true,
+      "metrics": {
+        "samplePeak": 0.15811699628829956,
+        "rms": 0.02046811683078058,
+        "stemPeakMusic": 0.10065115243196487,
+        "stemPeakSfx": 0.1416471153497696,
+        "clipped": false,
+        "listeningPerformed": false
+      }
+    },
+    {
+      "id": "legato",
+      "name": "signal-legato-48k.wav",
+      "bytes": 4608044,
+      "sha256": "039bb1f764a8a8f4bb854eb23632e5fa871287e5e445478ca8c47dcc559a3177",
+      "sampleRate": 48000,
+      "duration": 24,
+      "channels": 2,
+      "fullDecode": true,
+      "metrics": {
+        "samplePeak": 0.16470496356487274,
+        "rms": 0.020184292859846627,
+        "stemPeakMusic": 0.09818615019321442,
+        "stemPeakSfx": 0.15284886956214905,
+        "clipped": false,
+        "listeningPerformed": false
+      }
+    },
+    {
+      "id": "suspended",
+      "name": "signal-suspended-48k.wav",
+      "bytes": 4608044,
+      "sha256": "a994001681c911db41c2fe823ce012e62fb56199a7180217bbde32fdbacfcdc2",
+      "sampleRate": 48000,
+      "duration": 24,
+      "channels": 2,
+      "fullDecode": true,
+      "metrics": {
+        "samplePeak": 0.15294916927814484,
+        "rms": 0.0202794145388477,
+        "stemPeakMusic": 0.10065115243196487,
+        "stemPeakSfx": 0.1416471153497696,
+        "clipped": false,
+        "listeningPerformed": false
+      }
+    }
+  ],
+  "listeningPerformed": false
+}

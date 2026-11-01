@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "title": "原创机器人 · 镜头与结构练习",
+  "status": "ready",
+  "statusNote": "原创 Cycles 静帧、Eevee 连续预览与原生 Blender 场景已生成。",
+  "defaultFrame": 0,
+  "video": {
+    "src": "scene/rover-camera-preview.mp4",
+    "poster": "scene/cycles/frame_0001.png",
+    "engine": "Eevee",
+    "durationSeconds": 12,
+    "fps": 24,
+    "width": 640,
+    "height": 360,
+    "audio": false
+  },
+  "frames": [
+    {
+      "src": "scene/cycles/frame_0001.png",
+      "frame": 1,
+      "timeSeconds": 0,
+      "engine": "Cycles",
+      "label": "低位整体",
+      "detail": "FRAME 001 / 0.00 s",
+      "caption": "低位整体 / 先看清轮组、底盘、传感器与场地的关系。",
+      "alt": "蓝灰金属四轮机器人位于障碍物之间；低机位呈现轮胎、双层底盘与顶部传感器。"
+    },
+    {
+      "src": "scene/cycles/frame_0103.png",
+      "frame": 103,
+      "timeSeconds": 4.25,
+      "engine": "Cycles",
+      "label": "扫描与路径",
+      "detail": "FRAME 103 / 4.25 s",
+      "caption": "扫描与路径 / 抬高视点，观察测量回波、障碍距离场与同一坐标中的路线。",
+      "alt": "高斜俯视中的机器人与三块障碍；青色测量点落在障碍表面，地面代价网格旁有一条橙色路径。"
+    },
+    {
+      "src": "scene/cycles/frame_0197.png",
+      "frame": 197,
+      "timeSeconds": 8.166667,
+      "engine": "Cycles",
+      "label": "拆开上盖",
+      "detail": "FRAME 197 / 8.17 s",
+      "caption": "拆开上盖 / 沿安装轴揭开外壳，露出控制板、散热片与电池组件。",
+      "alt": "机器人上盖垂直升起；斜俯视可见底盘内的绿色控制板、银色散热片与三块电池组件。"
+    },
+    {
+      "src": "scene/cycles/frame_0247.png",
+      "frame": 247,
+      "timeSeconds": 10.25,
+      "engine": "Cycles",
+      "label": "控制器近景",
+      "detail": "FRAME 247 / 10.25 s",
+      "caption": "控制器近景 / 镜头贴近内部零件，固定灯位让金属边缘与部件厚度保持可读。",
+      "alt": "敞开机器人底盘的近景，绿色电路板上的散热片、连接器、铜色线束与后方电池组件清晰可见。"
+    }
+  ],
+  "scene": {
+    "src": "scene/rover_camera_study.blend"
+  },
+  "technical": {
+    "items": [
+      {
+        "label": "参考观察",
+        "value": "源片采样研究；细节见独立观察记录"
+      },
+      {
+        "label": "原创实现",
+        "value": "Blender 5.1.2 / 独立机器人与场地"
+      },
+      {
+        "label": "代表静帧",
+        "value": "Cycles / 960 × 540 / 48 samples / 4 帧"
+      },
+      {
+        "label": "计算内容",
+        "value": "障碍网格射线求交、二维距离代价场、A* 路径"
+      },
+      {
+        "label": "动画预览",
+        "value": "Eevee / 640 × 360 / 24 fps / 12 s / 无声"
+      }
+    ],
+    "note": "示例用于镜头与空间表达练习。路径、数据和拆解动画不等同于真实机器人导航或物理仿真。"
+  }
+}

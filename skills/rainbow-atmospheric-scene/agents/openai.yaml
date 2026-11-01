@@ -1,0 +1,4 @@
+interface:
+  display_name: "大气海景与连续镜头"
+  short_description: "改善云层、水面反射、光照和穿云镜头，包含真实渲染证据与遮挡验收方法"
+  default_prompt: "使用 $rainbow-atmospheric-scene 检查并改善当前视频的大气、体积云、水面反射与镜头连续性。"

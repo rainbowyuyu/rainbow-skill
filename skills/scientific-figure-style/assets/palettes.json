@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": "https://www.douyin.com/note/7697852809240218920",
+  "palettes": {
+    "reference-labels": {
+      "provenance": "Printed hex transcription; Steel Blue is ambiguous, provisionally #6BBCA8. Not an official Nature palette.",
+      "colors": {"ocean": "#2F4B6E", "steel": "#6BBCA8", "sage": "#7CA982", "ochre": "#E3C27B", "terracotta": "#C96B4A", "ivory": "#F7F2E7", "charcoal": "#4B4B4B"}
+    },
+    "reference-sampled": {
+      "provenance": "Approximate median RGB of seven 30 x 35 pixel interior rectangles in the 1086 x 1448 WebP viewed on 2026-10-21; not author hex values.",
+      "colors": {"ocean": "#365468", "steel": "#718D98", "sage": "#859A7A", "ochre": "#E1AF5E", "terracotta": "#C38D6D", "ivory": "#EBE4D4", "charcoal": "#52524D"}
+    }
+  },
+  "categorical_order": ["ocean", "terracotta", "sage", "ochre", "steel"],
+  "display_names": {"ocean": "Ocean Blue", "steel": "Steel Blue", "sage": "Sage Green", "ochre": "Ochre", "terracotta": "Terracotta", "ivory": "Ivory", "charcoal": "Charcoal"}
+}

@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="一件双层青瓷溢流装置。从真实 Blender 渲染观察实体、自由表面、材质与镜头。">
+  <title>水过青瓷 · Blender 流水习作</title>
+  <link rel="stylesheet" href="./blender-flow.css">
+  <link rel="stylesheet" href="./document-reader.css">
+</head>
+<body>
+  <a class="skip-link" href="#work">跳到作品</a>
+  <header class="site-header">
+    <a class="brand" href="./index.html" aria-label="返回镜头与节奏案例库">
+      <img src="./brand.png" alt="rainbow鱼" width="45" height="32">
+      <span>镜头与节奏<small>BLENDER / OBJECT & FLOW</small></span>
+    </a>
+    <nav aria-label="相关资料">
+      <a href="../studies/blender-flow.md">原片研究 <span aria-hidden="true">↗</span></a>
+      <a href="../guides/blender-model-motion.md">建模与动画 <span aria-hidden="true">↗</span></a>
+      <a href="../examples/blender-flow/API.md">代码接入 <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="introduction" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow"><span class="fine-line" aria-hidden="true"></span> ORIGINAL BLENDER STUDY / 01</p>
+        <h1 id="page-title">水过青瓷<span>。</span></h1>
+      </div>
+      <p class="intro-copy">让形体引导水，让光线显出流动。<br>一件双层溢流装置，四个观察角度。</p>
+    </section>
+
+    <section class="work" id="work" aria-labelledby="work-title">
+      <div class="work-heading">
+        <h2 id="work-title"><span class="status-dot" aria-hidden="true"></span>双层青瓷溢流装置</h2>
+        <span class="work-kind">原创场景 · Blender 实际渲染</span>
+      </div>
+
+      <div class="media-stage">
+        <div id="film-view" class="film-view" hidden>
+          <video id="film" controls playsinline preload="metadata" tabindex="0" aria-label="青瓷溢流装置的 Blender 渲染短片" aria-describedby="playback-hint"></video>
+        </div>
+        <figure id="still-view" class="still-view">
+          <img id="still" src="../examples/blender-flow/scene/poster/frame_0096.png" alt="双层青瓷水槽与其间下落的水流，Blender 渲染第 96 帧" width="1280" height="720">
+          <figcaption id="still-caption" class="frame-caption">第 96 帧 / 水片持续下落，下槽蓄水并激起局部飞溅。</figcaption>
+        </figure>
+        <p id="media-error" class="media-error" role="status" hidden></p>
+      </div>
+
+      <div class="media-bar">
+        <div class="mode-switch" role="group" aria-label="作品查看方式">
+          <button id="film-mode" type="button" aria-pressed="false" disabled><span aria-hidden="true">▷</span> 看流动</button>
+          <button id="still-mode" type="button" aria-pressed="true"><span aria-hidden="true">▧</span> 看静帧</button>
+        </div>
+        <div id="transport" class="transport" hidden>
+          <button id="replay" class="icon-button" type="button" aria-label="回到视频开头">↺</button>
+          <button id="prev-frame" class="icon-button" type="button" aria-label="上一帧">‹</button>
+          <button id="play" type="button">播放</button>
+          <button id="next-frame" class="icon-button" type="button" aria-label="下一帧">›</button>
+          <label class="speed-label">速度 <select id="speed" aria-label="播放速度"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option></select></label>
+          <output id="time" for="film">0.00 / 0.00 s</output>
+        </div>
+        <span id="media-meta" class="media-meta">BLENDER RENDER</span>
+      </div>
+      <div class="frame-rail">
+        <div class="rail-title"><span>停下来，看细节</span><small id="frame-count">代表静帧</small></div>
+        <div id="frames" class="frames" role="group" aria-label="选择实际渲染代表帧"></div>
+      </div>
+      <p id="playback-hint" class="playback-hint" hidden>用 ‹ / › 逐帧观察接触与飞溅，或切换 0.5× 慢看。控制按钮支持 Tab 选择、空格操作。</p>
+    </section>
+
+    <section class="study" aria-labelledby="study-title">
+      <div class="study-main">
+        <div class="section-heading"><p class="eyebrow">LOOK CLOSER</p><h2 id="study-title">从哪里开始看</h2></div>
+        <div id="lesson-tabs" class="lesson-tabs" role="tablist" aria-label="学习点">
+          <button id="tab-form" type="button" role="tab" aria-controls="lesson-panel" aria-selected="true" tabindex="0" data-lesson="form"><span>01</span>实体建模</button>
+          <button id="tab-surface" type="button" role="tab" aria-controls="lesson-panel" aria-selected="false" tabindex="-1" data-lesson="surface"><span>02</span>自由表面</button>
+          <button id="tab-light" type="button" role="tab" aria-controls="lesson-panel" aria-selected="false" tabindex="-1" data-lesson="light"><span>03</span>材质与光</button>
+          <button id="tab-camera" type="button" role="tab" aria-controls="lesson-panel" aria-selected="false" tabindex="-1" data-lesson="camera"><span>04</span>镜头</button>
+        </div>
+        <article id="lesson-panel" class="lesson-panel" role="tabpanel" aria-labelledby="tab-form" tabindex="0">
+          <p id="lesson-kicker" class="lesson-kicker">先让容器成立</p>
+          <h3 id="lesson-title">厚度、转角与落差，决定水经过哪里。</h3>
+          <p id="lesson-copy">先看上槽的出水口，再沿落差找到下槽。槽底、槽壁和溢流唇都有实体厚度；倒角让边缘在光里可读，也让两层容器保持同一种造型语言。</p>
+          <p class="look-for"><span>观察</span><span id="lesson-look">跟着轮廓走一遍：水从哪里进入，越过哪里，又落在哪里。</span></p>
+        </article>
+      </div>
+      <aside class="resources" aria-labelledby="resources-title">
+        <p class="eyebrow">TAKE IT APART</p>
+        <h2 id="resources-title">打开场景，接着做。</h2>
+        <p>从同一件模型出发，修改槽口、光位或机位，比较它们如何改变画面。</p>
+        <a id="download-scene" class="download-scene" href="../examples/blender-flow/scene/porcelain_spillway.blend" download><span>下载 Blender 场景<small>.blend</small></span><span aria-hidden="true">↓</span></a>
+        <div class="resource-links"><a href="../guides/blender-model-motion.md">建模与动画方法 <span aria-hidden="true">↗</span></a><a href="../examples/blender-flow/API.md">生成、烘焙与渲染 <span aria-hidden="true">↗</span></a></div>
+        <details class="technical">
+          <summary>渲染记录与使用边界</summary>
+          <p>这是原创学习场景。水面来自 Blender Mantaflow 液体烘焙；当前分辨率用于造型和镜头练习，未经工程流体精度验证。</p>
+          <dl id="technical-data"></dl>
+          <p id="cache-note">液体缓存独立于 .blend。复现流动需按接入文档重新烘焙，或使用配套缓存。</p>
+          <a href="../examples/blender-flow/API.md">查看完整参数与复现方式 ↗</a>
+        </details>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>实体 · 水面 · 反射 · 视点</span>
+    <a href="https://v.douyin.com/85SXSqesAFI/" target="_blank" rel="noopener noreferrer">参考：柳疯衫·awa《流水》 <span aria-hidden="true">↗</span></a>
+  </footer>
+  <script type="module" src="./blender-flow-studio.js"></script>
+  <script type="module" src="./document-reader.js"></script>
+</body>
+</html>

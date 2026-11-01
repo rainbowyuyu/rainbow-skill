@@ -1,0 +1,4 @@
+interface:
+  display_name: "rainbow鱼四平台发布"
+  short_description: "读取视频发布文件夹，自动填写四个平台内容、封面和合集，并记录投稿结果"
+  default_prompt: "使用 $rainbow-publish 发布我提供的文件夹，将成片、文案和封面填写到四个平台的相关合集，并核实发布结果。"

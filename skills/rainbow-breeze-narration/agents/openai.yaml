@@ -1,0 +1,6 @@
+interface:
+  display_name: "Breeze · 本人情感配音"
+  short_description: "按故事指导本人音色的情绪、语速与重音，以实际音频同步字幕和画面"
+  default_prompt: "使用 $rainbow-breeze-narration 为当前视频生成有语气变化的本人解说，并按实际音长重建时间线。"
+policy:
+  allow_implicit_invocation: true

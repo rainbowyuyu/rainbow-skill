@@ -1,0 +1,232 @@
+{
+  "created": "2026-10-12",
+  "assets": [
+    {
+      "path": "assets/brand/rainbow-line.png",
+      "source": "C:\\Users\\USER\\Desktop\\logo\\logo.png",
+      "sourceURL": null,
+      "sourceDescription": "用户品牌原图",
+      "identity": "rainbow鱼 · 透明线稿",
+      "bytes": 13501,
+      "sha256": "d06cdbd8377a82513ba4a4f5172defb6eccfb5e3f17f4ddebe2af2a9bfb9637a",
+      "license": "User-designated brand asset; no CC0/open license claim; preserve trademark/brand rights",
+      "transformation": "none (byte-identical copy)",
+      "id": "rainbow-line"
+    },
+    {
+      "path": "assets/brand/rainbow-color.png",
+      "source": "C:\\Users\\USER\\Desktop\\logo\\logo2.png",
+      "sourceURL": null,
+      "sourceDescription": "用户品牌原图",
+      "identity": "rainbow鱼 · 透明彩色",
+      "bytes": 102547,
+      "sha256": "d60b3d040b34ebd7c236f3aaad0867a26efb9b3b450624370f15698683e4d5c5",
+      "license": "User-designated brand asset; no CC0/open license claim; preserve trademark/brand rights",
+      "transformation": "none (byte-identical copy)",
+      "id": "rainbow-color"
+    },
+    {
+      "path": "assets/brand/rainbow-white-backed.png",
+      "source": "C:\\Users\\USER\\Desktop\\logo\\logo_white_bg.png",
+      "sourceURL": null,
+      "sourceDescription": "用户品牌原图；白底是资产内容",
+      "identity": "rainbow鱼 · 原图白底",
+      "bytes": 21766,
+      "sha256": "66bf616312e4cc9620d0d7b4300f47e83e61f3c4c83663c6cdeb089b6f97dc60",
+      "license": "User-designated brand asset; no CC0/open license claim; preserve trademark/brand rights",
+      "transformation": "none (byte-identical copy)",
+      "id": "rainbow-white-backed"
+    },
+    {
+      "path": "assets/brand/zju-official-wordmark.svg",
+      "source": "D:\\projects\\manim_extend_rainbow\\work\\science-video-skill\\zju-official-homepage-wordmark.svg",
+      "sourceURL": "https://www.zju.edu.cn/_upload/tpl/0b/bf/3007/template3007/static/media/mlogo.66388675484ae2a807b2ad65b1d31ca9.svg",
+      "sourceDescription": "官网下载原件；保留品牌权利",
+      "identity": "浙江大学 · 官网标志",
+      "bytes": 29387,
+      "sha256": "8a0803fa1320412f1f84d95fd2308ca6d1d654dcae8bad9eaeb06147588afd04",
+      "license": "User-designated brand asset; no CC0/open license claim; preserve trademark/brand rights",
+      "transformation": "none (byte-identical copy)",
+      "id": "zju-official-wordmark"
+    },
+    {
+      "path": "assets/brand/zju-emblem.svg",
+      "source": "D:\\projects\\manim_extend_rainbow\\video_project\\beso_ai_research_2026\\public\\brand\\zju-university-logo.svg",
+      "sourceURL": null,
+      "sourceDescription": "用户既有项目；原来源 D:/projects/beso_ai/frontend_static/assets/zju-university-logo.svg",
+      "identity": "浙江大学 · 单校徽",
+      "bytes": 19686,
+      "sha256": "db5b60090e946c3c88c40dacc824c36e847f6a2f9e9da063aba6c2e6d17835fc",
+      "license": "User-designated brand asset; no CC0/open license claim; preserve trademark/brand rights",
+      "transformation": "none (byte-identical copy)",
+      "id": "zju-emblem"
+    },
+    {
+      "path": "assets/brand/ocean-college-lockup.svg",
+      "source": "D:\\projects\\manim_extend_rainbow\\video_project\\beso_ai_research_2026\\public\\brand\\zju-horizontal-mark.svg",
+      "sourceURL": null,
+      "sourceDescription": "用户原图描摹；原参考 D:/projects/beso_ai/video-feature-tour/public/revision-sept23/horizontal-mark-reference.webp",
+      "identity": "海洋学院 · 横向联合标志",
+      "bytes": 58134,
+      "sha256": "cd5bd7e2a7e69db9083f1bdfa3eb6b663d4950108f42da219b7d0357ed5830c0",
+      "license": "User-designated brand asset; no CC0/open license claim; preserve trademark/brand rights",
+      "transformation": "none (byte-identical copy)",
+      "id": "ocean-college-lockup"
+    },
+    {
+      "path": "assets/brand/ocean-college-emblem.svg",
+      "source": "D:\\projects\\beso_ai\\video-feature-tour\\public\\revision-sept23\\ocean-traced.svg",
+      "sourceURL": null,
+      "sourceDescription": "用户原图描摹；原参考 D:/projects/beso_ai/video-feature-tour/public/revision-sept23/ocean-reference.png",
+      "identity": "海洋学院 · 单院徽",
+      "bytes": 37430,
+      "sha256": "3a41a9ea7eac7ca9f96debb164f49a36613f67b529b88563efd4b8e7c6f4e8c9",
+      "license": "User-designated brand asset; no CC0/open license claim; preserve trademark/brand rights",
+      "transformation": "none (byte-identical copy)",
+      "id": "ocean-college-emblem"
+    },
+    {
+      "id": "rainbow-optics",
+      "path": "assets/reference/rainbow-optics.jpg",
+      "sha256": "4299210b35bad3caea6347f915974e020de12ab875c0034d344f21836ea630bb",
+      "sourcePath": "D:\\projects\\manim_extend_rainbow\\work\\science-video-skill\\rainbow-reference-extract\\frames\\sample-0002.jpg",
+      "sourceSha256": "da4a90fdde64ed87d617503cd24f542238e6fbe1fddcd83542cb42026a4598f4",
+      "kind": "project-render-reference",
+      "purpose": "连续光谱 · 细光芯 · 玻璃边缘",
+      "rights": "Private project reference; brand and third-party assets retain their original rights. Not a redistribution license.",
+      "originalVideo": "C:\\Users\\USER\\.codex\\visualizations\\2026\\10\\02\\THREAD_ID\\rainbow_arc_v14\\delivery\\彩虹为什么是弧形_V14_1080p.mp4",
+      "originalVideoSha256": "188797cad204f2df9337941d48aecbec90358aef745e7245ad88f176f2e336de",
+      "originalFrame": 3260
+    },
+    {
+      "id": "rainbow-reflection",
+      "path": "assets/reference/rainbow-reflection.jpg",
+      "sha256": "02442a959be1626615c0c8cc19dc1ad3f9d65c8c1c9532a7d47f72ec17379f09",
+      "sourcePath": "D:\\projects\\manim_extend_rainbow\\work\\science-video-skill\\rainbow-reference-extract\\frames\\sample-0003.jpg",
+      "sourceSha256": "685030d461b9d01c3609c329e20e8fe2ae52ab568dcd1fe5837d7087f0e5aa05",
+      "kind": "project-render-reference",
+      "purpose": "界面锚点 · 光路与标签",
+      "rights": "Private project reference; brand and third-party assets retain their original rights. Not a redistribution license.",
+      "originalVideo": "C:\\Users\\USER\\.codex\\visualizations\\2026\\10\\02\\THREAD_ID\\rainbow_arc_v14\\delivery\\彩虹为什么是弧形_V14_1080p.mp4",
+      "originalVideoSha256": "188797cad204f2df9337941d48aecbec90358aef745e7245ad88f176f2e336de",
+      "originalFrame": 3700
+    },
+    {
+      "id": "rainbow-character",
+      "path": "assets/reference/rainbow-character.jpg",
+      "sha256": "3b551cbaa3b609cc2d27fbb4404a132bd0227b22ee1104f1a1968301ae2daf99",
+      "sourcePath": "D:\\projects\\manim_extend_rainbow\\work\\science-video-skill\\rainbow-reference-extract\\frames\\sample-0001.jpg",
+      "sourceSha256": "8dd4b66ca29f069d3f122e559ee66e6c97590c371729e0f4afacb551d9629476",
+      "kind": "project-render-reference",
+      "purpose": "骨骼鱼 · 前中远景 · 场景尺度",
+      "rights": "Private project reference; brand and third-party assets retain their original rights. Not a redistribution license.",
+      "originalVideo": "C:\\Users\\USER\\.codex\\visualizations\\2026\\10\\02\\THREAD_ID\\rainbow_arc_v14\\delivery\\彩虹为什么是弧形_V14_1080p.mp4",
+      "originalVideoSha256": "188797cad204f2df9337941d48aecbec90358aef745e7245ad88f176f2e336de",
+      "originalFrame": 590
+    },
+    {
+      "id": "dna-fountain-mechanism",
+      "path": "assets/reference/dna-fountain-mechanism.jpg",
+      "sha256": "ba08d6305217fe57c994e967928c15d3c0d4d468b0f6052ae9d2f227c22ce198",
+      "sourcePath": "D:\\projects\\manim_extend_rainbow\\work\\science-video-skill\\selected-references\\dna-fountain-mechanism.jpg",
+      "sourceSha256": "5b451214f745eeb942092f872dee99740a694e13324f1966b602f3ffd87cab32",
+      "kind": "project-render-reference",
+      "purpose": "同一色义 · 数据与图形关系",
+      "rights": "Private project reference; brand and third-party assets retain their original rights. Not a redistribution license."
+    },
+    {
+      "id": "dna-alignment-mechanism",
+      "path": "assets/reference/dna-alignment-mechanism.jpg",
+      "sha256": "4f3eb37e291639b95c5b673db5c87e661681cf0bfba9394e657a27d023f6470d",
+      "sourcePath": "D:\\projects\\manim_extend_rainbow\\work\\science-video-skill\\selected-references\\dna-alignment-mechanism.jpg",
+      "sourceSha256": "d0ab7a6dd5da4529716eff7455dea0f25364d3b6d7be77c2fdecf379464e0361",
+      "kind": "project-render-reference",
+      "purpose": "算法状态 · 指针与实体对应",
+      "rights": "Private project reference; brand and third-party assets retain their original rights. Not a redistribution license."
+    },
+    {
+      "id": "engineering-force",
+      "path": "assets/reference/engineering-force.jpg",
+      "sha256": "6729489721cba5c00fe787e986593a7e0be34899f3d33934a9dec356e02ec978",
+      "sourcePath": "D:\\projects\\manim_extend_rainbow\\video_project\\shanghai_tower\\research\\qa\\v16\\main-patch-boundaries\\final\\frame-05254.png",
+      "sourceSha256": "72228f94d12aacccb38ffc44eb050bcfa9f545fcd085a6a7222f4371bf88186a",
+      "kind": "project-render-reference",
+      "purpose": "剖切 · 受力锚点 · 层次",
+      "rights": "Private project reference; brand and third-party assets retain their original rights. Not a redistribution license."
+    },
+    {
+      "id": "engineering-cover",
+      "path": "assets/reference/engineering-cover.jpg",
+      "sha256": "3a65347d3836b6d96f28dfbd1ce73736b86aea9fab873e8a98e1229c9b3c8ddf",
+      "sourcePath": "D:\\projects\\manim_extend_rainbow\\video_project\\shanghai_tower\\delivery\\covers\\上海中心_封面_16x9.jpg",
+      "sourceSha256": "c60a8777585c6d39068aea1ea6f31e7255369763061a8d2b31789c32551c1a7c",
+      "kind": "project-render-reference",
+      "purpose": "封面主体 · 拆解轮廓 · 大字",
+      "rights": "Private project reference; brand and third-party assets retain their original rights. Not a redistribution license."
+    },
+    {
+      "id": "camera-continuity-guide",
+      "path": "assets/reference/camera-continuity-guide.png",
+      "sha256": "72af45d8ab88262244c2d7dd3193f4139a9e7ed9a9c3a458dffde4c6cb636603",
+      "sourcePath": "Original diagram generated for this skill",
+      "kind": "original-guide",
+      "rights": "Created for the user; font is rendered, font files are not bundled."
+    },
+    {
+      "id": "brand-sheet",
+      "path": "assets/reference/brand-sheet.jpg",
+      "sha256": "63112706c4ed00978e332c1ce386a93b6b7bb0dc31c864c88fb23dfdfceb93be",
+      "kind": "derived-review-sheet",
+      "source": "Created from documented assets or original instructions for this skill",
+      "rights": "Personal production template/reference; component brand and asset rights retained."
+    },
+    {
+      "id": "gallery-1",
+      "path": "assets/reference/gallery-1.jpg",
+      "sha256": "667cb36f846222beda234dad10477be3847588817488cb12e88d3fe781890bab",
+      "kind": "derived-review-sheet",
+      "source": "Created from documented assets or original instructions for this skill",
+      "rights": "Personal production template/reference; component brand and asset rights retained."
+    },
+    {
+      "id": "gallery-2",
+      "path": "assets/reference/gallery-2.jpg",
+      "sha256": "df6bc64f433dbfdf648a6324a93302404e75e48d242c04cd6c915917f82c0f3c",
+      "kind": "derived-review-sheet",
+      "source": "Created from documented assets or original instructions for this skill",
+      "rights": "Personal production template/reference; component brand and asset rights retained."
+    },
+    {
+      "id": "asset-record",
+      "path": "assets/templates/asset-record.json",
+      "sha256": "bc37834e071e06a987e9d90084d32c0b6af945c720249805ed9997c4beaa02ef",
+      "kind": "template",
+      "source": "Created from documented assets or original instructions for this skill",
+      "rights": "Personal production template/reference; component brand and asset rights retained."
+    },
+    {
+      "id": "iteration-record",
+      "path": "assets/templates/iteration-record.json",
+      "sha256": "3b2df51ad777c8afc4794b19c24b69063d8b40db36c6219af65d5a2c53caf0cf",
+      "kind": "template",
+      "source": "Created from documented assets or original instructions for this skill",
+      "rights": "Personal production template/reference; component brand and asset rights retained."
+    },
+    {
+      "id": "qa-record",
+      "path": "assets/templates/qa-record.json",
+      "sha256": "851946815c359aa0c4be466b46834e71800f6432241aff54e7566c0f622dc395",
+      "kind": "template",
+      "source": "Created from documented assets or original instructions for this skill",
+      "rights": "Personal production template/reference; component brand and asset rights retained."
+    },
+    {
+      "id": "shot-contract",
+      "path": "assets/templates/shot-contract.json",
+      "sha256": "d1b5cc689ca34cb4675af7f9e14206075a8f3e2f425b1b5f57d6254c99ba2e6a",
+      "kind": "template",
+      "source": "Created from documented assets or original instructions for this skill",
+      "rights": "Personal production template/reference; component brand and asset rights retained."
+    }
+  ]
+}

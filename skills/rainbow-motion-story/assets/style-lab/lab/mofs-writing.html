@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>先让人想知道 · 文案工作台</title><link rel="stylesheet" href="./mofs-writing.css"><link rel="stylesheet" href="./document-reader.css"></head>
+<body>
+<header><a class="brand" href="./index.html"><img src="./brand.png" alt="rainbow鱼"><span>镜头与节奏<small>MOTION ATELIER / WRITING</small></span></a><nav><a href="../studies/mofs-script.md">原片文案拆解</a><a href="../guides/mofs-writing.md">怎样迁移到自己的题材</a><a href="./index.html">方法库 ↗</a></nav></header>
+<main>
+<section class="intro"><div><p class="eyebrow">从 MOFs 科普，学习解释的吸引力</p><h1>先让人想知道，<br>再把事情讲明白。</h1></div><p>同一套孔道示意，三种开场。<br>把每一句话放回画面，看问题怎样接着往前走。</p></section>
+<div id="choices" class="choices" role="group" aria-label="选择开场方式"></div>
+<div class="workspace">
+<section class="player" aria-label="文案与画面预演"><div class="scene-bar"><span id="phase">正在准备</span><span>原创示意 · 静音分镜</span></div><canvas id="scene" width="1600" height="900" tabindex="0" role="img" aria-label="讲稿对应画面，空格播放，左右键逐帧"></canvas>
+<div class="transport"><button id="restart" aria-label="从头播放">↺</button><button id="play" class="primary" aria-label="播放">▶ 播放</button><button id="prev" aria-label="上一帧">‹</button><button id="next" aria-label="下一帧">›</button><label>速度 <select id="speed" aria-label="播放速度"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option></select></label><output id="time"></output></div>
+<input id="seek" type="range" min="0" max="38" step="0.001" value="0" aria-label="观察时间"><div id="chapters" class="chapters" role="group" aria-label="故事阶段"></div>
+<div class="score-title"><h2>讲稿沿着画面走</h2><span>点一句，定位它的画面</span></div><div id="cueList" class="cue-list"></div></section>
+<aside>
+<p class="eyebrow">此刻要回答的问题</p><h2 id="question"></h2>
+<div class="cue-meta"><span id="cueKind"></span><output id="cueTime"></output></div><p id="narration" class="narration"></p>
+<div class="evidence"><h3>画面拿什么来解释</h3><p id="evidence"></p><h3>屏幕上只留下</h3><p id="screenText"></p></div>
+<details id="editor"><summary>试着改写这一句</summary><label for="draft">保留当前事实，换自己的说法</label><textarea id="draft" rows="4" spellcheck="false" aria-label="当前句改写"></textarea><div class="edit-foot"><span id="draftStatus"></span><button id="resetDraft">恢复示例</button></div><p class="note">改写保存在本机浏览器，随完整讲稿一起导出。画面与时长保持原计划，接入配音后需要重新对齐。</p></details>
+<div class="exports"><button id="export" class="primary">导出讲稿与镜头 JSON ↗</button><button id="saveFrame">保存当前画面 PNG</button><a id="candidateLink" href="./index.html">在主方法库选用 ↗</a><a href="../examples/mofs-explanation/API.md">代码与接入 ↗</a><output id="status" role="status"></output></div>
+<p class="note">时间是分镜计划，尚未合成旁白。框架与小球用于解释概念，不代表某种 MOF 的真实晶体或吸附计算。</p>
+</aside></div>
+<section class="principles"><article><small>让观众有东西可看</small><h2>动词落到动作上。</h2><p>搭起、进入、停住，各自对应一个可见变化。形容词不能代替机制。</p></article><article><small>让下一句有来由</small><h2>答案带出下一问。</h2><p>先回答当前问题，再揭示还没解释的部分。新术语跟着对象出现。</p></article><article><small>给结果留出位置</small><h2>看清以后，再往前。</h2><p>结构落定时减少变化。一个短暂留白，让观众把刚看见的结果接上解释。</p></article></section>
+</main><footer><span>参考：炫酷的Mr氧《神奇的 MOFs，你也能看懂》。本页讲稿与图形为原创练习。</span><a href="../studies/mofs-writing-principles.md">科学资料与写作边界 ↗</a></footer>
+<pre id="diagnostics" hidden></pre><script type="module" src="./mofs-writing-studio.js"></script><script type="module" src="./document-reader.js"></script></body></html>

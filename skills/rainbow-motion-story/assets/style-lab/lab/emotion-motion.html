@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>运动情绪与声音 · Motion Atelier</title>
+  <link rel="stylesheet" href="./emotion-motion.css">
+</head>
+<body>
+  <a class="skip" href="#playButton">跳到播放器</a>
+  <header class="masthead"><a class="brand" href="./index.html"><img src="./brand.png" alt="rainbow鱼"><span>运动情绪与声音<small>MOTION ATELIER / EXPRESSION</small></span></a><nav aria-label="工作台导航"><a href="./rate-curves.html">速率曲线</a><a href="./index.html">返回方法库 ↗</a></nav></header>
+  <main>
+    <div class="intro"><div><span class="eyebrow">把感觉放到具体的一次动作里</span><h1>快、慢、停、弹。<br class="mobile-break">听见它们的区别。</h1><p>先看同一个动作，再切换声音，比较节奏和落点怎样改变感受。</p></div><div class="intro-note"><span>动作与声音共用事件表</span><p>原创代码与合成音效<br>原片研究另列来源与观看范围</p></div></div>
+    <div id="presetList" class="preset-list" role="group" aria-label="动作候选"></div>
+    <div class="workspace">
+      <section class="stage-column" aria-label="动作与声音播放器">
+        <div class="stage-toolbar"><div class="mode-switch" role="group" aria-label="表现形式"><button id="objectMode" data-mode="object" aria-pressed="true">物体</button><button id="typeMode" data-mode="type" aria-pressed="false">文字</button></div><span id="sceneHeading">正在载入动作</span><span class="stage-badge">同画面对照</span></div>
+        <div class="stage-shell"><canvas id="sceneCanvas" width="1200" height="675" role="img" tabindex="0" aria-label="运动表达画面。空格播放或暂停，左右方向键逐帧定位。"></canvas></div>
+        <div class="stage-status"><span id="stageStatus">准备</span><span id="audioStatus">点击播放后启用声音</span></div>
+        <div class="transport"><div class="transport-actions"><button id="replayButton" class="icon-button" aria-label="从头重放" title="从头重放">↺</button><button id="playButton" class="play-button" aria-label="播放一次">▶ 播放一次</button><button id="stopButton" class="icon-button stop" aria-label="停止并归零" title="停止并归零">■</button><button id="muteButton" class="quiet-button" aria-pressed="false">声音开</button></div><output id="timeDisplay">0.000 / 4.000 s</output><label class="fps-control"><select id="fpsSelect" aria-label="逐帧参考帧率"><option value="24">24 fps</option><option value="30" selected>30 fps</option><option value="60">60 fps</option></select></label></div>
+        <div class="seek-title"><label for="seekInput">观察时刻</label><span id="frameDisplay">第 0 帧</span></div><input id="seekInput" type="range" min="0" max="4" step="0.001" value="0" aria-label="定位画面时间">
+        <p class="micro-note">播放一次后停住。← → 逐帧，Shift + ← → 跳 0.5 秒。切换声音保留当前画面时间。</p>
+        <div class="chart-title"><div><h2>声音落在哪一次变化上</h2><p>上方是运动速率 |v|，下方是音效窗口；竖线对应可见事件。</p></div><output id="speedValue">0.00 /s</output></div>
+        <div class="chart-shell"><canvas id="timelineCanvas" width="1000" height="340" role="img" tabindex="0" aria-label="速率与声音事件时间线。横轴为秒，速率为归一化画布单位每秒。点击定位。"></canvas></div>
+        <p class="micro-note chart-note">速率 = √(vx² + vy²)，单位为归一化画布单位 / 秒。它始终非负，方向由画面中的运动表达；音效锚点不等于波形的实测主峰。</p>
+        <div class="table-wrap"><table><caption>当前方案的音效事件表，时间单位为秒</caption><thead><tr><th>音效</th><th>起音</th><th>事件落点</th><th>结束</th></tr></thead><tbody id="cueRows"></tbody></table></div>
+      </section>
+      <aside class="inspector" aria-label="声音对照与动作说明">
+        <section><span class="eyebrow">只换声音，保留动作</span><div class="sound-switch" role="group" aria-label="声音方案"><button id="matchedButton" data-sound="matched" aria-pressed="true"><strong>匹配音效</strong><span>按动作选择音色与起落</span></button><button id="neutralButton" data-sound="neutral" aria-pressed="false"><strong>统一提示音</strong><span>用相同声音标记事件</span></button></div><p id="soundDescription" class="control-copy">比较同一动作在两种声音安排下的感受。</p></section>
+        <section><div class="control-title"><label for="gainInput">试听与导出音量</label><output id="gainValue">65%</output></div><input id="gainInput" type="range" min="0" max="1" step="0.01" value="0.65" aria-label="音量"><p class="micro-note">静音只影响试听；WAV 保留这里的音量。页面不会自行开启声音。</p><label class="listen-only"><input id="listenOnlyInput" type="checkbox"><span>只听声音<small>收起动作，观察声音本身的节奏</small></span></label></section>
+        <section class="meaning-section"><span class="eyebrow">这次动作想表达什么</span><h2 id="presetTitle">动作说明</h2><p id="presetDescription" class="control-copy"></p><dl><dt>感觉</dt><dd id="presetFeeling"></dd><dt>适合</dt><dd id="presetUse"></dd><dt>留意</dt><dd id="presetRisk"></dd></dl></section>
+        <section class="export-section"><h2>把这一组动作带走</h2><button id="exportJsonButton" class="primary-button">下载事件表 JSON ↗</button><button id="exportWavButton" class="quiet-button">下载当前方案 WAV</button><a class="code-link" href="./emotion-motion.js">查看运动与合成代码 ↗</a><p class="micro-note">JSON 包含动作、声音方案与事件时刻。WAV 为 48 kHz 双声道，保留完整尾音。</p><output id="renderStatus" aria-live="polite">播放或导出时合成音频</output></section>
+      </aside>
+    </div>
+    <section class="notes"><div><h2>用同一段画面做比较</h2><p>先看静音画面，再听匹配音效与统一提示音。想比较声音时，让对象和动作时刻保持一致；想比较运动时，再切换候选。</p></div><div><h2>让停留也有作用</h2><p>动作完成后留一点观察时间。声音何时结束、哪一刻保持安静，与起音同样值得选择。数值与浏览器检查不代表主观听感通过。</p></div></section>
+  </main>
+  <footer><p id="preferenceNote">默认暂停，不自动循环。合成音效不包含参考作品音频采样。</p><div><a href="../guides/emotion-motion.md">使用指南</a><a href="../studies/emotion-motion.md">参考研究</a><a href="./sound-design.html">声音时机工作台</a><a href="./index.html">返回方法库</a></div></footer>
+  <div id="notice" class="notice" role="status" aria-live="polite"></div>
+  <pre id="playbackDiagnostics" hidden aria-hidden="true">{"time":0,"playing":false,"audioState":"not-created","activeSourceCount":0,"epoch":0}</pre>
+  <script type="module" src="./emotion-motion-studio.js"></script>
+</body>
+</html>

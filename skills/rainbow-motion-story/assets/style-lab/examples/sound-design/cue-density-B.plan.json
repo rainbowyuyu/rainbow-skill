@@ -1,0 +1,356 @@
+{
+  "id": "cue-density",
+  "title": "每个动作都有声，还是只听见结果",
+  "question": "同一组装配动作，哪些声音值得留下？",
+  "duration": 8,
+  "variants": [
+    {
+      "id": "A",
+      "title": "每个动作都触发",
+      "description": "全部小动作、移动和完成都出现音效。"
+    },
+    {
+      "id": "B",
+      "title": "只留下因果重点",
+      "description": "保留主要接触与最终确认，次要动作安静完成。"
+    }
+  ],
+  "events": [
+    {
+      "id": "slide-1",
+      "kind": "move",
+      "onset": 0.5,
+      "peak": 0.85,
+      "contact": 1.1,
+      "end": 1.25,
+      "priority": 0.25
+    },
+    {
+      "id": "slide-2",
+      "kind": "move",
+      "onset": 1,
+      "peak": 1.35,
+      "contact": 1.6,
+      "end": 1.75,
+      "priority": 0.25
+    },
+    {
+      "id": "slide-3",
+      "kind": "move",
+      "onset": 1.5,
+      "peak": 1.85,
+      "contact": 2.1,
+      "end": 2.25,
+      "priority": 0.3
+    },
+    {
+      "id": "joint-1",
+      "kind": "metal",
+      "onset": 2.2,
+      "peak": 2.6,
+      "contact": 2.9,
+      "end": 3.2,
+      "priority": 0.9
+    },
+    {
+      "id": "slide-4",
+      "kind": "move",
+      "onset": 3,
+      "peak": 3.35,
+      "contact": 3.6,
+      "end": 3.75,
+      "priority": 0.25
+    },
+    {
+      "id": "joint-2",
+      "kind": "wood",
+      "onset": 3.8,
+      "peak": 4.2,
+      "contact": 4.5,
+      "end": 4.9,
+      "priority": 0.85
+    },
+    {
+      "id": "rotate",
+      "kind": "servo",
+      "onset": 4.85,
+      "peak": 5.35,
+      "contact": 5.85,
+      "end": 6.05,
+      "priority": 0.35
+    },
+    {
+      "id": "complete",
+      "kind": "confirm",
+      "onset": 6,
+      "peak": 6.3,
+      "contact": 6.55,
+      "end": 6.75,
+      "priority": 1
+    }
+  ],
+  "speechWindows": [],
+  "readWindows": [],
+  "variant": "B",
+  "options": {
+    "sampleRate": 48000,
+    "offsetMs": 0,
+    "gainDb": 0,
+    "intensity": 1,
+    "includeSpeechPlaceholder": false
+  },
+  "cues": [
+    {
+      "id": "environment",
+      "sound": "room-air",
+      "eventId": null,
+      "anchor": "onset",
+      "anchorTime": 0,
+      "anchorOffset": 0,
+      "start": 0,
+      "duration": 8,
+      "priority": 0.1,
+      "gain": 0.026,
+      "pan": 0,
+      "seed": 45671,
+      "params": {},
+      "policy": "space",
+      "designSyncDelta": 0,
+      "end": 8
+    },
+    {
+      "id": "joint-1:metal-contact",
+      "sound": "metal-contact",
+      "eventId": "joint-1",
+      "anchor": "contact",
+      "anchorTime": 2.9,
+      "anchorOffset": 0,
+      "start": 2.9,
+      "duration": 0.55,
+      "priority": 0.9,
+      "gain": 0.28,
+      "pan": 0,
+      "seed": 25466,
+      "params": {
+        "peakFraction": 0,
+        "motionStart": 2.2,
+        "motionEnd": 3.2,
+        "mapping": false
+      },
+      "policy": "full",
+      "designSyncDelta": 0,
+      "end": 3.45
+    },
+    {
+      "id": "joint-2:wood-contact",
+      "sound": "wood-contact",
+      "eventId": "joint-2",
+      "anchor": "contact",
+      "anchorTime": 4.5,
+      "anchorOffset": 0,
+      "start": 4.5,
+      "duration": 0.28,
+      "priority": 0.85,
+      "gain": 0.28,
+      "pan": 0,
+      "seed": 41304,
+      "params": {
+        "peakFraction": 0,
+        "motionStart": 3.8,
+        "motionEnd": 4.9,
+        "mapping": false
+      },
+      "policy": "full",
+      "designSyncDelta": 0,
+      "end": 4.78
+    },
+    {
+      "id": "complete:ui-confirm",
+      "sound": "ui-confirm",
+      "eventId": "complete",
+      "anchor": "end",
+      "anchorTime": 6.75,
+      "anchorOffset": 0,
+      "start": 6.75,
+      "duration": 0.35,
+      "priority": 1,
+      "gain": 0.13,
+      "pan": 0,
+      "seed": 57142,
+      "params": {
+        "peakFraction": 0,
+        "motionStart": 6,
+        "motionEnd": 6.75,
+        "mapping": false
+      },
+      "policy": "full",
+      "designSyncDelta": 0,
+      "end": 7.1
+    }
+  ],
+  "excludedCues": [
+    {
+      "id": "slide-1:air-passby",
+      "sound": "air-passby",
+      "eventId": "slide-1",
+      "anchor": "peak",
+      "anchorTime": 0.85,
+      "anchorOffset": 0.35,
+      "start": 0.5,
+      "duration": 0.75,
+      "priority": 0.25,
+      "gain": 0.16,
+      "pan": 0,
+      "seed": 1709,
+      "params": {
+        "peakFraction": 0.4666666666666666,
+        "motionStart": 0.5,
+        "motionEnd": 1.25,
+        "mapping": false
+      },
+      "policy": "full",
+      "reason": "secondary action: no new causal information"
+    },
+    {
+      "id": "slide-2:air-passby",
+      "sound": "air-passby",
+      "eventId": "slide-2",
+      "anchor": "peak",
+      "anchorTime": 1.35,
+      "anchorOffset": 0.3500000000000001,
+      "start": 1,
+      "duration": 0.75,
+      "priority": 0.25,
+      "gain": 0.16,
+      "pan": 0,
+      "seed": 9628,
+      "params": {
+        "peakFraction": 0.4666666666666668,
+        "motionStart": 1,
+        "motionEnd": 1.75,
+        "mapping": false
+      },
+      "policy": "full",
+      "reason": "secondary action: no new causal information"
+    },
+    {
+      "id": "slide-3:air-passby",
+      "sound": "air-passby",
+      "eventId": "slide-3",
+      "anchor": "peak",
+      "anchorTime": 1.85,
+      "anchorOffset": 0.3500000000000001,
+      "start": 1.5,
+      "duration": 0.75,
+      "priority": 0.3,
+      "gain": 0.16,
+      "pan": 0,
+      "seed": 17547,
+      "params": {
+        "peakFraction": 0.4666666666666668,
+        "motionStart": 1.5,
+        "motionEnd": 2.25,
+        "mapping": false
+      },
+      "policy": "full",
+      "reason": "secondary action: no new causal information"
+    },
+    {
+      "id": "slide-4:air-passby",
+      "sound": "air-passby",
+      "eventId": "slide-4",
+      "anchor": "peak",
+      "anchorTime": 3.35,
+      "anchorOffset": 0.3500000000000001,
+      "start": 3,
+      "duration": 0.75,
+      "priority": 0.25,
+      "gain": 0.16,
+      "pan": 0,
+      "seed": 33385,
+      "params": {
+        "peakFraction": 0.4666666666666668,
+        "motionStart": 3,
+        "motionEnd": 3.75,
+        "mapping": false
+      },
+      "policy": "full",
+      "reason": "secondary action: no new causal information"
+    },
+    {
+      "id": "rotate:servo",
+      "sound": "servo",
+      "eventId": "rotate",
+      "anchor": "onset",
+      "anchorTime": 4.85,
+      "anchorOffset": 0,
+      "start": 4.85,
+      "duration": 1.2000000000000002,
+      "priority": 0.35,
+      "gain": 0.12,
+      "pan": 0,
+      "seed": 49223,
+      "params": {
+        "peakFraction": 0,
+        "motionStart": 4.85,
+        "motionEnd": 6.05,
+        "mapping": false
+      },
+      "policy": "full",
+      "reason": "secondary action: no new causal information"
+    }
+  ],
+  "masterGain": 0.82,
+  "placeholderNotice": "Optional surrogate is amplitude-modulated synthetic tones/noise, NOT voice, TTS or proof of intelligibility.",
+  "soundOrigin": "Original deterministic synthesis; no third-party samples.",
+  "cueMeasurements": [
+    {
+      "id": "joint-1:metal-contact",
+      "sound": "metal-contact",
+      "designAnchor": "contact",
+      "designAnchorTime": 2.9,
+      "designAnchorOffset": 0,
+      "designedSyncDelta": 0,
+      "measuredThreshold10PercentTime": 2.900708333333333,
+      "measuredAbsolutePeakTime": 2.9065416666666666,
+      "measured8msRmsPeakTime": 2.9053125,
+      "peakDelayFromAnchor": 0.006541666666666668,
+      "thresholdDelayFromAnchor": 0.0007083333333333108,
+      "sourcePeak": 0.7219047546386719,
+      "firstSample": 0,
+      "lastSample": 0
+    },
+    {
+      "id": "joint-2:wood-contact",
+      "sound": "wood-contact",
+      "designAnchor": "contact",
+      "designAnchorTime": 4.5,
+      "designAnchorOffset": 0,
+      "designedSyncDelta": 0,
+      "measuredThreshold10PercentTime": 4.5004583333333334,
+      "measuredAbsolutePeakTime": 4.503604166666666,
+      "measured8msRmsPeakTime": 4.507104166666666,
+      "peakDelayFromAnchor": 0.0036041666666664085,
+      "thresholdDelayFromAnchor": 0.0004583333333334494,
+      "sourcePeak": 0.7605299353599548,
+      "firstSample": 0,
+      "lastSample": 0
+    },
+    {
+      "id": "complete:ui-confirm",
+      "sound": "ui-confirm",
+      "designAnchor": "end",
+      "designAnchorTime": 6.75,
+      "designAnchorOffset": 0,
+      "designedSyncDelta": 0,
+      "measuredThreshold10PercentTime": 6.7521458333333335,
+      "measuredAbsolutePeakTime": 6.8336041666666665,
+      "measured8msRmsPeakTime": 6.759083333333334,
+      "peakDelayFromAnchor": 0.08360416666666648,
+      "thresholdDelayFromAnchor": 0.0021458333333335133,
+      "sourcePeak": 0.4710911214351654,
+      "firstSample": 0,
+      "lastSample": 0
+    }
+  ]
+}

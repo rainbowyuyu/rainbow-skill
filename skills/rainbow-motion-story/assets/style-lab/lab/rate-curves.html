@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>给运动一条性格曲线 · Motion Atelier</title>
+  <link rel="stylesheet" href="./rate-curves.css">
+</head>
+<body>
+  <a class="skip" href="#playButton">跳到运动播放器</a>
+  <header class="masthead">
+    <a class="brand" href="./index.html"><img src="./brand.png" alt="rainbow鱼"><span>给运动一条性格曲线<small>MOTION ATELIER / RATE CURVES</small></span></a>
+    <nav aria-label="工作台导航"><a href="./sound-design.html">声音与时机</a><a href="./index.html">返回方法库 ↗</a></nav>
+  </header>
+  <main>
+    <section class="intro"><div><span class="eyebrow">同一段路，可以走出不同的语气</span><h1>距离相同，为什么感觉完全不同？</h1><p>换一条曲线，看起步、经过与停下怎样改变画面的分量。</p></div><div class="relation"><strong>位置 → 速度 → 加速度</strong><span>速度是位移对时间的导数；速率是速度的大小 |v|。</span></div></section>
+    <div class="workspace">
+      <section class="stage-column" aria-label="运动与曲线对照">
+        <div class="stage-top"><div class="mode-switch" role="group" aria-label="表现形式"><button data-mode="object" aria-pressed="true">物体移动</button><button data-mode="type" aria-pressed="false">文字进入</button><button data-mode="camera" aria-pressed="false">镜头推进</button></div><span id="modeNote">同一物体 · 同一路径 · 相同距离</span></div>
+        <div class="stage-shell"><canvas id="motionCanvas" width="1200" height="600" tabindex="0" role="img" aria-label="A 与 B 的运动对照。空格播放，左右键逐帧定位。"></canvas><div class="stage-foot"><span id="spacingNote">小点：每隔相同时间记录一次位置</span><span id="phaseLabel">等待播放</span></div></div>
+        <div class="transport"><div class="transport-buttons"><button id="replayButton" class="icon-button" aria-label="从头重播" title="从头重播">↺</button><button id="playButton" class="play-button" aria-label="播放一次">▶ 播放一次</button><button id="stopButton" class="icon-button" aria-label="停止并回到开头" title="停止并回到开头">■</button></div><output id="timeDisplay">0.00 / 3.20 s</output><label class="frame-rate"><select id="fpsSelect" aria-label="逐帧参考帧率"><option value="24">24 fps</option><option value="30" selected>30 fps</option><option value="60">60 fps</option></select></label></div>
+        <div class="seek-caption"><label for="seekInput">观察时间</label><span id="frameLabel">第 0 帧</span></div><input id="seekInput" type="range" min="0" max="3.2" step="0.001" value="0" aria-label="观察时间">
+        <p id="clockNote" class="fine-print">走完后保留 0.8 秒读窗，不自动循环。空格播放 / 暂停，← → 逐帧。</p>
+        <div class="readouts" aria-label="当前运动数值">
+          <div class="readout-head"><span>当前时刻</span><span>位置 x</span><span>速度 v</span><span>速率 |v|</span><span>加速度 a</span></div>
+          <div id="readoutA" class="readout-row lane-a"></div><div id="readoutB" class="readout-row lane-b"></div>
+        </div>
+        <div class="plots-heading"><div><h2>看见曲线，也看见它的导数</h2><p>横轴统一为 u = t / T；T 是设定的运动时间尺度。</p></div><div class="legend"><span class="a-dot">A</span><span class="b-dot">B</span></div></div>
+        <div class="plot-range-row"><div class="plot-range" role="group" aria-label="曲线图观察区间"><button id="plotMainButton" aria-pressed="true">主运动</button><button id="plotFullButton" aria-pressed="false">完整响应</button></div><p id="plotRangeNote" class="fine-print">主运动显示 0–1.4T，弹簧尾部仍继续计算。</p></div>
+        <div class="plots">
+          <figure><figcaption><strong>位置 s(u)</strong><span>归一化位移 · 1 为目标</span></figcaption><canvas id="positionChart" width="600" height="310" tabindex="0" role="img" aria-label="归一化位移曲线，横轴为归一化时间 u。点击或左右键定位。"></canvas></figure>
+          <figure><figcaption><strong>有符号速度 ds/du</strong><span>负值表示返回</span></figcaption><canvas id="velocityChart" width="600" height="310" tabindex="0" role="img" aria-label="归一化有符号速度曲线。负值表示返回。点击或左右键定位。"></canvas></figure>
+          <figure><figcaption><strong>加速度 d²s/du²</strong><span>斜率如何继续变化</span></figcaption><canvas id="accelerationChart" width="600" height="310" tabindex="0" role="img" aria-label="归一化加速度曲线。点击或左右键定位。"></canvas></figure>
+        </div>
+        <div class="formula-note"><code>x = x₀ + D · s(u)</code><code>v = (D/T) · ds/du</code><code>a = (D/T²) · d²s/du²</code></div>
+        <p id="derivativeNote" class="fine-print">时长减半，同一路程的速度变成 2 倍、加速度变成 4 倍。图中的形状不变，实际运动已经不同。</p>
+      </section>
+      <aside class="inspector" aria-label="对照曲线与参数">
+        <section><span class="eyebrow">选择对照</span><label class="curve-select lane-a">A · 对照<select id="curveA" aria-label="A 曲线"></select></label><label class="curve-select lane-b">B · 候选<select id="curveB" aria-label="B 曲线"></select></label><button id="swapButton" class="quiet-button">交换 A / B</button></section>
+        <section><div class="control-title"><label for="durationInput">运动时间尺度 T</label><output id="durationValue">2.4 s</output></div><input id="durationInput" type="range" min="0.8" max="6" step="0.1" value="2.4"><div class="control-title"><label for="distanceInput">位移距离 D</label><output id="distanceValue">560 px</output></div><input id="distanceInput" type="range" min="100" max="800" step="10" value="560"><p class="fine-print">画布逻辑像素。镜头示例把同一位移映射到固定的透视空间。</p></section>
+        <section><div class="control-title"><h2>曲线自己的参数</h2><div class="lane-switch" role="group" aria-label="编辑哪条曲线"><button id="editA" aria-pressed="false">A</button><button id="editB" aria-pressed="true">B</button></div></div><div id="curveParameters"></div><p id="curveBoundary" class="fine-print"></p><button id="resetCurveButton" class="quiet-button">还原这条曲线参数</button></section>
+        <section class="selection-notes"><h2 id="activeTitle">当前候选</h2><dl><dt>感觉</dt><dd id="activeFeeling"></dd><dt>适合</dt><dd id="activeUse"></dd><dt>留意</dt><dd id="activeRisk"></dd></dl></section>
+        <section class="export-panel"><h2>带走实际参数</h2><button id="exportJsonButton" class="primary-button">下载选择 JSON ↗</button><button id="exportCodeButton" class="quiet-button">下载可复用代码</button><button id="showCodeButton" class="text-button">查看代码示例</button><p class="fine-print">导出包含 A/B 曲线、曲线参数、距离和时长。代码调用同一份曲线核心。</p></section>
+      </aside>
+    </div>
+    <section class="library" aria-labelledby="libraryHeading"><div class="library-heading"><div><span class="eyebrow">十二种动作语气</span><h2 id="libraryHeading">按这次表达的意思选择</h2><p>每张卡都能放进 A 或 B。先观察，再决定。</p></div><span class="library-note">曲线描述的是运动安排，并不自动等于真实动力学。</span></div><div id="curveCards" class="curve-cards"></div></section>
+    <section class="reading-room"><div><h2>停一下，再看清变化</h2><p>说明和参数读数保持固定，画内标题用于比较曲线。弹簧在 T 之后继续响应；碰撞点的速度会跳变，图中单独标出。</p></div><div><h2>从这里接入真实镜头</h2><p>此页的镜头是 Canvas 透视示例。接入 Three.js 时，用同一进度驱动相机路径，另行核对视角、距离和加速度。</p></div></section>
+  </main>
+  <footer><p id="motionPreference">默认不自动播放，也不自动循环。减少动态效果偏好只在手动播放时显示运动。</p><a href="../guides/rate-curves.md">速率曲线指南</a><a href="../studies/rate-curves.md">研究与来源</a><a href="./rate-curves.js">查看曲线核心</a><a href="./index.html">返回方法库</a></footer>
+  <dialog id="codeDialog" aria-labelledby="codeHeading"><div class="dialog-header"><h2 id="codeHeading">当前选择对应的代码</h2><button id="closeCodeButton" aria-label="关闭代码">✕</button></div><p>把 rate-curves.js 放在同目录。timeSeconds 来自你的帧号 / fps。</p><pre><code id="codeContent"></code></pre><button id="dialogDownloadButton" class="primary-button">下载这份代码</button></dialog>
+  <div id="notice" class="notice" role="status" aria-live="polite"></div>
+  <script type="module" src="./rate-curves-studio.js"></script>
+</body>
+</html>

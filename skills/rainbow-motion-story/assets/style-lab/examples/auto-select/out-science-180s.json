@@ -1,0 +1,889 @@
+{
+  "schema": "auto-select/plan@1",
+  "brief": {
+    "title": "MOFs：为什么一块粉末能装下一整个房间的气体",
+    "topic": "金属有机框架（MOF）的多孔结构：从方框示意到化学结构，解释比表面积为什么能这么大，以及这个数字从哪里来",
+    "duration": 180.0,
+    "aspect": "16:9",
+    "genre": "science",
+    "tones": [
+      "curious",
+      "calm"
+    ],
+    "need_sound": true,
+    "must_explain": [
+      "金属有机框架的多孔结构",
+      "比表面积的来源与量级",
+      "几何示意与真实材料吸附的区别"
+    ],
+    "audience": "知道分子概念、没接触过配位聚合物和晶体学的普通观众"
+  },
+  "segmentBudget": [
+    {
+      "segment": "hook",
+      "name": "钩子",
+      "seconds": 12.0,
+      "share": 0.066667
+    },
+    {
+      "segment": "explain",
+      "name": "解释",
+      "seconds": 112.8,
+      "share": 0.626667
+    },
+    {
+      "segment": "contrast",
+      "name": "对照",
+      "seconds": 20.0,
+      "share": 0.111111
+    },
+    {
+      "segment": "reveal",
+      "name": "揭示",
+      "seconds": 25.2,
+      "share": 0.14
+    },
+    {
+      "segment": "close",
+      "name": "收束",
+      "seconds": 10.0,
+      "share": 0.055556
+    }
+  ],
+  "timeline": [
+    {
+      "beat": 1,
+      "segment": "hook",
+      "segmentName": "钩子",
+      "start": 0.0,
+      "end": 6.0,
+      "duration": 6.0,
+      "techniqueId": "hook-object-first",
+      "technique": "物件先行：先给一个能指认、能追踪的对象",
+      "moduleIds": [
+        "continuity.js",
+        "mofs-explanation.js"
+      ],
+      "params": {
+        "holdSeconds": 1.5,
+        "objectIdRequired": true,
+        "enterScale": "mid"
+      },
+      "sound": {
+        "layer": "contact",
+        "detail": "对象落定给一次短接触声，不用长 whoosh 开场"
+      },
+      "why": "genre=science；tone=curious/calm；aspect=16:9；关键词命中：装",
+      "risk": "对象太多会失去主线，只保留一个主实体",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/script.md",
+          "claim": "开头先给观众一个能指认、能跟着操作或能作出判断的对象"
+        },
+        {
+          "path": "assets/style-lab/guides/continuity.md",
+          "claim": "给主角、轨迹、标签一个跨镜不变的 ID"
+        },
+        {
+          "path": "assets/style-lab/studies/mofs-script.md",
+          "claim": "几何通过与材料吸附分开解释"
+        }
+      ]
+    },
+    {
+      "beat": 2,
+      "segment": "hook",
+      "segmentName": "钩子",
+      "start": 6.0,
+      "end": 12.0,
+      "duration": 6.0,
+      "techniqueId": "hook-question-open",
+      "technique": "问题先行：先给出一个能回答的问题",
+      "moduleIds": [
+        "mofs-explanation.js"
+      ],
+      "params": {
+        "holdSeconds": 1.2,
+        "textCase": "一句话问句",
+        "maxWords": 14
+      },
+      "sound": {
+        "layer": "silence",
+        "detail": "开场不铺音乐，等第一句落定再进"
+      },
+      "why": "genre=science；tone=curious/calm；aspect=16:9；关键词命中：为什么",
+      "risk": "问句若在画面里没有对应对象，会变成空泛标题",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/mofs-writing.md",
+          "claim": "三种开场入口按观众已有什么判断来选，不强制先问问题"
+        },
+        {
+          "path": "assets/style-lab/studies/mofs-script.md",
+          "claim": "先操作方框再命名，术语出现时画面已经建立了对象"
+        },
+        {
+          "path": "assets/style-lab/guides/script.md",
+          "claim": "主题缩成一个能回答的问题，每段记录观众原先的判断"
+        }
+      ]
+    },
+    {
+      "beat": 3,
+      "segment": "explain",
+      "segmentName": "解释",
+      "start": 12.0,
+      "end": 30.8,
+      "duration": 18.8,
+      "techniqueId": "explain-formula-link",
+      "technique": "参数驱动实体：一个量同时决定图形与读数",
+      "moduleIds": [
+        "visualization-entity-formula",
+        "DerivativeLinkedView"
+      ],
+      "params": {
+        "holdSeconds": 2.6,
+        "quantityIdRequired": true,
+        "unitOnLabel": true
+      },
+      "sound": {
+        "layer": "sonification",
+        "detail": "关键关系建立后保留安静窗口，读完再给下一次提示"
+      },
+      "why": "genre=science；tone=curious/calm；aspect=16:9；关键词命中：比表面积、量级、来源",
+      "risk": "符号按字形自动匹配决定不了哪一处是复制，语义要显式记录",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/manim-formula-language.md",
+          "claim": "每个符号记录 quantityId / occurrenceId / role / unit / color / sourceObject"
+        },
+        {
+          "path": "assets/style-lab/studies/3b1b-manim-source.md",
+          "claim": "研究范围是官方 ManimGL 示例的 12 个类与四组指定源码"
+        },
+        {
+          "path": "assets/style-lab/guides/rate-curves.md",
+          "claim": "时长减半时速度变 2 倍、加速度 4 倍"
+        }
+      ]
+    },
+    {
+      "beat": 4,
+      "segment": "explain",
+      "segmentName": "解释",
+      "start": 30.8,
+      "end": 49.6,
+      "duration": 18.8,
+      "techniqueId": "explain-trace-assembly",
+      "technique": "按含义分组逐层生长：支架→路径→闭合→命名",
+      "moduleIds": [
+        "type-semantic-emphasis",
+        "visualization-flow-continuity"
+      ],
+      "params": {
+        "holdSeconds": 2.0,
+        "groupOrder": [
+          "support",
+          "path",
+          "closure",
+          "label"
+        ],
+        "curve": "minimum-jerk"
+      },
+      "sound": {
+        "layer": "contact",
+        "detail": "每组线段闭合时一次轻接触声，命名时静音让位"
+      },
+      "why": "genre=science；tone=curious/calm；aspect=16:9；关键词命中：结构",
+      "risk": "同一帧突然显示全部线条会让观众丢失装配顺序",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/motionface-type.md",
+          "claim": "线条组装按含义分组：先参照或支架，再作用路径，再结构闭合，最后填色与说明"
+        },
+        {
+          "path": "assets/style-lab/guides/anatomy-mechanics.md",
+          "claim": "先画出因果链，再设计镜头"
+        },
+        {
+          "path": "assets/style-lab/lab/modules/visualization.js",
+          "claim": "visualization-flow-continuity 保持同一路径跨镜"
+        }
+      ]
+    },
+    {
+      "beat": 5,
+      "segment": "explain",
+      "segmentName": "解释",
+      "start": 49.6,
+      "end": 68.4,
+      "duration": 18.8,
+      "techniqueId": "explain-focus-handoff",
+      "technique": "注意力窗口沿连续路径交接",
+      "moduleIds": [
+        "focus-handoff"
+      ],
+      "params": {
+        "holdSeconds": 2.4,
+        "windowPath": "continuous",
+        "keepContext": true
+      },
+      "sound": {
+        "layer": "air",
+        "detail": "窗口移动时弱气流跟随，抵达后静音给阅读"
+      },
+      "why": "genre=science；tone=curious/calm；aspect=16:9",
+      "risk": "不要把 Canvas 局部柔化说成真实摄影景深",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/motionface-type.md",
+          "claim": "让背景依然保留必要上下文，再把亮度、边框或遮罩中心沿连续路径移到下一个对象"
+        },
+        {
+          "path": "assets/style-lab/guides/motionface-type.md",
+          "claim": "标签跟同一锚点走；最终文字独立清晰渲染"
+        }
+      ]
+    },
+    {
+      "beat": 6,
+      "segment": "explain",
+      "segmentName": "解释",
+      "start": 68.4,
+      "end": 87.2,
+      "duration": 18.8,
+      "techniqueId": "explain-spatial-data",
+      "technique": "从实体到数据再回到动作",
+      "moduleIds": [
+        "visualization-entity-formula"
+      ],
+      "params": {
+        "holdSeconds": 2.2,
+        "worldAnchorRequired": true,
+        "separateDataClock": true
+      },
+      "sound": {
+        "layer": "sonification",
+        "detail": "数据变化用稳定映射，注明是 sonification"
+      },
+      "why": "genre=science；tone=curious/calm；aspect=16:9",
+      "risk": "位置若代表真实数值，不能为了配乐改排名或相交点",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/robot-spatial-explainer.md",
+          "claim": "先约定一个可追踪的世界，再从实体到数据再回到动作"
+        },
+        {
+          "path": "assets/style-lab/studies/robocup-blender-technical.md",
+          "claim": "世界坐标与镜头分别保存"
+        }
+      ]
+    },
+    {
+      "beat": 7,
+      "segment": "explain",
+      "segmentName": "解释",
+      "start": 87.2,
+      "end": 106.0,
+      "duration": 18.8,
+      "techniqueId": "explain-linework",
+      "technique": "线稿的体积、材料与过程",
+      "moduleIds": [
+        "engraved-flow-path",
+        "engraved-orthographic-assembly"
+      ],
+      "params": {
+        "holdSeconds": 2.0,
+        "solidBeforeLine": true,
+        "lineWeightUnit": "mm"
+      },
+      "sound": {
+        "layer": "contact",
+        "detail": "线条生长时极轻的摩擦声，落定后消失"
+      },
+      "why": "genre=science；tone=calm；aspect=16:9；关键词命中：材料",
+      "risk": "先画线再补体积，会让线稿浮在表面",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/linework-language.md",
+          "claim": "让实体成立，再决定画哪些线"
+        },
+        {
+          "path": "assets/style-lab/studies/qinyulian-linework.md",
+          "claim": "线宽与实体尺度绑定"
+        }
+      ]
+    },
+    {
+      "beat": 8,
+      "segment": "explain",
+      "segmentName": "解释",
+      "start": 106.0,
+      "end": 124.8,
+      "duration": 18.8,
+      "techniqueId": "explain-shuffle-beat",
+      "technique": "多次重复动作的疏密与取样",
+      "moduleIds": [
+        "storytelling-perfect-shuffle"
+      ],
+      "params": {
+        "holdSeconds": 1.8,
+        "repeatCompress": true,
+        "keyTurnHold": 2.5
+      },
+      "sound": {
+        "layer": "bed",
+        "detail": "不要每次重复都配声；只在关键反转给一次重音"
+      },
+      "why": "genre=science；tone=curious；aspect=16:9",
+      "risk": "把参考片的特定概率条件或洗牌次数当成通用结论",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/shuffle-rhythm.md",
+          "claim": "先画出动作阶段，再决定哪几次配声"
+        },
+        {
+          "path": "assets/style-lab/guides/shuffle-story.md",
+          "claim": "重复过程可压缩，关键反转要留观察时间"
+        },
+        {
+          "path": "assets/style-lab/studies/shuffle-rhythm.md",
+          "claim": "多次微动作配声太满会盖住结果"
+        }
+      ]
+    },
+    {
+      "beat": 9,
+      "segment": "contrast",
+      "segmentName": "对照",
+      "start": 124.8,
+      "end": 131.47,
+      "duration": 6.67,
+      "techniqueId": "contrast-rate-ab",
+      "technique": "同画面换曲线：只改时间分配",
+      "moduleIds": [
+        "rate-curves-ab"
+      ],
+      "params": {
+        "fixedPath": true,
+        "fixedDuration": true,
+        "curve": "ease-in-out",
+        "holdSeconds": 1.5
+      },
+      "sound": {
+        "layer": "silence",
+        "detail": "对照段先静音，让观众只看运动差别"
+      },
+      "why": "genre=science；tone=curious/calm；aspect=16:9",
+      "risk": "同时改颜色和曲线，就无法判断差别来自哪里",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/rate-curves.md",
+          "claim": "先固定同一个物体、同一段距离和同一总时长，只换曲线做 A/B"
+        },
+        {
+          "path": "assets/style-lab/studies/rate-curves.md",
+          "claim": "三张图分别是进度、速度、加速度，不是同一条曲线"
+        },
+        {
+          "path": "assets/style-lab/examples/rate-curves/API.md",
+          "claim": "sampleCurve / sampleMotion 从绝对时间求值"
+        }
+      ]
+    },
+    {
+      "beat": 10,
+      "segment": "contrast",
+      "segmentName": "对照",
+      "start": 131.47,
+      "end": 138.14,
+      "duration": 6.67,
+      "techniqueId": "contrast-card-convergence",
+      "technique": "三卡汇聚成一个关系",
+      "moduleIds": [
+        "mf-card-convergence"
+      ],
+      "params": {
+        "holdSeconds": 2.0,
+        "identityPersist": true,
+        "curve": "ease-out"
+      },
+      "sound": {
+        "layer": "confirm",
+        "detail": "只在最终关系成立时给一次确认音"
+      },
+      "why": "genre=science；tone=curious/calm；aspect=16:9",
+      "risk": "没有实际汇聚关系却把任意三个词连线",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/motionface-type.md",
+          "claim": "三张卡的身份、汇聚方向、最终关系要可追踪"
+        },
+        {
+          "path": "assets/style-lab/guides/motionface-type.md",
+          "claim": "连接线等节点停稳后再绘制"
+        }
+      ]
+    },
+    {
+      "beat": 11,
+      "segment": "contrast",
+      "segmentName": "对照",
+      "start": 138.14,
+      "end": 144.81,
+      "duration": 6.67,
+      "techniqueId": "contrast-aesthetic-3way",
+      "technique": "三种视觉方向对照，不只换配色",
+      "moduleIds": [
+        "aesthetic-direction.js"
+      ],
+      "params": {
+        "fixedContent": true,
+        "holdSeconds": 1.8,
+        "threeDirections": true
+      },
+      "sound": {
+        "layer": "bed",
+        "detail": "三方案共用同一条音床，避免声音差异干扰判断"
+      },
+      "why": "genre=science；tone=calm；aspect=16:9",
+      "risk": "只换颜色会被误认成三个方案",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/aesthetic-direction.md",
+          "claim": "先写观察任务，再选视觉方向；不能仅换颜色就算多方案"
+        },
+        {
+          "path": "assets/style-lab/studies/aesthetic.md",
+          "claim": "按观察任务选择视觉方向"
+        },
+        {
+          "path": "assets/style-lab/guides/aesthetic-direction.md",
+          "claim": "三方案工作台固定内容，只比较方向"
+        }
+      ]
+    },
+    {
+      "beat": 12,
+      "segment": "reveal",
+      "segmentName": "揭示",
+      "start": 144.81,
+      "end": 153.21,
+      "duration": 8.4,
+      "techniqueId": "reveal-lattice-growth",
+      "technique": "结构生长：从一个单元长成整体",
+      "moduleIds": [
+        "visualization-lattice-growth"
+      ],
+      "params": {
+        "holdSeconds": 2.6,
+        "unitToWhole": true,
+        "scaleLabelVisible": true
+      },
+      "sound": {
+        "layer": "sonification",
+        "detail": "生长进度映射到脉冲稀疏度，注明是 sonification"
+      },
+      "why": "genre=science；tone=calm；aspect=16:9；关键词命中：晶体、分子、结构",
+      "risk": "不能把位置示意说成吸附仿真或实际晶体",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/visualization.md",
+          "claim": "公式与可视化共用一个可追踪对象"
+        },
+        {
+          "path": "assets/style-lab/guides/mofs-writing.md",
+          "claim": "重复、缩小并映射到化学结构，之后命名并交代意义"
+        },
+        {
+          "path": "assets/style-lab/studies/mofs.md",
+          "claim": "几何通过与材料吸附分开解释"
+        }
+      ]
+    },
+    {
+      "beat": 13,
+      "segment": "reveal",
+      "segmentName": "揭示",
+      "start": 153.21,
+      "end": 161.61,
+      "duration": 8.4,
+      "techniqueId": "reveal-camera-move",
+      "technique": "镜头运动揭示空间关系",
+      "moduleIds": [
+        "camera-first-person",
+        "camera-hitchcock-zoom",
+        "camera-bullet-time"
+      ],
+      "params": {
+        "focalLengthMm": 50,
+        "fNumber": 4,
+        "holdSeconds": 2.0,
+        "worldClockSeparate": true
+      },
+      "sound": {
+        "layer": "air",
+        "detail": "穿梭声跟随相机真实速度，不是固定包络"
+      },
+      "why": "genre=science；tone=curious；aspect=16:9",
+      "risk": "整段变慢会把旁白一起拖慢；世界与相机要分开",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/camera.md",
+          "claim": "运镜按观察任务选择：穿梭、第一人称、离体、子弹时刻"
+        },
+        {
+          "path": "assets/style-lab/studies/camera-moves.md",
+          "claim": "相机运动曲线与物体物理时间分别保存"
+        },
+        {
+          "path": "assets/style-lab/guides/rate-curves.md",
+          "claim": "子弹时刻中相机可以继续绕行，世界只前进一点"
+        }
+      ]
+    },
+    {
+      "beat": 14,
+      "segment": "reveal",
+      "segmentName": "揭示",
+      "start": 161.61,
+      "end": 170.01,
+      "duration": 8.4,
+      "techniqueId": "reveal-shape-into-world",
+      "technique": "形状里先放进另一个世界，再停顿、再扩大",
+      "moduleIds": [
+        "symbolic-titles.js"
+      ],
+      "params": {
+        "holdSeconds": 2.2,
+        "recognizeBeforeExpand": true,
+        "order": [
+          "insert",
+          "hold",
+          "expand"
+        ]
+      },
+      "sound": {
+        "layer": "bed",
+        "detail": "辨认阶段撤掉瞬态，只留和声底，扩大时再进"
+      },
+      "why": "genre=science；tone=curious；aspect=16:9",
+      "risk": "跳过辨认停顿直接扩大，观众只会看到一次闪白",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/symbolic-title-sequence.md",
+          "claim": "14.6s 下一场景已在盔面负形中，14.7–15.5s 保留辨认，15.6–16.2s 再扩大"
+        },
+        {
+          "path": "assets/style-lab/studies/review-magpie.md",
+          "claim": "静帧审阅支持图形与构图，不支持精确缓动"
+        }
+      ]
+    },
+    {
+      "beat": 15,
+      "segment": "close",
+      "segmentName": "收束",
+      "start": 170.01,
+      "end": 175.01,
+      "duration": 5.0,
+      "techniqueId": "close-question-return",
+      "technique": "旧轨迹变形成新问题",
+      "moduleIds": [
+        "symbolic-titles.js",
+        "continuity.js"
+      ],
+      "params": {
+        "holdSeconds": 2.4,
+        "reuseExistingObject": true
+      },
+      "sound": {
+        "layer": "bed",
+        "detail": "结尾保留环境底，不突然全静音"
+      },
+      "why": "genre=science；tone=curious/calm；aspect=16:9",
+      "risk": "凭空换一个新对象提问，会让前文白讲",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/syy-rhythm.md",
+          "claim": "结尾由旧轨迹继续变形，新问题才有来处"
+        },
+        {
+          "path": "assets/style-lab/guides/continuity.md",
+          "claim": "让下一镜接住上一镜的问题"
+        }
+      ]
+    },
+    {
+      "beat": 16,
+      "segment": "close",
+      "segmentName": "收束",
+      "start": 175.01,
+      "end": 180.0,
+      "duration": 4.99,
+      "techniqueId": "close-prediction",
+      "technique": "让观众用刚学的关系做一次预测",
+      "moduleIds": [
+        "storytelling.js"
+      ],
+      "params": {
+        "holdSeconds": 2.5,
+        "pauseBeforeAnswer": 2.0,
+        "newSituation": true
+      },
+      "sound": {
+        "layer": "silence",
+        "detail": "提问后留 1.5–2 秒空镜，不急着给答案"
+      },
+      "why": "genre=science；tone=curious；aspect=16:9",
+      "risk": "新情境必须换条件，不能只是把原例重播一遍",
+      "refs": [
+        {
+          "path": "SKILL.md",
+          "claim": "讲完之后安排一个新情境，让观众用刚学的关系做一次预测"
+        },
+        {
+          "path": "assets/style-lab/guides/script.md",
+          "claim": "对照只听旁白、静音看画面和正常播放的断点"
+        }
+      ]
+    }
+  ],
+  "techniqueSet": [
+    {
+      "id": "hook-object-first",
+      "segment": "hook",
+      "technique": "物件先行：先给一个能指认、能追踪的对象",
+      "moduleIds": [
+        "continuity.js",
+        "mofs-explanation.js"
+      ],
+      "refs": [
+        "assets/style-lab/guides/script.md",
+        "assets/style-lab/guides/continuity.md",
+        "assets/style-lab/studies/mofs-script.md"
+      ]
+    },
+    {
+      "id": "hook-question-open",
+      "segment": "hook",
+      "technique": "问题先行：先给出一个能回答的问题",
+      "moduleIds": [
+        "mofs-explanation.js"
+      ],
+      "refs": [
+        "assets/style-lab/guides/mofs-writing.md",
+        "assets/style-lab/studies/mofs-script.md",
+        "assets/style-lab/guides/script.md"
+      ]
+    },
+    {
+      "id": "explain-formula-link",
+      "segment": "explain",
+      "technique": "参数驱动实体：一个量同时决定图形与读数",
+      "moduleIds": [
+        "visualization-entity-formula",
+        "DerivativeLinkedView"
+      ],
+      "refs": [
+        "assets/style-lab/guides/manim-formula-language.md",
+        "assets/style-lab/studies/3b1b-manim-source.md",
+        "assets/style-lab/guides/rate-curves.md"
+      ]
+    },
+    {
+      "id": "explain-trace-assembly",
+      "segment": "explain",
+      "technique": "按含义分组逐层生长：支架→路径→闭合→命名",
+      "moduleIds": [
+        "type-semantic-emphasis",
+        "visualization-flow-continuity"
+      ],
+      "refs": [
+        "assets/style-lab/guides/motionface-type.md",
+        "assets/style-lab/guides/anatomy-mechanics.md",
+        "assets/style-lab/lab/modules/visualization.js"
+      ]
+    },
+    {
+      "id": "explain-focus-handoff",
+      "segment": "explain",
+      "technique": "注意力窗口沿连续路径交接",
+      "moduleIds": [
+        "focus-handoff"
+      ],
+      "refs": [
+        "assets/style-lab/guides/motionface-type.md",
+        "assets/style-lab/guides/motionface-type.md"
+      ]
+    },
+    {
+      "id": "explain-spatial-data",
+      "segment": "explain",
+      "technique": "从实体到数据再回到动作",
+      "moduleIds": [
+        "visualization-entity-formula"
+      ],
+      "refs": [
+        "assets/style-lab/guides/robot-spatial-explainer.md",
+        "assets/style-lab/studies/robocup-blender-technical.md"
+      ]
+    },
+    {
+      "id": "explain-linework",
+      "segment": "explain",
+      "technique": "线稿的体积、材料与过程",
+      "moduleIds": [
+        "engraved-flow-path",
+        "engraved-orthographic-assembly"
+      ],
+      "refs": [
+        "assets/style-lab/guides/linework-language.md",
+        "assets/style-lab/studies/qinyulian-linework.md"
+      ]
+    },
+    {
+      "id": "explain-shuffle-beat",
+      "segment": "explain",
+      "technique": "多次重复动作的疏密与取样",
+      "moduleIds": [
+        "storytelling-perfect-shuffle"
+      ],
+      "refs": [
+        "assets/style-lab/guides/shuffle-rhythm.md",
+        "assets/style-lab/guides/shuffle-story.md",
+        "assets/style-lab/studies/shuffle-rhythm.md"
+      ]
+    },
+    {
+      "id": "contrast-rate-ab",
+      "segment": "contrast",
+      "technique": "同画面换曲线：只改时间分配",
+      "moduleIds": [
+        "rate-curves-ab"
+      ],
+      "refs": [
+        "assets/style-lab/guides/rate-curves.md",
+        "assets/style-lab/studies/rate-curves.md",
+        "assets/style-lab/examples/rate-curves/API.md"
+      ]
+    },
+    {
+      "id": "contrast-card-convergence",
+      "segment": "contrast",
+      "technique": "三卡汇聚成一个关系",
+      "moduleIds": [
+        "mf-card-convergence"
+      ],
+      "refs": [
+        "assets/style-lab/guides/motionface-type.md",
+        "assets/style-lab/guides/motionface-type.md"
+      ]
+    },
+    {
+      "id": "contrast-aesthetic-3way",
+      "segment": "contrast",
+      "technique": "三种视觉方向对照，不只换配色",
+      "moduleIds": [
+        "aesthetic-direction.js"
+      ],
+      "refs": [
+        "assets/style-lab/guides/aesthetic-direction.md",
+        "assets/style-lab/studies/aesthetic.md",
+        "assets/style-lab/guides/aesthetic-direction.md"
+      ]
+    },
+    {
+      "id": "reveal-lattice-growth",
+      "segment": "reveal",
+      "technique": "结构生长：从一个单元长成整体",
+      "moduleIds": [
+        "visualization-lattice-growth"
+      ],
+      "refs": [
+        "assets/style-lab/guides/visualization.md",
+        "assets/style-lab/guides/mofs-writing.md",
+        "assets/style-lab/studies/mofs.md"
+      ]
+    },
+    {
+      "id": "reveal-camera-move",
+      "segment": "reveal",
+      "technique": "镜头运动揭示空间关系",
+      "moduleIds": [
+        "camera-first-person",
+        "camera-hitchcock-zoom",
+        "camera-bullet-time"
+      ],
+      "refs": [
+        "assets/style-lab/guides/camera.md",
+        "assets/style-lab/studies/camera-moves.md",
+        "assets/style-lab/guides/rate-curves.md"
+      ]
+    },
+    {
+      "id": "reveal-shape-into-world",
+      "segment": "reveal",
+      "technique": "形状里先放进另一个世界，再停顿、再扩大",
+      "moduleIds": [
+        "symbolic-titles.js"
+      ],
+      "refs": [
+        "assets/style-lab/guides/symbolic-title-sequence.md",
+        "assets/style-lab/studies/review-magpie.md"
+      ]
+    },
+    {
+      "id": "close-question-return",
+      "segment": "close",
+      "technique": "旧轨迹变形成新问题",
+      "moduleIds": [
+        "symbolic-titles.js",
+        "continuity.js"
+      ],
+      "refs": [
+        "assets/style-lab/guides/syy-rhythm.md",
+        "assets/style-lab/guides/continuity.md"
+      ]
+    },
+    {
+      "id": "close-prediction",
+      "segment": "close",
+      "technique": "让观众用刚学的关系做一次预测",
+      "moduleIds": [
+        "storytelling.js"
+      ],
+      "refs": [
+        "SKILL.md",
+        "assets/style-lab/guides/script.md"
+      ]
+    }
+  ],
+  "soundPlan": {
+    "enabled": true,
+    "layerCounts": {
+      "contact": 3,
+      "silence": 3,
+      "sonification": 3,
+      "air": 2,
+      "bed": 4,
+      "confirm": 1
+    },
+    "note": "接触声跟接触帧，确认声跟状态提交，掠过声在最近点前 0.15–0.45 秒进入；旁白活动窗口内先避让，再考虑减小增益。",
+    "refs": [
+      "assets/style-lab/guides/sound-design.md",
+      "assets/style-lab/guides/emotion-motion.md"
+    ]
+  },
+  "unresolved": [
+    "钩子 段预算 21.6 秒超过 12 秒上界，溢出 9.6 秒并入解释段。",
+    "对照 段预算 25.2 秒超过 20 秒上界，溢出 5.2 秒并入解释段。",
+    "收束 段预算 14.4 秒超过 10 秒上界，溢出 4.4 秒并入解释段。"
+  ],
+  "limits": [
+    "选型器只安排技法与时长，不生成事实、公式结果、数值或科学结论。",
+    "params 是起点值，须按当前对象尺度与旁白重新调；不是验收标准。",
+    "refs 表示该文件支持这条技法，不代表已完成主观听审或全片验收。",
+    "参考作品的配乐、水印、人物与第三方代码不可直接进入交付包。"
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "高级演示制作"
+  short_description: "用共享依赖的 Remotion 工作区制作组会演示，并自动清理旧迭代"
+  default_prompt: "使用 $advanced-presentation 在共享 Remotion 工作区创建或迭代我的组会报告，复用统一依赖并在成功验收后清理旧临时文件。"

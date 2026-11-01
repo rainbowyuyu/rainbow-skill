@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Illustrative event-to-sound production template, not a rendering command",
+  "fps": 30,
+  "durationFrames": 240,
+  "sampleRate": 48000,
+  "evidence": "fixed-teaching-example",
+  "events": [
+    {"id": "assembly-seat", "objectId": "coupling", "onsetFrame": 42, "contactFrame": 90, "endFrame": 108, "annotationUncertaintyFrames": 1, "source": "shared assembly animation state"},
+    {"id": "result-commit", "objectId": "load-label", "onsetFrame": 126, "commitFrame": 144, "endFrame": 162, "annotationUncertaintyFrames": 0, "source": "timeline state commit"}
+  ],
+  "speechWindowsFrames": [{"start": 6, "end": 69}, {"start": 168, "end": 224}],
+  "readWindowsFrames": [{"start": 162, "end": 230, "label": "Read the final load value"}],
+  "cues": [
+    {
+      "id": "seat-contact",
+      "eventId": "assembly-seat",
+      "eventAnchor": "contactFrame",
+      "role": "designed-contact",
+      "assetId": "replace-with-licensed-or-original-contact",
+      "assetSyncSeconds": 0.012,
+      "offsetMs": 0,
+      "gainDb": -18,
+      "pan": 0,
+      "priority": "primary-action",
+      "tailPolicy": "Keep a smooth decay; shorten if it overlaps the next key phrase",
+      "reason": "Make the coupling's single seated contact legible",
+      "enabled": true
+    },
+    {
+      "id": "result-confirm",
+      "eventId": "result-commit",
+      "eventAnchor": "commitFrame",
+      "role": "designed-information",
+      "assetId": "replace-with-original-short-confirmation",
+      "assetSyncSeconds": 0.01,
+      "offsetMs": 0,
+      "gainDb": -24,
+      "pan": 0,
+      "priority": "secondary",
+      "tailPolicy": "End before reading window",
+      "reason": "One confirmation when the result becomes stable; omit if music already marks it",
+      "enabled": false
+    }
+  ],
+  "assets": [
+    {"id": "replace-with-licensed-or-original-contact", "status": "unassigned", "path": null, "sha256": null, "author": null, "sourceUrl": null, "license": null, "modifications": []},
+    {"id": "replace-with-original-short-confirmation", "status": "unassigned", "path": null, "sha256": null, "author": null, "sourceUrl": null, "license": null, "modifications": []}
+  ],
+  "review": {"visualAnchorVerified": false, "speechIntelligibilityListened": false, "musicCompatibilityListened": false, "monoChecked": false, "finalEncodeChecked": false},
+  "notes": "All numbers are editable teaching values. Unassigned assets must be supplied before rendering. Do not turn illustrative gains or timing into universal thresholds."
+}

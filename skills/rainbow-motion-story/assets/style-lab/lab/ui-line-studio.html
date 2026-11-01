@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>线与界面 · 动效研究室</title><link rel="stylesheet" href="./ui-line-studio.css"><link rel="stylesheet" href="./document-reader.css"></head>
+<body>
+<header><a class="brand" href="./index.html"><img src="./brand.png" alt="rainbow鱼">镜头与节奏 <span>/ 线与界面</span></a><a href="../guides/integrated-direction.md">回到整片导演流程 ↗</a></header>
+<main>
+<section class="intro"><div><p class="eyebrow">MOTION STUDIES · 10 / 11</p><h1>让线条成为结构，<br>让界面接住动作。</h1></div><p>四个原创短段，把选中、移动、拆开与装回变成可追踪的过程。<br>选择一个方法，停在任意一帧，看它怎样工作。</p></section>
+<div class="workspace">
+<aside><div class="eyebrow">选择一种表达</div><div id="candidates" class="candidates"></div><div class="note"><span class="dot"></span>原创方法试作 · 静音<br>绝对时间采样，可逐帧检查与倒序定位。</div></aside>
+<section class="preview" aria-label="原创方法预览"><div class="stage-head"><div><span id="family" class="eyebrow"></span><h2 id="title">正在载入</h2></div><span class="badge">可复用代码</span></div><div class="frame"><canvas id="stage" width="1600" height="900" aria-label="所选原创动效画面"></canvas></div><div class="transport"><button id="play" aria-label="播放">播放</button><button id="prev" aria-label="上一帧">‹</button><button id="next" aria-label="下一帧">›</button><button id="restart" aria-label="回到开头">↺</button><input id="time" aria-label="预览时间" type="range" min="0" max="14" step="0.033333333333" value="0"><output id="timecode">0.00 / 14.00</output><label><span class="sr-only">播放速度</span><select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option></select></label></div><div class="status"><span id="phase"></span><span id="hold"></span></div><div id="stops" class="stops" aria-label="动作阶段"></div></section>
+</div>
+<section class="details"><article><p class="eyebrow">观察任务</p><h3 id="question"></h3><p id="description"></p><div class="actions"><button id="brief">导出选用说明 JSON</button><button id="png">保存这一帧 PNG</button><a id="api" href="#">代码与 API ↗</a></div></article><article><p class="eyebrow">从参考到自己的作品</p><p id="transfer"></p><p id="sourceNote" class="muted"></p><div class="links"><a id="guide" href="#">方法指南 ↗</a><a id="study" href="#">逐段研究与来源 ↗</a></div></article></section>
+<details class="technical"><summary>这一帧的状态与实现范围</summary><p id="limits"></p><pre id="state"></pre></details>
+<p id="message" role="status" aria-live="polite"></p>
+</main><footer>使用形状、线条与事件的原创重建；参考作者的品牌、角色、音乐与原视频不进入这些样例。</footer><script type="module" src="./ui-line-studio.js"></script><script type="module" src="./document-reader.js"></script>
+</body></html>

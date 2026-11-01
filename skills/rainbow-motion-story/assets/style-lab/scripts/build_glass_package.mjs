@@ -1,0 +1,11 @@
+import path from 'node:path';
+import fs from 'node:fs';
+import {createRequire} from 'node:module';
+const root=path.resolve(import.meta.dirname,'..');
+const shared=process.env.MOTION_SHARED_NODE||'D:/projects/manim_extend_rainbow/video_project/shared/node';
+const threeRoot=path.join(shared,'268dce538bf2/node_modules/three');
+const buildRoot=path.join(shared,'c711f0f95a19/node_modules/esbuild');
+const require=createRequire(import.meta.url),esbuild=require(buildRoot);
+await esbuild.build({entryPoints:[path.join(root,'lab/modules/glass-package-renderer.js')],outfile:path.join(root,'lab/glass-package.bundle.js'),bundle:true,minify:true,format:'esm',platform:'browser',target:'es2022',sourcemap:false,legalComments:'linked',plugins:[{name:'shared-three',setup(b){b.onResolve({filter:/^three(?:\/|$)/},args=>({path:args.path==='three'?path.join(threeRoot,'build/three.module.js'):path.join(threeRoot,args.path.replace('three/addons/','examples/jsm/'))}));}}]});
+const dest=path.join(root,'examples/glass-package');fs.mkdirSync(dest,{recursive:true});fs.copyFileSync(path.join(threeRoot,'LICENSE'),path.join(dest,'THREE-LICENSE.txt'));
+console.log(JSON.stringify({bundle:'lab/glass-package.bundle.js',bytes:fs.statSync(path.join(root,'lab/glass-package.bundle.js')).size,threeVersion:JSON.parse(fs.readFileSync(path.join(threeRoot,'package.json'))).version,dependenciesCopied:false}));

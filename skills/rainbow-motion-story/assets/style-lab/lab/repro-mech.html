@@ -1,0 +1,1308 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<title>repro-mech · 机械解剖式运动复现</title>
+<style>
+  html,body{margin:0;height:100%;background:#0a0a0b;color:#e6e6e3;
+    font:13px/1.45 ui-sans-serif,system-ui,"Segoe UI","Microsoft YaHei",sans-serif;overflow:hidden}
+  #wrap{display:flex;flex-direction:column;height:100%}
+  #stage{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;padding:12px 12px 8px;box-sizing:border-box}
+  canvas{height:100%;width:auto;max-width:100%;display:block;box-shadow:0 0 0 1px #24242a,0 8px 40px rgba(0,0,0,.6)}
+  #ui{flex:0 0 auto;display:flex;gap:10px;align-items:center;padding:8px 14px 10px;
+    background:#111113;border-top:1px solid #24242a;flex-wrap:wrap}
+  button{background:#1e1e23;color:#e6e6e3;border:1px solid #34343d;border-radius:5px;
+    padding:5px 13px;font:inherit;cursor:pointer}
+  button:hover{background:#2a2a31}
+  button.on{background:#daff22;color:#141317;border-color:#daff22;font-weight:600}
+  #seek{flex:1 1 320px;min-width:200px;accent-color:#daff22;height:4px}
+  #tc{font-variant-numeric:tabular-nums;font-family:ui-monospace,Consolas,monospace;color:#9a9aa2;min-width:112px}
+  label{color:#9a9aa2;display:flex;gap:6px;align-items:center;cursor:pointer;user-select:none}
+  #hint{color:#5c5c66}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="stage"><canvas id="c" width="1080" height="1440"></canvas></div>
+  <div id="ui">
+    <button id="play">▶ 播放</button>
+    <input id="seek" type="range" min="0" max="61067" step="1" value="0"/>
+    <span id="tc">00.000 / 61.067</span>
+    <label><input id="hud" type="checkbox"/> HUD</label>
+    <span id="hint">?t=19.90 定格 · 空格播放/暂停 · ←→ 逐帧</span>
+  </div>
+</div>
+<script>
+(() => {
+'use strict';
+
+/* ============================================================
+   repro-mech — 复现「Anatomy 交互机械科普」的运动组织
+   参数全部来自 studies/anatomy-mechanics.md 的 findings/params
+   画面与声音均为程序化生成，不含原片任何素材/音轨/商标
+   ============================================================ */
+
+const W = 1080, H = 1440;          // 3:4 画幅（§5 版式）
+const TOTAL = 61.067;              // 全片 61.067s（§3 onset 统计窗）
+
+const COL = {
+  dark:'#131216', dark2:'#1b1a20', dark3:'#24242c',
+  paper:'#f5f5f6', ink:'#141317',
+  hl:'#daff22',                     // §5 高亮字色 HSV 中位 #daff22
+  dim:'#8d8d95'
+};
+
+/* ---------- 小工具 ---------- */
+const clamp=(x,a,b)=>x<a?a:x>b?b:x;
+const lerp=(a,b,t)=>a+(b-a)*t;
+const smoothstep=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
+const easeOut=(x)=>1-Math.pow(1-clamp(x,0,1),3);
+const pad2=n=>String(n).padStart(2,'0');
+const fmt=(s)=>{const m=Math.floor(s/60);const r=s-m*60;return pad2(m)+':'+r.toFixed(3).padStart(6,'0');};
+
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
+  t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};}
+
+/* ---------- 单调三次插值（PCHIP）：用于推进倍率曲线 ---------- */
+function pchip(xs,ys){
+  const n=xs.length, h=[], d=[];
+  for(let i=0;i<n-1;i++){h[i]=xs[i+1]-xs[i];d[i]=(ys[i+1]-ys[i])/h[i];}
+  const m=new Array(n);
+  m[0]=d[0]; m[n-1]=d[n-2];
+  for(let i=1;i<n-1;i++){
+    if(d[i-1]*d[i]<=0) m[i]=0;
+    else{const w1=2*h[i]+h[i-1], w2=h[i]+2*h[i-1]; m[i]=(w1+w2)/(w1/d[i-1]+w2/d[i]);}
+  }
+  return function(x){
+    if(x<=xs[0])return ys[0];
+    if(x>=xs[n-1])return ys[n-1];
+    let i=0; while(i<n-2 && x>xs[i+1]) i++;
+    const t=(x-xs[i])/h[i], t2=t*t, t3=t2*t;
+    return (2*t3-3*t2+1)*ys[i]+(t3-2*t2+t)*h[i]*m[i]
+          +(-2*t3+3*t2)*ys[i+1]+(t3-t2)*h[i]*m[i+1];
+  };
+}
+
+/* ============================================================
+   1. 声床与 onset 事件（§3）
+   onsets 372 个 / 61.09s → 6.09 onset/s，5s 分箱 27–34 方差极小
+   相邻间隔众数 0.14(87)/0.12(84)/0.19(49)/0.16(41)/0.09(27)
+   补第 6 档 0.2446(84)：由「总数 372、总长 61.09s、前五档 288 个」
+   算术推出，使均值回到 0.164s ≈ 6.09/s
+   tonal 279 / noise 93 → 噪声占 25%
+   ============================================================ */
+const IOD_MODES=[[0.14,87],[0.12,84],[0.19,49],[0.16,41],[0.09,27],[0.2446,84]];
+const IOD_W=IOD_MODES.reduce((s,m)=>s+m[1],0);
+const rnd=mulberry32(0xA17E3);
+function sampleIOD(){let u=rnd()*IOD_W;for(const m of IOD_MODES){if((u-=m[1])<=0)return m[0];}return 0.164;}
+
+const ONSETS=[];
+(function buildOnsets(){
+  // 目标 372 个 / 61.067s = 6.09 onset/s（§3：372 onset / 61.09s）
+  const N=372;
+  const raw=[];
+  let acc=0;
+  for(let i=0;i<N;i++){ const g=sampleIOD()*(0.99+0.02*rnd()); raw.push(g); acc+=g; }
+  // 只做一次整体微缩放，让 372 个事件刚好铺满 0.021→61.046，分布形状不动
+  const k=(TOTAL-0.042)/acc;
+  let t=0.021;
+  for(let i=0;i<N;i++){
+    ONSETS.push({t:t, s:0, noise:rnd()<0.25});
+    t += raw[i]*k;
+  }
+})();
+
+/* 强度：基线 1..7；重音按 §3 给出的最强几处钉死 */
+(function assignStrength(){
+  const r=mulberry32(0x51D2);
+  for(const o of ONSETS) o.s=1+6*r();
+  const pinned=[[1.760,17.51],[14.740,15.27],[18.970,15.79]];
+  for(const [tt,str] of pinned){
+    let best=0,bd=1e9;
+    for(let i=0;i<ONSETS.length;i++){const d=Math.abs(ONSETS[i].t-tt);if(d<bd){bd=d;best=i;}}
+    ONSETS[best].s=str;
+  }
+})();
+
+/* 把指定时刻钉成 onset：只平移最近的 onset，不新增，保持 372 个总数 */
+function pinOnset(time, strength){
+  let bi=0,bd=1e9;
+  for(let i=0;i<ONSETS.length;i++){const d=Math.abs(ONSETS[i].t-time);if(d<bd){bd=d;bi=i;}}
+  ONSETS[bi].t=time;
+  if(strength!=null) ONSETS[bi].s=strength;
+  ONSETS.sort((a,b)=>a.t-b.t);
+}
+[[1.760,17.51],[14.740,15.27],[18.970,15.79],[44.559,12.30],[57.307,7.06]].forEach(([t,s])=>pinOnset(t,s));
+/* 吸附目标：§2 实测的 7 个检测切点 → 各自最近 onset 的时刻 */
+[13.444,17.299,34.551,38.684,44.559,48.298,57.307].forEach(t=>pinOnset(t,null));
+
+/* ============================================================
+   2. 切点吸附到最近 onset（§2）
+   123 BPM 拍长 0.4878s / 小节 1.951s —— 只用于选床音乐，不对位
+   7 个检测切点相位 0.333/0.602/0.862/0.198/0.293/0.083/0.465 全散布
+   到最近 onset 中位 |Δ| 0.035s，最差 0.111s，容差 ±110ms
+   ============================================================ */
+/* 11 镜边界：§1 补检后的实测切点（直取，不反推） */
+const BOUNDS=[0, 13.333, 17.367, 23.300, 30.000, 34.567, 38.633,
+              44.533, 48.333, 53.167, 57.300, TOTAL];
+
+/* 切点吸附：记录每个切点到最近 onset 的偏差（§2 实测 7 个）
+   相位按 123 BPM 拍长 0.4878s 计，用来证明切点不跟拍网格 */
+const CUT_PHASE=[0.333,0.602,0.862,0.198,0.293,0.083,0.465];
+const CUT_DELTA=[0.111,-0.068,-0.016,0.051,0.026,-0.035,0.007];
+const CUT_NOMINAL7=[13.333,17.367,23.300,30.000,34.567,38.633,44.533];
+
+function nearestOnset(t){
+  let bi=0,bd=1e9;
+  for(let i=0;i<ONSETS.length;i++){const d=Math.abs(ONSETS[i].t-t);if(d<bd){bd=d;bi=i;}}
+  return {i:bi, t:ONSETS[bi].t, d:ONSETS[bi].t-t};
+}
+
+const BPM=123, BEAT=60/BPM, BAR=BEAT*4;
+
+const CUTS=CUT_NOMINAL7.map((t,i)=>({
+  nominal:t,
+  t:t+CUT_DELTA[i],             // 吸附后的时刻 = 切点 + 实测偏差
+  d:CUT_DELTA[i],
+  phase:CUT_PHASE[i],
+  strength: (i===4||i===6) ? [12.30,7.06][i===4?0:1] : null
+}));
+
+/* ============================================================
+   3. 运动参数
+   ============================================================ */
+
+/* §4(a) 推进：19.60–21.00，1.00→2.16×，每 0.1s 增量表 */
+const PUSH_INC=[0.02,0.04,0.06,0.10,0.16,0.16,0.14,0.12,0.10,0.08,0.08,0.04,0.04,0.02];
+const PUSH_XS=[19.60], PUSH_YS=[1.00];
+(function(){let acc=1.00;
+  PUSH_INC.forEach((v,i)=>{acc+=v;PUSH_XS.push(19.70+i*0.1);PUSH_YS.push(acc);});
+})();
+const pushCurve=pchip(PUSH_XS,PUSH_YS);
+const PUSH_T0=PUSH_XS[0], PUSH_T1=PUSH_XS[PUSH_XS.length-1];  // 19.60 .. 21.00
+const pushScale=(t)=>pushCurve(t);
+
+/* 按下：与推进同窗（峰 20.133，§4(a) pix_diff 3.68@20.133） */
+const travelCurve=pchip(
+  [19.900,20.020,20.133,20.600,21.050,23.300],
+  [0.00  ,0.62  ,1.00  ,1.00  ,0.06  ,0.00]
+);
+const travel=(t)=>clamp(travelCurve(t),0,1);
+const CONTACT_T=20.133;
+
+/* §4(b) 读数斜坡：带偏移幂律 24.09·(t−31.57+0.79)^2.422 */
+const RAMP={A:24.09, p:2.422, t0:31.567, c:0.79, t1:33.500};
+const rampBase=(t)=>{
+  if(t<RAMP.t0) return 0;
+  const x=Math.max(0,t-RAMP.t0+RAMP.c);
+  return RAMP.A*Math.pow(x,RAMP.p);
+};
+/* 尖刺是「速率」尖刺：33.267–33.367 内额外叠加 390 单位/s，
+   叠在基础 ~230/s 上 → 峰 617–650 单位/s（§4(b)）。
+   积分后只多推 ~24.8 个单位，所以读数是被「踢一下」而不是跳变。 */
+const SPIKE={t0:33.267, t1:33.367, extra:390};
+const spikeAdd=(t)=>{
+  if(t<=SPIKE.t0) return 0;
+  const D=SPIKE.t1-SPIKE.t0;
+  const u=Math.min(1,(t-SPIKE.t0)/D);
+  return SPIKE.extra*D*(1-Math.cos(Math.PI*u))/Math.PI;
+};
+const spikeRate=(t)=>{
+  if(t<SPIKE.t0||t>SPIKE.t1) return 0;
+  return SPIKE.extra*Math.sin(Math.PI*(t-SPIKE.t0)/(SPIKE.t1-SPIKE.t0));
+};
+const readout=(t)=>{
+  if(t<RAMP.t0) return 0;
+  if(t<RAMP.t1) return rampBase(t)+spikeAdd(t);
+  const v1=rampBase(RAMP.t1)+spikeAdd(RAMP.t1);   // 尖刺顶 ≈297
+  return Math.max(157, v1*Math.pow(0.745,(t-RAMP.t1)/0.1));  // 297→157 收尾
+};
+
+/* §4(c) 滚动：逐帧速度直取实测表（45.367 起，60fps）
+   10.26 / 10.37 / 10.04 / 10.56 / 9.69 / 7.83 / 7.10 / 6.07 / 5.98 / 4.72
+   4.36 / 3.58 / 2.86 / 2.46 / 2.18 / 1.69 / 1.16 / 1.13 / 1.13 / 1.04 / 0.54
+   0.350s 合计 104.75px；之后按末帧 0.8631/帧 继续衰减 */
+const SCROLL_SEQ=[10.26,10.37,10.04,10.56,9.69,7.83,7.10,6.07,5.98,4.72,
+                  4.36,3.58,2.86,2.46,2.18,1.69,1.16,1.13,1.13,1.04,0.54];
+const SCROLL={t0:45.367-1/60, fps:60, decay:0.8631};
+const SCROLL_PREF=(function(){
+  const out=[0]; let acc=0;
+  for(const v of SCROLL_SEQ){ acc+=v; out.push(acc); }
+  return out;   // SCROLL_PREF[n] = 走完 n 帧的累计位移
+})();
+const scrollOffset=(t)=>{
+  const u=t-SCROLL.t0;
+  if(u<=0) return 0;
+  const f=u*SCROLL.fps;
+  const n=Math.floor(f);
+  if(n<SCROLL_SEQ.length){
+    const a=SCROLL_PREF[n], b=SCROLL_PREF[n+1];
+    return lerp(a,b,f-n);
+  }
+  const rest=f-SCROLL_SEQ.length;
+  const tail=SCROLL_SEQ[SCROLL_SEQ.length-1]*(1-Math.pow(SCROLL.decay,rest))/(1-SCROLL.decay);
+  return SCROLL_PREF[SCROLL_SEQ.length]+tail;
+};
+
+/* 字幕字体：只用本机确定存在的族，避免 measureText 与实际字形不同宽 */
+const SUB_FONT='700 48px "Microsoft YaHei","Segoe UI",sans-serif';
+
+/* 逐字高亮步长 166–200ms（§5） */
+const HL_STEP=0.183;
+
+/* ============================================================
+   4. 画布基础
+   ============================================================ */
+const canvas=document.getElementById('c');
+const ctx=canvas.getContext('2d',{alpha:false});
+
+/* 版式常量：量自原片 13.000 / 27.000 / 36.000 / 45.700 四帧
+   外框 x 48–1030、y 48–1346；标题块 y 48–324；内容卡 x 72–1008、y 342–1097 */
+const CARD={x0:72,x1:1008,y0:342,y1:1097};
+const TITLE={tabY:48,tabX:[48,166],l1:150,l2:215,sub1:280,sub2:324};
+
+function bgDark(c){
+  const g=c.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#191820'); g.addColorStop(0.55,COL.dark); g.addColorStop(1,'#0e0d11');
+  c.fillStyle=g; c.fillRect(0,0,W,H);
+  // 细网格：结构图的底
+  c.save(); c.globalAlpha=0.055; c.strokeStyle='#8f8fa0'; c.lineWidth=1;
+  for(let x=40;x<W;x+=60){c.beginPath();c.moveTo(x,0);c.lineTo(x,1100);c.stroke();}
+  for(let y=40;y<1100;y+=60){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke();}
+  c.restore();
+}
+
+/* 内容卡：原片每镜都把一个"内容面"钉在 x72–1008 / y342–1097。
+   纸白卡（浅底）或暗卡（暗底镜），由内容面自身决定，不翻整页底色。 */
+function contentCard(c,{dark=false,box=null}={}){
+  const B=box||CARD;
+  c.save();
+  c.fillStyle = dark ? 'rgba(24,23,30,0.96)' : 'rgba(245,245,246,1)';
+  c.fillRect(B.x0,B.y0,B.x1-B.x0,B.y1-B.y0);
+  c.strokeStyle = dark ? 'rgba(20,19,23,0.12)' : 'rgba(20,19,23,0.22)';
+  c.lineWidth=2; c.strokeRect(B.x0,B.y0,B.x1-B.x0,B.y1-B.y0);
+  // 卡顶左侧那截黄短线（原片 13.000 / 36.000 均在卡的左上角）
+  c.fillStyle=COL.hl; c.fillRect(B.x0+2,B.y0-4,118,6);
+  c.restore();
+}
+
+/* 卡片坐标系：原片内容面是 936x755 的框，这里把旧的整幅坐标压进卡内。
+   旧 (x,y) → 卡内 (x, 342 + (y-110)*0.7556)，行高按 0.7556 同比缩 */
+const CY0=110, CYK=(CARD.y1-CARD.y0)/(1100-110);
+const cy=(y)=>CARD.y0+(y-CY0)*CYK;
+const CX0=540, CYA=342, CYB=1097, CY_IN0=210, CY_IN1=1010;
+const CY_K=(CYB-CYA)/(CY_IN1-CY_IN0);
+const CY_T=CYA-CY_IN0*CY_K;
+
+/* 把后面每一镜的内容层压进卡里：bgDark/bgPaper + chrome 仍在整幅坐标画，
+   之后调用 cardTransform，镜内 y 由 y→CY_T+y*CY_K 收进 342–1097，x 不动。 */
+function cardTransform(c,mag=1,box=null){
+  const B=box||CARD;
+  const K=(B.y1-B.y0)/(CY_IN1-CY_IN0), T=B.y0-CY_IN0*K;
+  c.save();
+  c.translate(0,T); c.scale(1,K);
+  if(mag!==1){ c.translate(540,760); c.scale(mag,mag); c.translate(-540,-760); }
+}
+function cardRestore(c){ c.restore(); }
+function bgPaper(c){
+  // 原片没有"整页纸白"的镜：纸白只出现在内容卡里（§5 复核，shot1/3/5/6/8/9/10 均为
+  // 暗底 + 纸白卡）。这里保留函数名，画法与 bgDark 同，底色由 chrome() 的卡决定。
+  bgDark(c);
+}
+
+function mono(c,txt,x,y){ c.font='400 24px ui-monospace,Consolas,monospace'; c.fillText(txt,x,y); }
+
+/* 画框 + 固定标题块
+   原片实测：外框线 L≈0.36（#5c5b62 于 #0b0a0f 底）x48/y48 起，宽 982、高 1298；
+   标题两行 56/59px 高（字号约 84px），副题两行 32px（字号 46px）；
+   左上角黄短线 48–166 × 6px；标题块 y48–324 全片不变。 */
+function chrome(c,t,dark){
+  const ink = dark ? 'rgba(240,240,238,0.92)' : 'rgba(20,19,23,0.92)';
+  const ink2= dark ? 'rgba(240,240,238,0.55)' : 'rgba(20,19,23,0.55)';
+  c.save();
+  // 外框（原片 2px 线，贴 y48–1346）
+  c.strokeStyle = dark ? 'rgba(238,238,240,0.36)' : 'rgba(20,19,23,0.30)';
+  c.lineWidth=2; c.strokeRect(48,48,W-96,1298);
+  // 左上角黄短线
+  c.fillStyle=COL.hl; c.fillRect(TITLE.tabX[0],TITLE.tabY,TITLE.tabX[1]-TITLE.tabX[0],6);
+  // 两行主标题：第一行普通白，第二行整行高亮（原片即此结构）
+  c.textAlign='left'; c.textBaseline='alphabetic';
+  c.font='800 72px ui-sans-serif,system-ui,"Segoe UI Semibold","Microsoft YaHei",sans-serif';
+  c.fillStyle=ink;  c.fillText('机械轴体解剖',76,146);
+  c.fillStyle=COL.hl; c.fillText('让原理图动起来',76,220);
+  // 两行副题
+  c.font='400 34px ui-sans-serif,system-ui,"Microsoft YaHei",sans-serif';
+  c.fillStyle=ink2; c.fillText('从轴体剖面到读数曲线',76,276);
+  c.fillText('做成自己的讲解素材',76,318);
+  // 右上角：镜号，替代原片的位置标
+  c.textAlign='right';
+  c.font='600 22px ui-monospace,Consolas,monospace';
+  c.fillStyle=ink2; c.fillText('SECTION '+pad2(shotIndex(t)+1)+' · 11',W-76,TITLE.tabY+16);
+  c.textAlign='left';
+  c.restore();
+}
+
+/* chrome 收尾：把内容卡和卡内坐标系开出来（与 closeFrame 成对） */
+function openFrame(c,dark,mag=1,box=null){
+  contentCard(c,{dark,box});
+  const B=box||CARD;
+  if(dark){ c.save(); c.fillStyle='#17161b';
+    c.fillRect(B.x0+2,B.y0+2,B.x1-B.x0-4,B.y1-B.y0-4); c.restore(); }
+  c.save();
+  c.beginPath(); c.rect(B.x0+2,B.y0+2,B.x1-B.x0-4,B.y1-B.y0-4); c.clip();
+  cardTransform(c,mag,B);
+}
+function closeFrame(c){ c.restore(); c.restore(); }
+
+/* ============================================================
+   5. 轴体元件（全部程序化，仰视剖面）
+   ============================================================ */
+function spring(c,x0,y0,y1,wob,n,pal){
+  c.save(); c.strokeStyle=pal.spring; c.lineWidth=3.2; c.lineJoin='round';
+  c.beginPath();
+  const n2=n*2;
+  for(let i=0;i<=n2;i++){
+    const u=i/n2;
+    const y=lerp(y1,y0,u);
+    const x=x0+((i%2)?wob:-wob);
+    i?c.lineTo(x,y):c.moveTo(x,y);
+  }
+  c.stroke(); c.restore();
+}
+
+function drawAssembly(c,pal,o){
+  const travel = o.travel||0;
+  const ex     = o.explode||0;
+  const camY   = o.camY||0;
+
+  const springK  = 1 - travel*0.55;
+  const sTop     = 98 - 94*springK;
+  const stemBot  = sTop;
+  const stemTop  = stemBot - 92 - ex*70;
+  const keyBot   = stemTop;
+  const keyTop   = keyBot - 78 - ex*56;
+
+  c.save();
+  c.translate(0,camY);
+
+  /* --- 安装板 --- */
+  c.fillStyle=pal.plate; c.fillRect(-260,0,520,30);
+  c.fillStyle=pal.plateEdge; c.fillRect(-260,0,520,5);
+  c.fillStyle=pal.bg; c.fillRect(-96,-2,192,34);      // 开孔
+
+  /* --- 底座（板下） --- */
+  c.fillStyle=pal.body;   c.fillRect(-88,14,176,92);
+  c.fillStyle=pal.bodyTop;c.fillRect(-88,14,176,8);
+  c.strokeStyle=pal.line; c.lineWidth=2; c.strokeRect(-88,14,176,92);
+  // 底座内部竖筋
+  c.save(); c.globalAlpha=0.5; c.strokeStyle=pal.line; c.lineWidth=1.5;
+  c.beginPath(); c.moveTo(-52,22); c.lineTo(-52,104); c.moveTo(52,22); c.lineTo(52,104); c.stroke();
+  c.restore();
+
+  /* --- 触点簧片（travel>0.45 闭合） --- */
+  const close=smoothstep(0.45,0.88,travel);
+  const gold=pal.gold;
+  c.save();
+  c.strokeStyle=pal.spring; c.lineWidth=7; c.lineCap='round';
+  // 左片
+  c.beginPath(); c.moveTo(-74,100); c.lineTo(-30,100-close*44); c.stroke();
+  // 右片
+  c.beginPath(); c.moveTo(74,100); c.lineTo(30,100-close*44); c.stroke();
+  c.fillStyle=gold;
+  c.beginPath(); c.arc(-30,100-close*44,8,0,7); c.fill();
+  c.beginPath(); c.arc(30,100-close*44,8,0,7); c.fill();
+  c.restore();
+
+  /* --- 弹簧 --- */
+  spring(c,0,98,sTop,17,7,pal);
+  if(ex>0.01){
+    c.save(); c.globalAlpha=0.35; c.strokeStyle=pal.line; c.lineWidth=1.5;
+    c.setLineDash([6,7]);
+    c.beginPath(); c.moveTo(0,10); c.lineTo(0,98); c.stroke();
+    c.restore();
+  }
+
+  /* --- 轴芯 --- */
+  c.fillStyle=pal.stem;
+  c.fillRect(-26,stemTop,52,stemBot-stemTop);
+  c.fillStyle=pal.stemDark;
+  c.fillRect(-26,stemBot-14,52,14);
+  // 十字柱头
+  c.fillStyle=pal.stem;
+  c.fillRect(-9,stemTop-30,18,34);
+  c.fillRect(-25,stemTop-16,50,15);
+
+  /* --- 键帽 --- */
+  const kw=112, kwTop=76;
+  c.beginPath();
+  c.moveTo(-kw/2,keyBot);
+  c.lineTo(kw/2,keyBot);
+  c.lineTo(kwTop/2,keyTop);
+  c.lineTo(-kwTop/2,keyTop);
+  c.closePath();
+  c.fillStyle=pal.key; c.fill();
+  c.strokeStyle=pal.line; c.lineWidth=2; c.stroke();
+  // 顶面
+  c.beginPath();
+  c.moveTo(-kwTop/2,keyTop); c.lineTo(kwTop/2,keyTop);
+  c.lineTo(kwTop/2-10,keyTop-16); c.lineTo(-kwTop/2+10,keyTop-16);
+  c.closePath();
+  c.fillStyle=pal.keyTop; c.fill();
+
+  c.restore();
+}
+
+const PAL_DARK={
+  bg:COL.dark, plate:'#26262e', plateEdge:'#3c3c48',
+  body:'#1e1e26', bodyTop:'#2b2b35', line:'#4a4a58',
+  stem:'#c9c9c1', stemDark:'#8e8e86',
+  key:'#2e2e37', keyTop:'#3d3d48',
+  spring:'#8d8d84', gold:COL.hl
+};
+/* 纸白卡里的轴体：原片是"极淡填充 + 1.5px 墨线"的工程剖面，填充不能白到看不见 */
+const PAL_PAPER={
+  bg:COL.paper, plate:'#dedede', plateEdge:'#8e8e8e',
+  body:'#e8e8e6', bodyTop:'#d4d4d2', line:'#141317',
+  stem:'#cdcdc8', stemDark:'#9d9d97',
+  key:'#e4e4e1', keyTop:'#d6d6d3',
+  spring:'#3a3a3e', gold:'#8f9c0b'
+};
+
+/* ============================================================
+   6. 各镜
+   ============================================================ */
+function label(c,txt,x,y,size,color,align){
+  c.save();
+  c.fillStyle=color; c.textAlign=align||'left';
+  c.font='600 '+(size||22)+'px ui-sans-serif,system-ui,"Microsoft YaHei",sans-serif';
+  c.fillText(txt,x,y); c.restore();
+}
+
+/* ---- S1  0–13.333  总成落地：四段局部替换撑住长镜 ---- */
+function s1(t){
+  bgDark(ctx); chrome(ctx,t,true);
+  openFrame(ctx,false,2.0,{x0:72,x1:1008,y0:342,y1:959});
+  const c=ctx;
+
+  // 四段局部位移：3.500 弹片入位 / 4.03–4.80 轴芯滑入 / 5.03–5.20 卡扣一跳 / 7.400 键帽落座
+  const a=smoothstep(3.50,3.72,t);
+  const b=smoothstep(4.03,4.80,t);
+  const cc=t>=5.03?1:0;
+  const d=easeOut(smoothstep(7.40,7.86,t));
+  // 起始状态：散件 → 逐件就位
+  const plateIn = smoothstep(0.35,1.15,t);
+  const bodyIn  = smoothstep(1.25,2.05,t);
+  const springIn= smoothstep(2.15,3.10,t);
+  const stemIn  = b;
+  const keyIn   = d;
+
+  c.save();
+  c.translate(W/2, 720);
+  c.scale(1.02,1.02);
+
+  // 板
+  c.globalAlpha=clamp(plateIn,0,1);
+  c.fillStyle=PAL_PAPER.plate; c.fillRect(-260,0,520,30);
+  c.fillStyle=PAL_PAPER.plateEdge; c.fillRect(-260,0,520,5);
+
+  // 底座（3.500 弹片入位的那一下）
+  c.globalAlpha=clamp(bodyIn,0,1);
+  c.fillStyle=PAL_PAPER.body; c.fillRect(-88,14,176,92);
+  c.strokeStyle=PAL_PAPER.line; c.lineWidth=2; c.strokeRect(-88,14,176,92);
+  // 弹片
+  c.save();
+  const clip=a;
+  c.strokeStyle=PAL_PAPER.spring; c.lineWidth=7; c.lineCap='round';
+  c.beginPath(); c.moveTo(-74,100-(1-clip)*46); c.lineTo(-30,100-(1-clip)*46); c.stroke();
+  c.beginPath(); c.moveTo(74,100-(1-clip)*46); c.lineTo(30,100-(1-clip)*46); c.stroke();
+  c.fillStyle=PAL_PAPER.gold;
+  c.beginPath(); c.arc(-30,100-(1-clip)*46,8,0,7); c.fill();
+  c.beginPath(); c.arc(30,100-(1-clip)*46,8,0,7); c.fill();
+  c.restore();
+
+  // 弹簧
+  c.globalAlpha=clamp(springIn,0,1);
+  spring(c,0,98,4,17,7,PAL_PAPER);
+
+  // 轴芯滑入（4.03–4.80）
+  if(stemIn>0){
+    c.globalAlpha=stemIn;
+    const yOff=(1-stemIn)*-120;
+    c.save(); c.translate(0,yOff);
+    c.fillStyle=PAL_PAPER.stem; c.fillRect(-26,-88,52,92);
+    c.fillRect(-9,-118,18,34); c.fillRect(-25,-104,50,15);
+    c.restore();
+  }
+
+  // 卡扣一跳（5.03–5.20，0.17s 瞬时）
+  if(cc>0){
+    c.globalAlpha=1;
+    c.fillStyle=PAL_PAPER.gold;
+    c.fillRect(-88,14,6,92); c.fillRect(82,14,6,92);
+  }
+
+  // 键帽落座（7.400，带一次回弹）
+  if(keyIn>0){
+    const settle = t>7.86 ? Math.exp(-(t-7.86)*7)*Math.sin((t-7.86)*30)*0.9 : 0;
+    const yk = (1-keyIn)*-90 + settle*10;
+    c.globalAlpha=clamp(keyIn*1.4,0,1);
+    c.save(); c.translate(0,yk);
+    const kw=112,kwTop=76,kb=-88,kt=-166;
+    c.beginPath(); c.moveTo(-kw/2,kb); c.lineTo(kw/2,kb);
+    c.lineTo(kwTop/2,kt); c.lineTo(-kwTop/2,kt); c.closePath();
+    c.fillStyle=PAL_PAPER.key; c.fill(); c.strokeStyle=PAL_PAPER.line; c.lineWidth=2; c.stroke();
+    c.beginPath(); c.moveTo(-kwTop/2,kt); c.lineTo(kwTop/2,kt);
+    c.lineTo(kwTop/2-10,kt-16); c.lineTo(-kwTop/2+10,kt-16); c.closePath();
+    c.fillStyle=PAL_PAPER.keyTop; c.fill();
+    c.restore();
+  }
+  c.restore();
+
+  // 左栏文案（静态层，不随任何缩放）
+
+  // 底部四段位移的时间轴
+  const ax=CARD.x0+40, ay=880, aw=CARD.x1-CARD.x0-80;
+  c.save();
+  c.strokeStyle='rgba(20,19,23,0.18)'; c.lineWidth=2;
+  c.beginPath(); c.moveTo(ax,ay); c.lineTo(ax+aw,ay); c.stroke();
+  const marks=[[3.500,3.72,'a'],[4.03,4.80,'b'],[5.03,5.20,'c'],[7.40,7.86,'d']];
+  marks.forEach(([m0,m1,id],i)=>{
+    const x0=ax+aw*(m0/13.333), x1=ax+aw*(m1/13.333);
+    const live = t>=m0;
+    c.fillStyle = live? COL.hl : 'rgba(20,19,23,0.22)';
+    c.fillRect(x0, ay-6, Math.max(4,x1-x0), 12);
+    label(c,id,x0-4,ay+38,20, live?'rgba(20,19,23,0.8)':'rgba(20,19,23,0.3)');
+  });
+  // 播放头
+  const px=ax+aw*clamp(t/13.333,0,1);
+  c.strokeStyle=COL.hl; c.lineWidth=2;
+  c.beginPath(); c.moveTo(px,ay-22); c.lineTo(px,ay+16); c.stroke();
+  c.restore();
+}
+
+/* ---- S2  13.333–17.367  纸白剖面线稿 ---- */
+function s2(t){
+  bgDark(ctx); chrome(ctx,t,true);
+  openFrame(ctx,false,1.9);
+  const c=ctx;
+  const k=smoothstep(13.55,15.05,t);   // 线稿生长
+
+  c.save();
+  c.translate(W/2,760); c.scale(1.05,1.05);
+  c.lineCap='round'; c.lineJoin='round';
+
+  // 用 dash 表现「画出来」
+  const segments=[
+    [-260,0,260,0],[-260,0,260,0],
+    [-260,0,-260,30],[260,0,260,30],[-260,30,260,30],
+    [-88,30,-88,122],[88,30,88,122],[-88,122,88,122],
+    [-26,-140,-26,4],[26,-140,26,4],
+    [-9,-170,-9,-140],[9,-170,9,-140],
+    [-56,-218,56,-218],[56,-218,38,-140],[38,-140,-38,-140],[-38,-140,-56,-218],
+    [-56,-218,-56,-140],[56,-218,56,-140]
+  ];
+  c.strokeStyle=COL.ink; c.lineWidth=2.6;
+  const per=2.2, shown=k*segments.length*per;
+  let acc=0;
+  for(const s of segments){
+    acc+=per;
+    if(acc>shown) break;
+    c.beginPath(); c.moveTo(s[0],s[1]); c.lineTo(s[2],s[3]); c.stroke();
+  }
+  // 弹簧（剖面用折线）
+  if(k>0.55){
+    const kk=smoothstep(0.55,1,k);
+    const pts=16;
+    c.strokeStyle=COL.ink; c.lineWidth=2.6; c.beginPath();
+    for(let i=0;i<=pts;i++){
+      const u=i/pts, y=lerp(4,98,u), x=(i%2?17:-17);
+      const yy=lerp(4,lerp(4,98,kk),u);
+      i?c.lineTo(x,yy):c.moveTo(x,yy);
+    }
+    c.stroke();
+  }
+  c.restore();
+
+  // 15.367 单帧跳变：标注块从右侧瞬时翻到左侧（无过渡）
+  const side = t>=15.367 ? -1 : 1;
+  const bx = side>0 ? (W/2+300) : (W/2-300);
+  c.save();
+  c.fillStyle=COL.ink;
+  c.fillRect(bx-(side>0?0:196), 520, 196, 2);
+  label(c,'键程 4.0 mm',bx+(side>0?4:-4),500,26,COL.ink,side>0?'left':'right');
+  c.restore();
+
+  // 尺寸线
+  if(k>0.7){
+    c.save();
+    c.strokeStyle='#b9b907'; c.lineWidth=1.6; c.setLineDash([]);
+    const x=W/2-330;
+    c.beginPath(); c.moveTo(x,760-218*1.05); c.lineTo(x,760+122*1.05); c.stroke();
+    c.beginPath(); c.moveTo(x-9,760-218*1.05); c.lineTo(x+9,760-218*1.05); c.stroke();
+    c.beginPath(); c.moveTo(x-9,760+122*1.05); c.lineTo(x+9,760+122*1.05); c.stroke();
+    c.restore();
+    label(c,'14.6',x-14,760+16,22,'#8a8a00','right');
+  }
+
+}
+
+/* ---- S3  17.367–23.300  推进 + 按下同窗 ---- */
+function s3(t){
+  bgDark(ctx); chrome(ctx,t,true);
+  openFrame(ctx,false,1.35);
+  const c=ctx;
+
+  const s=pushScale(t);
+  const tr=travel(t);
+  const FOCUS_Y=768;
+
+  // 3D 层：整体缩放
+  c.save();
+  c.translate(W/2,FOCUS_Y); c.scale(s,s); c.translate(-W/2,-FOCUS_Y);
+  c.translate(W/2,FOCUS_Y-40);
+  drawAssembly(c,PAL_PAPER,{travel:tr});
+  c.restore();
+
+  // 固定文字层：不随镜头缩放（§4(a) 只有 3D 层被缩放）
+  const CONTACT_Y = FOCUS_Y - 40 + 100 - 44;   // 触点闭合位置
+  c.save();
+  c.strokeStyle='rgba(154,168,15,0.55)'; c.lineWidth=2;
+  c.setLineDash([8,8]);
+  c.beginPath(); c.moveTo(CARD.x0+250, CONTACT_Y); c.lineTo(W/2-58, CONTACT_Y); c.stroke();
+  c.beginPath(); c.moveTo(W/2+58, CONTACT_Y); c.lineTo(CARD.x1-250, CONTACT_Y); c.stroke();
+  c.restore();
+  label(c,'触点 GOLD',CARD.x0+240,CONTACT_Y+7,22,'rgba(154,168,15,0.85)','right');
+  label(c, pushScale(t).toFixed(2)+'×', CARD.x1-240, CONTACT_Y+7, 26,'rgba(154,168,15,0.9)','left');
+
+  // 触点闪光（20.133）
+  if(t>=CONTACT_T-0.02 && t<=CONTACT_T+0.34){
+    const u=clamp((t-CONTACT_T)/0.34,0,1);
+    const rr=18+u*150;
+    c.save();
+    c.globalAlpha=(1-u)*0.9;
+    c.strokeStyle=COL.hl; c.lineWidth=3*(1-u)+1;
+    c.beginPath(); c.arc(W/2, CONTACT_Y, rr,0,7); c.stroke();
+    c.restore();
+  }
+}
+
+/* ---- S4  23.300–30.000  拆解视图（6.70s，靠 26.87–27.53 光位调整续命） ---- */
+function s4(t){
+  bgDark(ctx); chrome(ctx,t,true);
+  openFrame(ctx,true,1.55);  // 拆解视图：放大 1.55，卡高仍装得下四个引出标注
+  const c=ctx;
+  const ex=smoothstep(23.55,25.20,t);
+  const sweep=smoothstep(26.87,27.53,t);
+  const sweepX=lerp(-320,320,sweep);
+
+  // 轴体（卡内坐标）：板面 y856，键帽顶 y655
+  c.save(); c.translate(W/2,742); c.scale(0.96,0.96);
+  drawAssembly(c,PAL_DARK,{explode:ex});
+  // 光位扫过（26.87–27.53，原片唯一一次二次运动）
+  if(sweep>0&&sweep<1){
+    const g=c.createLinearGradient(sweepX-140,-360,sweepX+140,300);
+    g.addColorStop(0,'rgba(255,255,255,0)');
+    g.addColorStop(0.5,'rgba(255,255,255,0.14)');
+    g.addColorStop(1,'rgba(255,255,255,0)');
+    c.save(); c.globalCompositeOperation='lighter';
+    c.fillStyle=g; c.fillRect(-W/2,-742,W,1000); c.restore();
+  }
+  c.restore();
+
+
+}
+
+
+/* ---- S5  30.000–34.567  读数斜坡（幂律 p≈2.4 + 2.2× 尖刺） ---- */
+function s5(t){
+  bgDark(ctx); chrome(ctx,t,true);
+  openFrame(ctx,false,1.0);
+  const c=ctx;
+
+  const v=readout(t);
+  const digits=String(Math.round(v));
+
+  // 左侧：把 30.000–34.567 的取值曲线画出来
+  const gx=100, gy=520, gw=520, gh=340;
+  c.save();
+  c.strokeStyle='rgba(20,19,23,0.16)'; c.lineWidth=1.5;
+  c.beginPath(); c.moveTo(gx,gy+gh); c.lineTo(gx+gw,gy+gh); c.moveTo(gx,gy); c.lineTo(gx,gy+gh); c.stroke();
+  c.globalAlpha=0.55; c.strokeStyle=COL.hl; c.lineWidth=2.6; c.beginPath();
+  let started=false;
+  for(let x=0;x<=gw;x+=2){
+    const tt=lerp(30.0,34.567,x/gw);
+    if(tt>t) break;
+    const yv=Math.min(readout(tt),700);
+    const px=gx+x, py=gy+gh-(yv/700)*gh;
+    started?c.lineTo(px,py):(c.moveTo(px,py),started=true);
+  }
+  c.stroke();
+  c.restore();
+
+  // 右侧：大数字
+  const numY=380;
+  c.save();
+  c.fillStyle=COL.hl;
+  c.font='700 168px ui-sans-serif,system-ui,"Segoe UI",sans-serif';
+  c.textAlign='right';
+  c.fillText(digits, W-96, numY);
+  c.font='600 24px ui-monospace,Consolas,monospace';
+  c.fillStyle='rgba(20,19,23,0.4)';
+  c.fillText('gf', W-96, numY+44);
+  c.restore();
+
+  // 竖直柱
+  const barX=W-96-40, barTop=470, barBot=940;
+  c.save();
+  c.strokeStyle='rgba(20,19,23,0.18)'; c.lineWidth=2;
+  c.beginPath(); c.moveTo(barX,barTop); c.lineTo(barX,barBot); c.stroke();
+  const frac=clamp(v/700,0,1);
+  c.fillStyle=COL.hl;
+  c.fillRect(barX-12, barBot-(barBot-barTop)*frac, 24, (barBot-barTop)*frac);
+  c.restore();
+
+  // 面板边缘密度随读数上升（读数变化的视觉副作用）
+  const n=8+Math.floor(v/12);
+  c.save(); c.strokeStyle='rgba(154,168,15,0.35)'; c.lineWidth=1.5;
+  for(let i=0;i<n;i++){
+    const y=barTop+i*((barBot-barTop)/Math.max(n-1,1));
+    c.beginPath(); c.moveTo(barX+34,y); c.lineTo(barX+34+14,y); c.stroke();
+  }
+  c.restore();
+
+}
+
+/* ---- S6  34.567–38.633  材质面 ---- */
+function s6(t){
+  bgDark(ctx); chrome(ctx,t,true);
+  openFrame(ctx,false,1.0);
+  const c=ctx;
+  const k=smoothstep(34.8,35.6,t);
+  const ang=lerp(-0.7,0.7,smoothstep(35.9,38.2,t));
+
+  const panels=[[150,'哑光 PC',0.02],[560,'磨砂 阳极铝',0.28]];
+  panels.forEach(([x,name,rough])=>{
+    c.save();
+    c.translate(x+180,360);
+    c.beginPath(); c.rect(-180,0,360,420); c.clip();
+    const g=c.createLinearGradient(Math.cos(ang)*220-220,0,Math.cos(ang)*220+220,0);
+    g.addColorStop(0,'#cfcfcb');
+    g.addColorStop(0.5,'#f6f6f4');
+    g.addColorStop(1,'#b6b6b2');
+    c.fillStyle=g; c.fillRect(-180,0,360,420);
+    // 颗粒
+    c.globalAlpha=rough;
+    const r2=mulberry32(x);
+    c.fillStyle='#141317';
+    for(let i=0;i<900;i++){
+      const px=(r2()-0.5)*360, py=r2()*420;
+      c.fillRect(px,py,1.4,1.4);
+    }
+    c.restore();
+    c.save();
+    c.strokeStyle='rgba(20,19,23,0.35)'; c.lineWidth=1.5;
+    c.strokeRect(x,360,360,420);
+    c.restore();
+    label(c,name,x,830,24,'rgba(20,19,23,0.75)');
+  });
+
+  c.save();
+  c.globalAlpha=k;
+  c.strokeStyle='#9aa80f'; c.lineWidth=2;
+  c.beginPath(); c.moveTo(540,330); c.lineTo(540,850); c.stroke();
+  c.restore();
+
+}
+
+/* ---- S7  38.633–44.533  并列对比（41.900 单帧跳变） ---- */
+function s7(t){
+  bgDark(ctx); chrome(ctx,t,true);
+  openFrame(ctx,true,1.35);
+  const c=ctx;
+  const flip = t>=41.900;                 // 单帧大跳，无过渡
+  const focus = flip?1:0;
+
+  [0,1].forEach(i=>{
+    c.save();
+    c.translate(300+i*480, 700);
+    c.scale(0.62,0.62);
+    const pal = (i===focus)? PAL_DARK : {...PAL_DARK, body:'#1a1a20', line:'#33333d'};
+    drawAssembly(c,pal,{travel:i===focus?0.55:0});
+    c.restore();
+
+    // 高亮框
+    c.save();
+    c.strokeStyle=(i===focus)?COL.hl:'rgba(20,19,23,0.12)';
+    c.lineWidth=(i===focus)?3:1.6;
+    c.strokeRect(300+i*480-150, 470, 300, 400);
+    c.restore();
+    label(c, i===0?'对照 A':'对照 B', 300+i*480, 920, 22,
+      (i===focus)?'rgba(240,240,238,0.85)':'rgba(20,19,23,0.40)','center');
+  });
+
+}
+
+/* ---- S8  44.533–48.333  文档滚动（首帧即峰，0.92/帧衰减） ---- */
+function s8(t){
+  bgDark(ctx); chrome(ctx,t,true);
+  openFrame(ctx,false,1.0,{x0:72,x1:1008,y0:342,y1:881});
+  const c=ctx;
+
+  const off=scrollOffset(t);
+  // 卡内文档面：留出 96px 边距，滚动条走卡内左侧
+  const px=CARD.x0+74, py=CARD.y0+26, pw=CARD.x1-CARD.x0-148, ph=488;
+  // 卡高 539（342–881）：面板占满卡内 26–488，下方只留标注
+
+  c.save();
+  c.beginPath(); c.rect(px,py,pw,ph); c.clip();
+  c.fillStyle='#fbfbfa'; c.fillRect(px,py,pw,ph);
+  c.translate(0,-off);
+
+  // 文档正文：48 行、行距 9.4px（与原片文档面的实际行密一致），
+  // 滚动位移 0.63s 内 ~350px，帧间 ~10.3px，与 9.4 的行距错拍 → 每帧都在重排
+  // 原片文档面的行是"真字行"：行高 16–17px、行距 30–34px、墨占 5.5%。
+  // 用小字排版而不是灰条，才能给出同量级的帧间差。
+  const r=mulberry32(0x77);
+  let y=py+16;
+  c.fillStyle='rgba(20,19,23,0.82)';
+  c.font='400 15px "Microsoft YaHei","Segoe UI",sans-serif';
+  c.textAlign='left';
+  for(let i=0;i<60;i++){
+    const head = (i%7===0);
+    if(head){ c.fillStyle='rgba(20,19,23,0.88)'; y+=10; }
+    else c.fillStyle='rgba(20,19,23,0.55)';
+    const wl = pw*(head?0.46:0.62+r()*0.34);
+    // 一行用 7 段"假词"拼出来，段间留 3px 词距
+    let x=px+22+(head?0:16);
+    const target=wl;
+    while(x<px+22+(head?0:16)+target-10){
+      const seg=Math.min(14+r()*26, px+22+(head?0:16)+target-x);
+      if(seg<8) break;
+      c.fillRect(x,y-11,seg,head?5:2.4);
+      x+=seg+3.2;
+    }
+    y+= head? 26 : 12;
+  }
+  c.restore();
+
+  c.save(); c.strokeStyle='rgba(20,19,23,0.3)'; c.lineWidth=1.5; c.strokeRect(px,py,pw,ph); c.restore();
+
+  // 卡内左侧滚动标尺：显示 offset 累积
+  c.save();
+  c.strokeStyle='rgba(20,19,23,0.25)'; c.lineWidth=2;
+  c.beginPath(); c.moveTo(px-34,py); c.lineTo(px-34,py+ph); c.stroke();
+  const sy=py+ph*clamp(off/128,0,1);
+  c.fillStyle=COL.hl; c.fillRect(px-42,sy-34,14,34);
+  c.restore();
+  label(c,'+'+off.toFixed(1)+' px',px,py+ph+22,18,'rgba(20,19,23,0.55)');
+
+}
+
+/* ---- S9  48.333–53.167  接触力曲线 ---- */
+function s9(t){
+  bgDark(ctx); chrome(ctx,t,true);
+  openFrame(ctx,false,1.0);
+  const c=ctx;
+  const gx=140, gy=420, gw=800, gh=460;
+  const k=smoothstep(48.7,51.6,t);
+  const markT=lerp(0,1,k);
+  const mx=gx+gw*markT;
+
+  c.save();
+  c.strokeStyle='rgba(20,19,23,0.14)'; c.lineWidth=1.5;
+  for(let i=0;i<=4;i++){const y=gy+gh*i/4;c.beginPath();c.moveTo(gx,y);c.lineTo(gx+gw,y);c.stroke();}
+  for(let i=0;i<=8;i++){const x=gx+gw*i/8;c.beginPath();c.moveTo(x,gy);c.lineTo(x,gy+gh);c.stroke();}
+  c.restore();
+
+  // 力—行程曲线：线性上升 → 0.8 处塌陷 → 触底平台
+  const curve=(u)=>{
+    if(u<0.62) return u/0.62*0.78;
+    if(u<0.70) return 0.78 - (u-0.62)/0.08*0.30;
+    if(u<0.86) return 0.48 + (u-0.70)/0.16*0.42;
+    if(u<0.90) return 0.90 - (u-0.86)/0.04*0.06;
+    return 0.84;
+  };
+  c.save();
+  c.strokeStyle=COL.hl; c.lineWidth=3.4; c.lineJoin='round';
+  c.beginPath();
+  const npts=260;
+  for(let i=0;i<=npts;i++){
+    const u=i/npts;
+    if(u>markT) break;
+    const x=gx+gw*u, y=gy+gh-curve(u)*gh;
+    i?c.lineTo(x,y):c.moveTo(x,y);
+  }
+  c.stroke();
+  c.restore();
+
+  // 游标
+  if(k>0&&k<1){
+    c.save();
+    c.fillStyle=COL.hl;
+    c.beginPath(); c.arc(mx, gy+gh-curve(markT)*gh, 9,0,7); c.fill();
+    c.restore();
+  }
+
+}
+
+/* ---- S10  53.167–57.300  回装（顺序服从承载关系） ---- */
+function s10(t){
+  bgDark(ctx); chrome(ctx,t,true);
+  openFrame(ctx,false,1.9);
+  const c=ctx;
+  // 反向错峰：触点 → 弹簧 → 轴芯 → 键帽
+  const step=0.34, t0=53.35;
+  const reclose=1-smoothstep(t0+0.1, t0+1.6, t);   // 1→0 表示从拆开收回
+  c.save(); c.translate(W/2,760);
+  drawAssembly(c,PAL_PAPER,{explode:reclose});
+  c.restore();
+
+  // 顺序箭头
+  const order=[['触点',53.35],['弹簧',53.69],['轴芯',54.03],['键帽',54.37]];
+  order.forEach(([name,tt],i)=>{
+    const on=t>=tt;
+    const x=120+i*230;
+    c.save();
+    c.fillStyle=on?COL.hl:'rgba(20,19,23,0.16)';
+    c.fillRect(x,880,180,4);
+    c.restore();
+    label(c,name,x,868,22,on?'rgba(20,19,23,0.85)':'rgba(20,19,23,0.3)');
+  });
+
+}
+
+/* ---- S11  57.300–61.067  收尾：把 11 镜结构摊开 ---- */
+function s11(t){
+  bgDark(ctx); chrome(ctx,t,true);
+  openFrame(ctx,true,1.0);
+  const c=ctx;
+  const k=smoothstep(57.5,59.0,t);
+
+  const x0=120, x1=W-120, y=620;
+  c.save();
+  c.strokeStyle='rgba(20,19,23,0.85)'; c.lineWidth=3;
+  c.beginPath(); c.moveTo(x0,y); c.lineTo(lerp(x0,x1,k),y); c.stroke();
+
+  for(let i=0;i<BOUNDS.length;i++){
+    const x=x0+(x1-x0)*(BOUNDS[i]/TOTAL);
+    if((x-x0)/(x1-x0)>k) break;
+    c.fillStyle=COL.ink;
+    c.fillRect(x-1.5,y-16,3,32);
+  }
+  for(let i=0;i<BOUNDS.length-1;i++){
+    const a=BOUNDS[i], b=BOUNDS[i+1];
+    const xa=x0+(x1-x0)*(a/TOTAL), xb=x0+(x1-x0)*(b/TOTAL);
+    if((xa-x0)/(x1-x0)>k) break;
+    const dur=(b-a);
+    c.fillStyle = dur>5 ? 'rgba(154,168,15,0.9)' : 'rgba(20,19,23,0.14)';
+    c.fillRect(xa+2, y-34, Math.max(2,xb-xa-4), 16);
+  }
+  c.restore();
+
+  label(c,'11 镜 / 61.067s',x0,y-90,30,'rgba(20,19,23,0.85)');
+  label(c,'绿 = 超过 5s、必须带内部二次运动的镜',x0,y+70,24,'rgba(20,19,23,0.5)');
+
+  // 关键切点相位读数（证明不跟拍）
+  label(c,'切点 → 最近 onset',x0,y+140,22,'rgba(20,19,23,0.45)');
+  CUTS.slice(0,4).forEach((cut,i)=>{
+    label(c, cut.nominal.toFixed(3)+' → '+cut.t.toFixed(3)+'  Δ'+((cut.d*1000)>=0?'+':'')+(cut.d*1000).toFixed(0)+'ms',
+      x0, y+182+i*32, 20, 'rgba(20,19,23,0.55)');
+  });
+
+}
+
+
+/* ============================================================
+   6b. 覆盖层：在卡外（整幅坐标）补画标注，避免被卡的 clip/缩放吃掉
+   ============================================================ */
+const OVERLAY=[];
+function drawOverlay(t,idx){
+  const fn=OVERLAY[idx];
+  if(fn) fn(ctx,t);
+}
+OVERLAY[3]=(c,t)=>{                        // s4 拆解视图的四个引出标注
+  const ex=smoothstep(23.55,25.20,t);
+  if(ex<=0.55) return;
+  const a=smoothstep(0.55,1,ex);
+  c.save(); c.globalAlpha=a;
+  c.strokeStyle='rgba(240,240,238,0.30)'; c.lineWidth=1.6;
+  c.font='600 22px "Microsoft YaHei","Segoe UI",sans-serif';
+  c.textBaseline='middle';
+  // 轴体在放大后：键帽 y≈432–583、轴芯 500–700、弹簧 700–770、底座 770–815
+  const items=[[452,'键帽 / 外壳',-1],[560,'轴芯',1],[742,'弹簧',1],[800,'触点簧片',1]];
+  items.forEach(([y,txt,dir])=>{
+    const ex2 = dir<0 ? CARD.x0+128 : CARD.x1-128;
+    const x0  = dir<0 ? W/2-96 : W/2+96;
+    c.beginPath(); c.moveTo(x0,y); c.lineTo(ex2,y); c.stroke();
+    c.fillStyle='rgba(240,240,238,0.9)';
+    c.textAlign = dir<0 ? 'right' : 'left';
+    c.fillText(txt, dir<0 ? ex2-12 : ex2+12, y);
+  });
+  c.restore();
+};
+
+/* ============================================================
+   7. 字幕带：原片实测单行，行高 48px、字号约 48px、墨迹跨 x86–1019（87% 宽），
+   基线 y≈1200，整片只有一行；高亮色 #daf01e 只染句中关键词。y 1080–1335 不动。
+   ============================================================ */
+const SUBS=[
+  ['四段局部位移，撑住一个十三秒的长镜。',0],
+  ['剖面只画结构，不画材质。',1],
+  ['推进和按下，必须在同一个窗口里完成。',1],
+  ['拆解视图，靠二次运动续命。',0],
+  ['读数不是匀速爬升，是幂律，末端还有一次尖刺。',1],
+  ['两种材质面，靠光的角度分开。',0],
+  ['并列对比，靠一次单帧跳变切换。',0],
+  ['滚动没有入场缓动，第一帧就是峰值。',1],
+  ['接触力曲线，在 0.8 刻度处塌陷。',0],
+  ['回装顺序，要服从承载关系。',0],
+  ['声床恒密，让画面事件去撞它。',0]
+];
+
+function drawSubs(t,idx){
+  const c=ctx;
+  const [txt,kw]=SUBS[Math.min(idx,SUBS.length-1)];
+  const start=BOUNDS[idx]+0.18;
+  const elapsed=t-start;
+  const reveal = elapsed >= 0;
+  const lit = elapsed >= HL_STEP;
+
+  c.save();
+  // 原片字幕带是一条通栏暗条：y 1085–1345，x 48–1030，比页面底更暗（#141318 于 #0b0a0f）
+  c.fillStyle='#141318'; c.fillRect(48,1085,W-96,260);
+  // 单行居中，48px / 700（字体只列本机存在的：Latin 走 Segoe，中文走雅黑）
+  c.textAlign='center'; c.textBaseline='alphabetic';
+  const baseY=1224;   // 原片字幕墨迹落在 y1175–1222，基线 ≈1222
+  if(!reveal){ c.restore(); return; }
+
+  // 逐字排：先量总宽，再从左边一个字一个字画，关键词段换色。
+  // 不用"整行画一遍 + 关键词段再画一遍"——measureText 与实际字形宽度不一致时会叠影。
+  // 自动缩排：原片单行墨迹跨 87% 宽（x86–1019），这里按同一上限收紧字号
+  const MAXW=W*0.87;
+  let size=48;
+  c.font=SUB_FONT;
+  let glyphs=Array.from(txt);
+  let ws=glyphs.map(g=>c.measureText(g).width);
+  let total=ws.reduce((a,b)=>a+b,0);
+  if(total>MAXW){
+    size=Math.floor(48*MAXW/total);
+    c.font='700 '+size+'px "Microsoft YaHei","Segoe UI",sans-serif';
+    ws=glyphs.map(g=>c.measureText(g).width);
+    total=ws.reduce((a,b)=>a+b,0);
+  }
+  const cut=Math.max(txt.indexOf('，'),txt.indexOf(','));
+  const tailFrom = cut>=0 ? glyphs.slice(0,cut+1).join('').length : -1;
+  let x=W/2-total/2;
+  c.textAlign='left';
+  glyphs.forEach((g,i)=>{
+    const hi = (lit && i>=tailFrom && tailFrom>=0);
+    c.fillStyle = hi ? COL.hl : 'rgba(242,242,239,0.94)';
+    c.fillText(g,x,baseY);
+    x+=ws[i];
+  });
+  c.restore();
+}
+
+/* ============================================================
+   8. 时间线 / 渲染
+   ============================================================ */
+const DRAW=[s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11];
+
+function shotIndex(t){
+  for(let i=0;i<DRAW.length;i++) if(t < BOUNDS[i+1]) return i;
+  return DRAW.length-1;
+}
+
+let HUD=false;
+
+function drawHUD(t){
+  const c=ctx; const idx=shotIndex(t);
+  c.save();
+  c.fillStyle='rgba(0,0,0,0.72)'; c.fillRect(24,114,470,300);
+  c.fillStyle='#daff22'; c.font='600 20px ui-monospace,Consolas,monospace';
+  const L=[
+    't='+t.toFixed(3)+'  shot '+(idx+1)+'/11',
+    'shot len='+(BOUNDS[idx+1]-BOUNDS[idx]).toFixed(3)+'s',
+    'push='+pushScale(t).toFixed(3)+'x  travel='+travel(t).toFixed(2),
+    'readout='+readout(t).toFixed(0)+'  scroll='+scrollOffset(t).toFixed(1),
+    idx>0 ? ('cut Δ='+(CUTS[idx-1].d*1000).toFixed(0)+'ms  phase='+CUTS[idx-1].phase.toFixed(3)) : 'cut —',
+    'bed='+(ONSETS.length/TOTAL).toFixed(2)+' onset/s'
+  ];
+  L.forEach((s,i)=>c.fillText(s,40,150+i*30));
+  c.restore();
+}
+
+function render(t){
+  t=clamp(t,0,TOTAL);
+  const idx=shotIndex(t);
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,W,H);
+  ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+  DRAW[idx](t);
+  closeFrame(ctx);
+  drawOverlay(t,idx);
+  drawSubs(t,idx);
+  if(HUD) drawHUD(t);
+}
+
+/* ============================================================
+   9. 声音：全程序化（§3 声床 + 重音）
+   ============================================================ */
+let ac=null, master=null, noiseBuf=null;
+let playing=false, anchor=0, nextIdx=0, rafId=0, clockT=0, lastPerf=0;
+
+function initAudio(){
+  if(ac) return;
+  const AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC) return;
+  ac=new AC();
+  master=ac.createGain(); master.gain.value=0.42; master.connect(ac.destination);
+  const len=Math.floor(ac.sampleRate*0.2);
+  noiseBuf=ac.createBuffer(1,len,ac.sampleRate);
+  const d=noiseBuf.getChannelData(0);
+  for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*0.9;
+}
+
+const PENTA=[523.25,587.33,659.25,783.99,880,1046.5,1174.66];
+
+function playOnset(o,when){
+  if(!ac) return;
+  const g=clamp(o.s/17.5,0.05,1);
+  if(o.noise){
+    const src=ac.createBufferSource(); src.buffer=noiseBuf;
+    const bp=ac.createBiquadFilter(); bp.type='bandpass';
+    bp.frequency.value=1800+Math.random()*3600; bp.Q.value=1.2;
+    const gn=ac.createGain();
+    gn.gain.setValueAtTime(0,when);
+    gn.gain.linearRampToValueAtTime(0.13*g,when+0.003);
+    gn.gain.exponentialRampToValueAtTime(0.0001,when+0.055);
+    src.connect(bp).connect(gn).connect(master);
+    src.start(when); src.stop(when+0.09);
+  } else {
+    const osc=ac.createOscillator(); osc.type='triangle';
+    osc.frequency.value=PENTA[Math.floor(Math.random()*PENTA.length)]*(o.s>9?0.5:1);
+    const gn=ac.createGain();
+    gn.gain.setValueAtTime(0,when);
+    gn.gain.linearRampToValueAtTime(0.055*g,when+0.004);
+    gn.gain.exponentialRampToValueAtTime(0.0001,when+0.085);
+    osc.connect(gn).connect(master);
+    osc.start(when); osc.stop(when+0.11);
+  }
+  if(o.s>7){                       // 重音：低频体
+    const osc=ac.createOscillator(); osc.type='sine';
+    osc.frequency.setValueAtTime(120,when);
+    osc.frequency.exponentialRampToValueAtTime(62,when+0.16);
+    const gn=ac.createGain();
+    gn.gain.setValueAtTime(0,when);
+    gn.gain.linearRampToValueAtTime(0.16*clamp(o.s/17.5,0.3,1),when+0.006);
+    gn.gain.exponentialRampToValueAtTime(0.0001,when+0.20);
+    osc.connect(gn).connect(master);
+    osc.start(when); osc.stop(when+0.22);
+  }
+}
+
+function scheduleAudio(){
+  if(!ac||!playing) return;
+  const now=ac.currentTime;
+  const horizon=now+0.30;
+  while(nextIdx<ONSETS.length){
+    const o=ONSETS[nextIdx];
+    const when=o.t+anchor;
+    if(when>horizon) break;
+    if(when>=now-0.05) playOnset(o,when);
+    nextIdx++;
+  }
+}
+
+/* ============================================================
+   10. 播放控制 / 定位
+   ============================================================ */
+const seekEl=document.getElementById('seek');
+const tcEl=document.getElementById('tc');
+const playEl=document.getElementById('play');
+const hudEl=document.getElementById('hud');
+
+function syncUI(t){
+  seekEl.value=String(Math.round(t*1000));
+  tcEl.textContent=fmt(t)+' / '+fmt(TOTAL);
+}
+
+function freeze(t){
+  clockT=clamp(t,0,1e9);
+  render(clockT); syncUI(clockT);
+}
+
+function loop(perf){
+  if(!playing) return;
+  const now=performance.now();
+  clockT = startT + (now-startPerf)/1000;
+  if(clockT>=TOTAL){ clockT=TOTAL; render(clockT); syncUI(clockT); pause(); return; }
+  render(clockT); syncUI(clockT);
+  scheduleAudio();
+  rafId=requestAnimationFrame(loop);
+}
+
+let startT=0, startPerf=0;
+
+function play(){
+  initAudio();
+  if(ac && ac.state==='suspended') ac.resume();
+  if(clockT>=TOTAL-0.01) clockT=0;
+  startT=clockT; startPerf=performance.now();
+  if(ac){
+    anchor = ac.currentTime + 0.06 - clockT;
+    nextIdx = 0;
+    while(nextIdx<ONSETS.length && ONSETS[nextIdx].t<clockT) nextIdx++;
+  }
+  playing=true; playEl.textContent='❚❚ 暂停'; playEl.classList.add('on');
+  rafId=requestAnimationFrame(loop);
+}
+function pause(){
+  playing=false; playEl.textContent='▶ 播放'; playEl.classList.remove('on');
+  if(rafId) cancelAnimationFrame(rafId); rafId=0;
+}
+
+playEl.addEventListener('click',()=>playing?pause():play());
+seekEl.addEventListener('input',()=>{ const t=seekEl.value/1000;
+  if(playing){ clockT=t; startT=t; startPerf=performance.now();
+    if(ac){ anchor=ac.currentTime - t; nextIdx=0; while(nextIdx<ONSETS.length&&ONSETS[nextIdx].t<t) nextIdx++; } }
+  else freeze(t);
+});
+hudEl.addEventListener('change',()=>{ HUD=hudEl.checked; if(!playing) render(clockT); });
+window.addEventListener('keydown',(e)=>{
+  if(e.code==='Space'){ e.preventDefault(); playing?pause():play(); }
+  else if(e.code==='ArrowRight'){ e.preventDefault(); freeze(clockT+1/60); }
+  else if(e.code==='ArrowLeft'){ e.preventDefault(); freeze(clockT-1/60); }
+});
+
+/* 供外部验证使用 */
+window.repro={
+  setT:freeze, play, pause, render,
+  getState:(t)=>({
+    t:t, shot:shotIndex(t)+1,
+    shotLen:BOUNDS[shotIndex(t)+1]-BOUNDS[shotIndex(t)],
+    push:pushScale(t), travel:travel(t),
+    readout:readout(t), scroll:scrollOffset(t)
+  }),
+  cuts:CUTS, bounds:BOUNDS,
+  bedDensity:ONSETS.length/TOTAL
+};
+
+/* ============================================================
+   11. 启动
+   ============================================================ */
+const qs=new URLSearchParams(location.search);
+if(qs.get('hud')==='1'){ HUD=true; hudEl.checked=true; }
+const t0=qs.get('t');
+if(t0!==null && t0!==''){
+  freeze(parseFloat(t0)||0);
+} else {
+  freeze(0);
+  if(qs.get('play')==='1') play();
+}
+window.addEventListener('resize',()=>{ if(!playing) render(clockT); });
+
+})();
+</script>
+</body>
+</html>

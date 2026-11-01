@@ -1,0 +1,363 @@
+{
+  "title": "到线才刹车，会停在哪儿？（原创教学分镜，时长待TTS校准）",
+  "duration": 75,
+  "centralQuestion": "搬着固定杯子的滑台，为什么到了目标线才刹车会越线，怎样提前留出停车距离？",
+  "answer": "在一维恒定减速度模型中，制动期间仍会前进，停车距离d=v²/(2a)。本例v=2 m/s、减速度大小a=1 m/s²，需提前2 m开始制动；改变条件后要重新计算。",
+  "terms": [
+    {
+      "id": "target",
+      "label": "目标线"
+    },
+    {
+      "id": "model",
+      "label": "一维恒定减速度模型"
+    },
+    {
+      "id": "initialSpeed",
+      "label": "制动开始时的速度v"
+    },
+    {
+      "id": "deceleration",
+      "label": "减速度大小a（取正值）"
+    },
+    {
+      "id": "stoppingDistance",
+      "label": "停车距离d"
+    },
+    {
+      "id": "brakePoint",
+      "label": "制动起点"
+    }
+  ],
+  "sources": [
+    {
+      "id": "constant-acceleration",
+      "url": "https://openstax.org/books/college-physics-2e/pages/2-5-motion-equations-for-constant-acceleration-in-one-dimension"
+    }
+  ],
+  "beats": [
+    {
+      "id": "result",
+      "start": 0,
+      "end": 6,
+      "question": "到线后为什么还在前进？",
+      "beforeBelief": "观众刚认识搬杯子的滑台，还没看到它如何停车。",
+      "afterBelief": "滑台开始刹车后仍越过目标线，接下来需要解释这段前进。",
+      "narration": "滑台已经到了目标线，怎么还往前走？",
+      "visual": "原创理想场景：杯子固定在滑台上，不演示液体。目标线置于画面右侧。滑台在目标线处开始减速，继续向前到停下；这时不显示公式或事故夸张。世界运动与镜头分别求值。",
+      "sound": "开头保留一次轻制动声，旁白进入前压低背景音乐；禁止用撞击声暗示画面没有发生的事故。",
+      "anchorIn": "cup-on-carriage",
+      "anchorOut": "cup-and-target-line",
+      "dependsOn": [],
+      "introduces": [
+        "target"
+      ],
+      "uses": [],
+      "evidence": "illustrative",
+      "sourceIds": [],
+      "readingWindow": null,
+      "pronunciationNotes": [],
+      "screenText": [
+        "目标线"
+      ],
+      "timingBasis": "planned"
+    },
+    {
+      "id": "conditions",
+      "start": 6,
+      "end": 15,
+      "question": "这次停车计算用了什么条件？",
+      "beforeBelief": "已经看到越线，但还不知道初速度和制动能力。",
+      "afterBelief": "知道本例只计算滑台一维运动，v=2 m/s、a=1 m/s²且恒定。",
+      "narration": "先只看滑台，杯子固定在上面。它每秒走两米。刹车后，速度每过一秒减少一米每秒。",
+      "visual": "回到制动前的同一滑台，保持杯子的屏幕位置。依次显示v=2 m/s和a=1 m/s²。靠近地面注明恒定减速度模型；数值为原创教学条件。暂时隐藏其他读数。",
+      "sound": "条件进入时音乐让位；轨道环境声连续，回看用明确的短时间标记，不把倒放音频当成现实声音。",
+      "anchorIn": "cup-and-target-line",
+      "anchorOut": "velocity-marker-on-carriage",
+      "dependsOn": [
+        "result"
+      ],
+      "introduces": [
+        "model",
+        "initialSpeed",
+        "deceleration"
+      ],
+      "uses": [
+        "target"
+      ],
+      "evidence": "illustrative",
+      "sourceIds": [
+        "constant-acceleration"
+      ],
+      "readingWindow": {
+        "start": 12,
+        "end": 15
+      },
+      "pronunciationNotes": [
+        "a读作减速度的大小",
+        "米每二次方秒保留为屏幕单位；口播可解释为每秒减少多少米每秒"
+      ],
+      "screenText": [
+        "v₀ = 2 m/s",
+        "a = 1 m/s²",
+        "理想恒定减速度"
+      ],
+      "timingBasis": "planned"
+    },
+    {
+      "id": "distance",
+      "start": 15,
+      "end": 25,
+      "question": "速度降为零之前，滑台又走了多少路？",
+      "beforeBelief": "知道速度在减少，尚未把速度变化连到停车距离。",
+      "afterBelief": "本例速度从2 m/s降到零需要2 s，制动期间前进2 m。",
+      "narration": "从两米每秒降到零，要两秒。这两秒里，滑台还在前进。把路程加起来，正好是两米。",
+      "visual": "同一初始状态播放制动。地面累积路径来自解析位置x(t)=x0+v0t-at²/2，在t=v0/a时夹停。每个等时间格逐渐缩短，速度箭头同步缩短。最后留下2 m跨度和实际停车位置。",
+      "sound": "细小路程格以低音量事件提示，间隔不制造假物理频率。数字落定后停运动约3秒；旁白不重复朗读所有格子。",
+      "anchorIn": "velocity-marker-on-carriage",
+      "anchorOut": "two-meter-ground-span",
+      "dependsOn": [
+        "conditions"
+      ],
+      "introduces": [
+        "stoppingDistance"
+      ],
+      "uses": [
+        "model",
+        "initialSpeed",
+        "deceleration",
+        "target"
+      ],
+      "evidence": "derived",
+      "sourceIds": [
+        "constant-acceleration"
+      ],
+      "readingWindow": {
+        "start": 22,
+        "end": 25
+      },
+      "pronunciationNotes": [
+        "a读作减速度的大小",
+        "米每二次方秒保留为屏幕单位；口播可解释为每秒减少多少米每秒"
+      ],
+      "screenText": [
+        "t = 2 s",
+        "d = 2 m"
+      ],
+      "timingBasis": "planned"
+    },
+    {
+      "id": "move-brake-point",
+      "start": 25,
+      "end": 35,
+      "question": "只把刹车点向前移两米，会怎样？",
+      "beforeBelief": "知道制动要走2 m，但还没看到如何用这个距离停车。",
+      "afterBelief": "在同样条件下提前2 m制动，滑台停在目标线上。",
+      "narration": "那就把刹车点往前挪两米，速度和制动能力都不变。再来一次。现在停在线上了。",
+      "visual": "保留目标线，2 m跨度平移到线前，成为制动点。重新从相同初速度播放，杯子和滑台保持同一对象ID。原实验只留淡色停车位置作对照，不改变镜头尺度。",
+      "sound": "刹车音与制动动作同步。结果显现后保留约2秒无旁白，让音乐轻抬；下一句前重新让位。",
+      "anchorIn": "two-meter-ground-span",
+      "anchorOut": "brake-point-and-target",
+      "dependsOn": [
+        "distance"
+      ],
+      "introduces": [
+        "brakePoint"
+      ],
+      "uses": [
+        "target",
+        "model",
+        "initialSpeed",
+        "deceleration",
+        "stoppingDistance"
+      ],
+      "evidence": "derived",
+      "sourceIds": [
+        "constant-acceleration"
+      ],
+      "readingWindow": {
+        "start": 32,
+        "end": 35
+      },
+      "pronunciationNotes": [
+        "a读作减速度的大小",
+        "米每二次方秒保留为屏幕单位；口播可解释为每秒减少多少米每秒"
+      ],
+      "screenText": [
+        "提前 2 m",
+        "同速度 · 同减速度"
+      ],
+      "timingBasis": "planned"
+    },
+    {
+      "id": "double-speed",
+      "start": 35,
+      "end": 46,
+      "question": "初速度翻倍，停车距离也只翻倍吗？",
+      "beforeBelief": "已理解基准的2 m停车距离，尚未比较速度变化。",
+      "afterBelief": "同样恒定减速度下，v从2变为4 m/s，d从2变为8 m，即4倍。",
+      "narration": "把初速度翻一倍，刹车还是一样。停车距离变成八米，是刚才的四倍。速度增加，留给减速的路也得重新算。",
+      "visual": "只改变初速度为4 m/s，保持a=1 m/s²。并列地面跨度2 m与8 m，轨道镜头拉开后保持两者同一比例尺。先让长距离可见，再出现×4标签。不得通过缩放两个实验制造差异。",
+      "sound": "镜头拉开时给一个低频空间展开音，读数进入前收住。只强调一次结果落点，不让所有数字同时跳拍。",
+      "anchorIn": "brake-point-and-target",
+      "anchorOut": "two-and-eight-meter-comparison",
+      "dependsOn": [
+        "move-brake-point"
+      ],
+      "introduces": [],
+      "uses": [
+        "model",
+        "initialSpeed",
+        "deceleration",
+        "stoppingDistance",
+        "brakePoint"
+      ],
+      "evidence": "derived",
+      "sourceIds": [
+        "constant-acceleration"
+      ],
+      "readingWindow": {
+        "start": 42,
+        "end": 46
+      },
+      "pronunciationNotes": [
+        "a读作减速度的大小",
+        "米每二次方秒保留为屏幕单位；口播可解释为每秒减少多少米每秒"
+      ],
+      "screenText": [
+        "v₀ ×2",
+        "d = 8 m = 4 × 2 m"
+      ],
+      "timingBasis": "planned"
+    },
+    {
+      "id": "equation",
+      "start": 46,
+      "end": 56,
+      "question": "一个式子怎样对应刚才的三个量？",
+      "beforeBelief": "已见到两个具体实验，关系还没用符号归纳。",
+      "afterBelief": "d=v²/(2a)，其中v是制动开始的速度，a是恒定减速度的正值大小。",
+      "narration": "刚才的关系，写下来就是这个式子。速度要平方，再除以两倍的减速度。地上这段距离，就是算出来的结果。",
+      "visual": "速度标记v进入固定公式槽位，制动器旁a随后进入，地面跨度连接到d。使用d=v²/(2a)，不能保留库中振子例子的能量式。单位和a取正值的注记保留；公式落定后镜头稳定约5秒。",
+      "sound": "符号到位用轻而短的原创音，旁白解释时背景保持克制；公式不用逐字逐符号抢读。",
+      "anchorIn": "two-and-eight-meter-comparison",
+      "anchorOut": "formula-d-and-ground-span",
+      "dependsOn": [
+        "double-speed"
+      ],
+      "introduces": [],
+      "uses": [
+        "model",
+        "initialSpeed",
+        "deceleration",
+        "stoppingDistance"
+      ],
+      "evidence": "derived",
+      "sourceIds": [
+        "constant-acceleration"
+      ],
+      "readingWindow": {
+        "start": 51,
+        "end": 56
+      },
+      "pronunciationNotes": [
+        "a读作减速度的大小",
+        "米每二次方秒保留为屏幕单位；口播可解释为每秒减少多少米每秒"
+      ],
+      "screenText": [
+        "d = v₀²/(2a)",
+        "a > 0；恒定减速度"
+      ],
+      "timingBasis": "planned"
+    },
+    {
+      "id": "weaker-brake",
+      "start": 56,
+      "end": 65,
+      "question": "制动能力减弱，停车位置会怎样改变？",
+      "beforeBelief": "知道速度的平方影响距离，还需明确减速度也决定结果。",
+      "afterBelief": "恢复v=2 m/s，只将a降到0.5 m/s²，停车距离增到4 m。",
+      "narration": "制动能力变弱，也会停得更远。这次速度不变，只把减速度减半，停车距离就变成四米。模型的条件要跟着改。",
+      "visual": "恢复v=2 m/s，将a从1改成0.5 m/s²。先强调a槽位，再在同一轨道显示重新计算的4 m跨度。若展示预测区间，要另有误差数据，本例只显示确定性理想结果。",
+      "sound": "用J-cut让新条件的第一小句提前约0.3秒进入，再转到制动器；此提前量仅为试剪建议，按真实TTS修正。",
+      "anchorIn": "formula-d-and-ground-span",
+      "anchorOut": "updated-stop-distance",
+      "dependsOn": [
+        "equation"
+      ],
+      "introduces": [],
+      "uses": [
+        "model",
+        "initialSpeed",
+        "deceleration",
+        "stoppingDistance"
+      ],
+      "evidence": "derived",
+      "sourceIds": [
+        "constant-acceleration"
+      ],
+      "readingWindow": {
+        "start": 62,
+        "end": 65
+      },
+      "pronunciationNotes": [
+        "a读作减速度的大小",
+        "米每二次方秒保留为屏幕单位；口播可解释为每秒减少多少米每秒"
+      ],
+      "screenText": [
+        "v₀ = 2 m/s",
+        "a = 0.5 m/s²",
+        "d = 4 m"
+      ],
+      "timingBasis": "planned"
+    },
+    {
+      "id": "return-to-answer",
+      "start": 65,
+      "end": 75,
+      "question": "开头那次越线，现在该怎么修？",
+      "beforeBelief": "已理解速度和制动能力共同决定距离，需要把答案接回原问题。",
+      "afterBelief": "在本例基准条件下，提前2 m制动即可停在线上；其他条件要重算。",
+      "narration": "回到最初那台滑台。这套条件下，提前两米开始减速，就能停在线上。它需要的那段路，得在到线之前留出来。",
+      "visual": "明确恢复v=2 m/s、a=1 m/s²，再播放提前2 m制动。画面由标记退回完整滑台和固定杯子，停在目标线处。末尾3秒只看结果，不再增加新术语或技术名单。",
+      "sound": "前一句尾音可跨到重演画面形成L-cut；结果稳定后音乐缓升，收尾不切断混响。75秒总长待实际TTS和试听校准。",
+      "anchorIn": "updated-stop-distance",
+      "anchorOut": "cup-stopped-at-target",
+      "dependsOn": [
+        "weaker-brake",
+        "move-brake-point"
+      ],
+      "introduces": [],
+      "uses": [
+        "target",
+        "model",
+        "initialSpeed",
+        "deceleration",
+        "stoppingDistance",
+        "brakePoint"
+      ],
+      "evidence": "derived",
+      "sourceIds": [
+        "constant-acceleration"
+      ],
+      "readingWindow": {
+        "start": 72,
+        "end": 75
+      },
+      "pronunciationNotes": [
+        "a读作减速度的大小",
+        "米每二次方秒保留为屏幕单位；口播可解释为每秒减少多少米每秒"
+      ],
+      "screenText": [
+        "这套条件下 · 提前 2 m"
+      ],
+      "timingBasis": "planned"
+    }
+  ],
+  "timingBasis": "planned",
+  "lockedConditions": [
+    "杯子固定在滑台上，不演示液体",
+    "一维平移；制动阶段恒定减速度",
+    "对照锁定相同机位、投影和单位，只改变声明变量"
+  ]
+}

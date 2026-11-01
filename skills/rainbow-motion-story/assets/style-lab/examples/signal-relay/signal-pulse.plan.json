@@ -1,0 +1,177 @@
+{
+  "schema": "motion-atelier.signal-relay/v1",
+  "id": "pulse",
+  "duration": 24,
+  "bpm": 100,
+  "origin": "original-illustration",
+  "question": "怎样让三个连续动作既有音乐的起伏，也让观众看懂交接？",
+  "music": {
+    "origin": "original-procedural-synthesis",
+    "bpm": 100,
+    "beatSeconds": 0.6,
+    "note": "原创练习配乐的设定值，不是参考视频的测量 BPM。"
+  },
+  "timeMap": [
+    [
+      0,
+      0
+    ],
+    [
+      1.2,
+      1
+    ],
+    [
+      3.6,
+      4
+    ],
+    [
+      4.5,
+      6
+    ],
+    [
+      5.4,
+      6
+    ],
+    [
+      8.4,
+      10
+    ],
+    [
+      10.2,
+      11
+    ],
+    [
+      11.4,
+      11
+    ],
+    [
+      14.4,
+      14
+    ],
+    [
+      15.3,
+      14
+    ],
+    [
+      19.2,
+      20
+    ],
+    [
+      21.6,
+      23
+    ],
+    [
+      24,
+      24
+    ]
+  ],
+  "events": [
+    {
+      "id": "emerge",
+      "kind": "chime",
+      "onset": 0.2,
+      "peak": 0.2,
+      "end": 1.5,
+      "semantic": "三个信号进入同一空间",
+      "pan": -0.45
+    },
+    {
+      "id": "relay-rise",
+      "kind": "air",
+      "onset": 3.85,
+      "peak": 4.43,
+      "end": 4.68,
+      "semantic": "焦点接力的预备与抵达",
+      "pan": 0.4
+    },
+    {
+      "id": "relay-seat",
+      "kind": "chime",
+      "onset": 4.5,
+      "peak": 4.5,
+      "end": 5.3,
+      "semantic": "接力完成，留下阅读窗",
+      "pan": 0.3
+    },
+    {
+      "id": "gather-rise",
+      "kind": "air",
+      "onset": 13.3,
+      "peak": 14.360000000000001,
+      "end": 14.700000000000001,
+      "semantic": "三条路线汇聚",
+      "pan": 0
+    },
+    {
+      "id": "gather-seat",
+      "kind": "impact",
+      "onset": 14.4,
+      "peak": 14.4,
+      "end": 15.8,
+      "semantic": "会合完成的主要重音",
+      "pan": 0
+    },
+    {
+      "id": "depart",
+      "kind": "air",
+      "onset": 17.599999999999998,
+      "peak": 18.95,
+      "end": 19.75,
+      "semantic": "结果向远处延伸，尾响跨过下一段",
+      "pan": 0.6
+    },
+    {
+      "id": "resolve",
+      "kind": "chime",
+      "onset": 21.6,
+      "peak": 21.6,
+      "end": 23.9,
+      "semantic": "最后确认，声音退场",
+      "pan": 0.15
+    }
+  ],
+  "readHolds": [
+    {
+      "start": 4.5,
+      "end": 5.4,
+      "storyTime": 6
+    },
+    {
+      "start": 10.2,
+      "end": 11.4,
+      "storyTime": 11
+    },
+    {
+      "start": 14.4,
+      "end": 15.3,
+      "storyTime": 14
+    }
+  ],
+  "chapters": [
+    {
+      "time": 0,
+      "title": "三个信号"
+    },
+    {
+      "time": 3.6,
+      "title": "焦点接力"
+    },
+    {
+      "time": 8.4,
+      "title": "靠近会合"
+    },
+    {
+      "time": 14.4,
+      "title": "完成会合"
+    },
+    {
+      "time": 19.2,
+      "title": "向远处延伸"
+    },
+    {
+      "time": 21.6,
+      "title": "结果停留"
+    }
+  ],
+  "evidence": "从连续光轨、身份持续与焦点接力提炼的原创试作；不代表参考原片精确复刻。"
+}

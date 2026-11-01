@@ -1,0 +1,1094 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>复现 · 可切开转子机构 / rotary-cutaway</title>
+<style>
+  :root{
+    --paper:#F2F0EA; --ink:#24242A; --ink2:#5A5A64; --gold:#B98A3C;
+    --red:#C4553F; --blue:#4A6E8F; --line:rgba(36,36,42,.16);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Helvetica Neue",Helvetica,Arial,"PingFang SC","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased}
+  #app{max-width:1500px;margin:0 auto;padding:18px 22px 40px}
+  #stage{position:relative;width:100%;background:#F2F0EA;border:1px solid var(--line);overflow:hidden}
+  #cv{display:block;width:100%;height:auto}
+  #bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:12px;
+       font-size:13px;font-variant-numeric:tabular-nums}
+  button{font:inherit;font-size:13px;padding:6px 12px;border:1px solid var(--line);
+    background:#fff;color:var(--ink);border-radius:2px;cursor:pointer}
+  button:hover{background:#EDEAE2}
+  button[aria-pressed="true"]{background:var(--ink);color:#F2F0EA;border-color:var(--ink)}
+  #seek{flex:1 1 320px;min-width:220px;accent-color:#B98A3C}
+  #tc{min-width:190px;font-variant-numeric:tabular-nums;color:var(--ink2)}
+  .sep{width:1px;height:22px;background:var(--line)}
+  #note{margin-top:10px;font-size:12.5px;line-height:1.7;color:var(--ink2)}
+  #note b{color:var(--ink);font-weight:600}
+  .jump{font-size:12px;padding:5px 9px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage"><canvas id="cv" width="1920" height="1080"></canvas></div>
+  <div id="bar">
+    <button id="play" class="primary">暂停</button>
+    <button id="prev" title="上一帧">◀ 帧</button>
+    <button id="next" title="下一帧">帧 ▶</button>
+    <input id="seek" type="range" min="0" max="12.6" step="0.001" value="0" aria-label="时间轴">
+    <span id="tc">00.000 / 12.600 · F000</span>
+    <div class="sep"></div>
+    <button class="jump" data-t="1.300">1 封闭</button>
+    <button class="jump" data-t="1.433">2 剖切中段</button>
+    <button class="jump" data-t="6.850">3 脉冲落定</button>
+    <button class="jump" data-t="10.500">4 透明静帧</button>
+    <div class="sep"></div>
+    <button id="mute" aria-pressed="false">声音 开</button>
+  </div>
+  <div id="note">
+    自包含复现：纯 HTML + Canvas + WebAudio，无外部素材、无原片画面或音轨、无商标。
+    参数取自 <b>studies/rotary-cutaway.md</b> 的量化结论。URL 加 <b>?t=9.2</b> 定格到某一秒，
+    加 <b>?t=1.433&amp;audio=0</b> 可静默定格。键盘：空格播放/暂停，← → 逐帧。声音需点击一次「声音」或「播放」才会启动。
+  </div>
+</div>
+
+<script>
+'use strict';
+(function () {
+/* =========================================================================
+   repro-rotor.html — 可切开转子机构的运动复现
+   所有数值均标注来源窗口（A = 5.467–5.633s 整机变剖面 / B = 121.394–122.333s
+   按钮驱动切开 / C = 145.267–148.900s 透明化）。时间轴被压缩为 12.6s 的演示带，
+   段内时长与间隔按原秒数 1:1 保留，只裁掉原片中间的软件教学段。
+   ========================================================================= */
+
+const W = 1920, H = 1080;
+const cv  = document.getElementById('cv');
+const ctx = cv.getContext('2d', { alpha: false });
+
+/* ---- 版面：实测剖切区 x 12.5%–62.5% / y 20%–80%，质心 (696,549) ---- */
+const CX = 696, CY = 549;                 // 分格差分质心 cx=2.40/cy=2.04 格
+/* 剖切区：x 12.5–62.5% 是硬约束（右侧 37.5% 必须全静）。
+   纵向放宽到 8.3–89%：静态壳体允许越过变化区上界，与参考片静物 y 90–939 一致；
+   旋转件与端盖退场仍限制在 y 216–864 的实测带内。 */
+const REG = { x: 240, y: 90, w: 960, h: 870 };  // 1920*.125 .. 1920*.625 / 1080*.0833 .. 1080*.888
+const RIGHT_X = 1200;                     // 右侧 37.5% 全程静止
+
+/* 尺寸依实测重设（studies/review-rotor.md）：
+   原 R=240/E=55 的包围盒占画面 32.5%×41.9%；参考片 A 窗实测主体 48.3%×78.5%，
+   宽度差 32.6%、高度差 46.6%。放大到 R=360/E=70 后包围盒 ≈47%×63%。
+   注意剖切区 x 240–1200 / y 216–864 是"变化发生区"（分格差分得出来的），
+   不是"静物剪影区"：参考片自身静物也超出该框（实测主体 y 90–939）。
+   因此这里让静态壳体越过 y=216 上边界，只要求转起来的部件留在区内。
+   e/R 由 0.229 收到 0.194，向真实 13B 的 15/105=0.143 靠；仍为程序化几何。 */
+const R_H = 360, E_E = 70;                // 壳体节圆半径 / 偏心距（自定尺寸，非厂商数据）
+const TOTAL = 12.600;
+const FRAME = 1 / 30;                     // 原片 30fps
+
+const clamp = (v,a,b)=> v<a?a:(v>b?b:v);
+const lerp  = (a,b,u)=> a+(b-a)*u;
+const easeInOut   = u => u<0.5 ? 2*u*u : 1-Math.pow(-2*u+2,2)/2;
+const easeOutCubic= u => 1-Math.pow(1-u,3);
+const smooth  = (a,b,x)=> { const u=clamp((x-a)/(b-a),0,1); return u*u*(3-2*u); };
+
+/* =========================================================================
+   1. 切开的位移曲线 —— A 窗
+   逐帧 pix_diff 5.467–5.633：1.33 / 4.06 / 6.84 / 3.92 / 9.06(峰) / 1.94
+   归一化 (v-1.3)/7.76 = 0.356 / 0.714 / 0.338 / 1.000 / 0.082 / 0.046
+   帧差与速度成正比，对归一化值求前缀和再归一到 1 得到位移：
+   0.140 / 0.422 / 0.555 / 0.949 / 0.982 / 1.000
+   → 0.067s 处的 0.555 就是"双峰之间"的停顿帧，位移在第 4 帧（+0.100s）已达 0.949。
+   ========================================================================= */
+const A_START = 1.400;
+const A_CUM = [0, 0.140, 0.422, 0.555, 0.949, 0.982, 1.000];  // 索引 -1..5 帧
+function progA(t){
+  const n = (t - A_START) / FRAME + 1;
+  if (n <= 0) return 0;
+  if (n >= A_CUM.length - 1) return 1;
+  const i = Math.floor(n), f = n - i;
+  return lerp(A_CUM[i], A_CUM[i+1], f);
+}
+
+/* ---- B 窗：两组脉冲。第一组 0.267s（峰在 +0.067s），静态间隙 0.466s，
+        第二组 0.134s（峰在 +0.067s）后落定提亮。 ---- */
+const B_START = 6.000, B_P1 = 0.267, B_GAP = 0.466, B_P2_PEAK = 0.067;
+function progB(t){
+  const u = t - B_START;
+  if (u < 0) return 0;
+  if (u < B_P1) return 0.62 * easeOutCubic(u / B_P1);
+  const g = B_P1 + B_GAP;
+  if (u < g) return 0.62;
+  const p = (u - g) / B_P2_PEAK;
+  return p < 1 ? 0.62 + 0.38 * easeOutCubic(clamp(p,0,1)) : 1;
+}
+
+/* ---- C 窗：整幅单帧跃迁 ---- */
+const C_JUMP = 9.200;
+
+/* 端盖开合总状态。5.400–6.000 与 8.600–9.200 属原片的无切区但研究未采样，
+   这两段按"回装 / 换视角"示意，界面上标注为推定。 */
+function cutProgress(t){
+  if (t < 5.400) return progA(t);
+  if (t < 6.000) return 1 - easeInOut((t - 5.400) / 0.600);
+  if (t < 8.600) return progB(t);
+  if (t < 9.200) return 1 - easeInOut((t - 8.600) / 0.600);
+  return 1;
+}
+const transparentAmount = t => t < C_JUMP ? 0 : 1;
+
+/* 落定后提亮：B 第二脉冲 105→141.5（×1.35），C 101.4→135.5（×1.29） */
+function rimBoost(t){
+  if (t < 6.800) return 1.00;
+  if (t < 9.200) return 1.35;
+  return 1.29;
+}
+
+/* =========================================================================
+   2. 转动相位：三个时钟独立，切开不重置转动相位
+   转速只由"残余运动档"分级（A 1.29 / B 0.54 / C 0.59）缩放，
+   C 静帧段残余 0.590 表现为标注微动而非转动（研究 gap 4：来源不可判定）。
+   ========================================================================= */
+const PHASES = [
+  { t0:0.000, t1:1.400, name:'A · 封闭整机',      res:1.29, meas:true  },
+  { t0:1.400, t1:1.567, name:'A · 剖切位移',      res:1.29, meas:true  },
+  { t0:1.567, t1:5.400, name:'A · 落定后连续旋转', res:1.29, meas:true  },
+  { t0:5.400, t1:6.000, name:'回装（推定）',       res:0.54, meas:false },
+  { t0:6.000, t1:6.866, name:'B · 两段脉冲',      res:0.54, meas:true  },
+  { t0:6.866, t1:8.600, name:'B · 落定提亮',      res:0.54, meas:true  },
+  { t0:8.600, t1:9.200, name:'换侧视角（推定）',   res:0.59, meas:false },
+  { t0:9.200, t1:11.470, name:'C · 讲解静帧 2.27s',res:0.59, meas:true  },
+  { t0:11.470,t1:TOTAL, name:'C · 收束',          res:0.59, meas:true  }
+];
+/* 转速档：实测"落定后残余运动量"三档 1.29 / 0.54 / 0.59。
+   1.29 ÷ 0.85 ≈ 1.52 rad/s；B/C 档再乘 0.54/1.29、0.59/1.29（研究 gap 4：
+   C 与 A 的差可能来自转速也可能来自码率，此处只作档位映射，不断言转速比）。
+   静帧不等于冻结 —— 残余 0.59 表现为 1.8px 的漂移而非转动。 */
+for (const p of PHASES) p.w = 1.52 * (p.res / 1.29);
+const CRAWL = { amp: 1.8, hz: 0.40 };      // 静帧段的微观漂移
+function crawl(t){
+  const ph = phaseAt(t);
+  const u = ph.res / 1.29;
+  const k = u * CRAWL.amp;
+  return { x: k * Math.sin(2*Math.PI*CRAWL.hz*t), y: k * Math.cos(2*Math.PI*CRAWL.hz*1.3*t) * 0.7, k };
+}
+
+(function integrate(){
+  let acc = 0;
+  for (const p of PHASES){ p.a0 = acc; acc += p.w * (p.t1 - p.t0); p.a1 = acc; }
+})();
+function rotorAngle(t){
+  for (const p of PHASES) if (t <= p.t1) return p.a0 + p.w * Math.max(0, t - p.t0);
+  return PHASES[PHASES.length-1].a1;
+}
+function phaseAt(t){
+  for (const p of PHASES) if (t <= p.t1) return p;
+  return PHASES[PHASES.length-1];
+}
+
+/* =========================================================================
+   3. 几何
+   ========================================================================= */
+function epitrochoidPath(g, cx, cy, scale, rot){
+  g.beginPath();
+  const c = Math.cos(rot), s = Math.sin(rot);
+  for (let i = 0; i <= 480; i++){
+    const th = i / 480 * Math.PI * 2;
+    let x = (R_H * Math.cos(th) + E_E * Math.cos(3*th)) * scale;
+    let y = (R_H * Math.sin(th) + E_E * Math.sin(3*th)) * scale;
+    const nx = x*c - y*s, ny = x*s + y*c;
+    i ? g.lineTo(cx + nx, cy + ny) : g.moveTo(cx + nx, cy + ny);
+  }
+  g.closePath();
+}
+
+function rotorState(alpha){
+  const cx = CX + E_E * Math.cos(3*alpha);
+  const cy = CY + E_E * Math.sin(3*alpha);
+  const v = [];
+  for (let i = 0; i < 3; i++){
+    const b = alpha + i * Math.PI * 2 / 3;
+    v.push([cx + R_H * Math.cos(b), cy + R_H * Math.sin(b)]);
+  }
+  return { cx, cy, v, alpha };
+}
+
+function rotorPath(g, st){
+  const { cx, cy, v } = st;
+  g.beginPath();
+  g.moveTo(v[0][0], v[0][1]);
+  for (let i = 0; i < 3; i++){
+    const a = v[i], b = v[(i+1) % 3];
+    const mx = (a[0]+b[0])/2, my = (a[1]+b[1])/2;
+    let ox = mx - cx, oy = my - cy;
+    const L = Math.hypot(ox, oy) || 1;
+    const bulge = R_H * 0.20;                 // 二次控制点位移 → 实际外凸约 0.10R
+    g.quadraticCurveTo(mx + ox/L*bulge, my + oy/L*bulge, b[0], b[1]);
+  }
+  g.closePath();
+}
+
+/* =========================================================================
+   4. 绘制
+   ========================================================================= */
+const INK='#24242A', INK2='#5A5A64', GOLD='#B98A3C', PAPER='#F2F0EA';
+const CHAMBER = ['#C4553F','#B98A3C','#4A6E8F'];
+
+/* 端盖离屏缓冲：尺寸即实测剖切区，画出去天然就限制在区内 */
+const coverBuf = document.createElement('canvas');
+coverBuf.width = REG.w; coverBuf.height = REG.h;
+const cctx = coverBuf.getContext('2d');
+const coverMask = document.createElement('canvas');
+coverMask.width = REG.w; coverMask.height = REG.h;
+const mctx = coverMask.getContext('2d');
+
+function drawBackground(){
+  /* 底色不是平涂纸白：参考片 A 窗实测 x=40 处 199、机体腰部 76–108、
+     右侧数据栏底 241，是一块"中间亮、四周沉"的摄影棚地。
+     平涂 #F2F0EA 让左侧均值 227.7，参考 156.8，差 71 —— 画面读起来像图纸不像实物。
+     这里加一层以机体为中心的径向压暗，只在左区生效：
+     右侧数据栏必须保持恒亮（37.5% 全静区），渐变到 x=1180 处已归零。 */
+  ctx.fillStyle = PAPER;
+  ctx.fillRect(0, 0, W, H);
+  const g = ctx.createRadialGradient(CX, CY + 40, 90, CX, CY + 40, 900);
+  g.addColorStop(0,   'rgba(242,240,234,0)');
+  g.addColorStop(0.42,'rgba(120,116,106,0.16)');
+  g.addColorStop(0.72,'rgba(92,88,80,0.30)');
+  g.addColorStop(1,   'rgba(70,67,61,0.38)');
+  ctx.save();
+  ctx.beginPath(); ctx.rect(0, 0, RIGHT_X, H); ctx.clip();
+  ctx.fillStyle = g; ctx.fillRect(0, 0, RIGHT_X, H);
+  ctx.restore();
+  ctx.fillStyle = 'rgba(36,36,42,.052)';
+  for (let x = 24; x < W; x += 48)
+    for (let y = 24; y < H; y += 48)
+      ctx.fillRect(x, y, 1.3, 1.3);
+}
+
+function drawRightColumn(t){
+  /* 全程静止的 37.5% —— A 窗 c5–c7 三列增量 ≤0.2 的硬约束 */
+  ctx.save();
+  ctx.strokeStyle = 'rgba(36,36,42,.18)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(RIGHT_X + 16, 96); ctx.lineTo(RIGHT_X + 16, 996); ctx.stroke();
+
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = GOLD;
+  ctx.font = '600 15px "Helvetica Neue",Helvetica,Arial,sans-serif';
+  ctx.letterSpacing = '3px';
+  ctx.fillText('STYLE-LAB  /  REPRO', RIGHT_X + 56, 150);
+  ctx.letterSpacing = '0px';
+
+  ctx.fillStyle = INK;
+  ctx.font = '600 52px "Helvetica Neue",Helvetica,Arial,"PingFang SC",sans-serif';
+  ctx.fillText('可切开转子', RIGHT_X + 54, 214);
+  ctx.font = '400 21px "Helvetica Neue",Helvetica,Arial,"PingFang SC",sans-serif';
+  ctx.fillStyle = INK2;
+  ctx.fillText('rotary-cutaway · 三段落定后的运动', RIGHT_X + 56, 250);
+
+  ctx.strokeStyle = 'rgba(36,36,42,.2)';
+  ctx.beginPath(); ctx.moveTo(RIGHT_X + 56, 284); ctx.lineTo(RIGHT_X + 640, 284); ctx.stroke();
+
+  /* 主数值锚点。参考片右侧栏的行高实测（深色像素行带）：
+     55 / 67 / 17 / 104 / 17 / 16 / 14 px —— 104px 的 "37 kW" 是整栏唯一的重音，
+     正文只有 14–17px，主副比约 6.1×。本复现原来最大号是 52px 标题，
+     正文 16px，主副比 3.3×，十一行等权排列，眼睛没有落点。
+     这里补一个 104px 的数字锚点（"4 帧"），并把参数表收到 8 行。 */
+  ctx.fillStyle = INK;
+  /* 字号 140px：Helvetica 数字的墨迹高约为字号 0.72，140×0.72≈101px，
+     与参考片 "37 kW" 的 104px 墨迹高对齐（原 104px 字号只出 75px 墨迹）。 */
+  ctx.font = '600 140px "Helvetica Neue",Helvetica,Arial,sans-serif';
+  ctx.fillText('4', RIGHT_X + 52, 418);
+  ctx.font = '400 26px "Helvetica Neue",Helvetica,Arial,sans-serif';
+  ctx.fillStyle = INK2;
+  ctx.fillText('帧', RIGHT_X + 132, 418);
+  ctx.font = '400 15px "Helvetica Neue",Helvetica,Arial,"PingFang SC",sans-serif';
+  ctx.fillStyle = INK2;
+  ctx.fillText('0.133 s 完成切开 · 峰值在第 3 帧 +0.100 s', RIGHT_X + 56, 436);
+
+  ctx.strokeStyle = 'rgba(36,36,42,.2)';
+  ctx.beginPath(); ctx.moveTo(RIGHT_X + 56, 452); ctx.lineTo(RIGHT_X + 640, 452); ctx.stroke();
+
+  const rows = [
+    ['双峰间隔',    '0.067 s（第 3 帧回落至 43%）'],
+    ['剖切区',      'x 12.5–62.5% · y 8.3–89%'],
+    ['质心',        '(696, 549) px · 偏左 264 px'],
+    ['右侧静止区',  '37.5%（Δ ≤ 0.2 格）'],
+    ['瞬态对比',    'A 7.0× · B 10.8× · C 56.5×'],
+    ['落定残余',    'A 1.29 · B 0.54 · C 0.59'],
+    ['响度台阶',    '+12.3 / +12.0 / +5.9 dB'],
+    ['首击对齐',    '+3 / −6 / +20 ms'],
+    ['静帧事件密度','5.73 onset/s（2.27 s）'],
+    ['讲解剪辑间隔','3.01 s（102.2 s 内 33 刀）']
+  ];
+  let y = 500;
+  for (const [k, v] of rows){
+    ctx.font = '400 16px "Helvetica Neue",Helvetica,Arial,"PingFang SC",sans-serif';
+    ctx.fillStyle = INK2; ctx.fillText(k, RIGHT_X + 56, y);
+    ctx.fillStyle = INK;  ctx.font = '500 16px "Helvetica Neue",Helvetica,Arial,"PingFang SC",sans-serif';
+    ctx.fillText(v, RIGHT_X + 200, y);
+    ctx.strokeStyle = 'rgba(36,36,42,.08)';
+    ctx.beginPath(); ctx.moveTo(RIGHT_X + 56, y + 12); ctx.lineTo(RIGHT_X + 640, y + 12); ctx.stroke();
+    y += 38;
+  }
+
+  /* 图例 */
+  ctx.fillStyle = GOLD;  ctx.fillRect(RIGHT_X + 56, 908, 26, 3);
+  ctx.fillStyle = INK2;  ctx.font = '400 14px "Helvetica Neue",Helvetica,Arial,"PingFang SC",sans-serif';
+  ctx.fillText('实测窗口', RIGHT_X + 94, 913);
+  ctx.fillStyle = 'rgba(36,36,42,.28)'; ctx.fillRect(RIGHT_X + 200, 908, 6, 3);
+  ctx.fillRect(RIGHT_X + 210, 908, 6, 3); ctx.fillRect(RIGHT_X + 220, 908, 6, 3);
+  ctx.fillText('未采样 / 推定段', RIGHT_X + 246, 913);
+
+  ctx.fillStyle = 'rgba(36,36,42,.5)';
+  ctx.font = '400 13.5px "Helvetica Neue",Helvetica,Arial,"PingFang SC",sans-serif';
+  ctx.fillText('不含原片画面、音轨、水印或商标。', RIGHT_X + 56, 948);
+  ctx.fillText('图形为程序化几何，声音为 WebAudio 合成。', RIGHT_X + 56, 972);
+  ctx.fillText('几何不代表任何厂商量产的转子尺寸。', RIGHT_X + 56, 996);
+  ctx.restore();
+}
+
+function drawHousingRim(alpha, boost, edgeOnly){
+  ctx.save();
+  ctx.globalAlpha = alpha;
+
+  if (edgeOnly){
+    /* 透明模式：只留边缘与轮廓，不铺不透明壳壁，内部保持可见 */
+    epitrochoidPath(ctx, CX, CY, 1.0, 0);
+    ctx.lineWidth = 2.0;
+    ctx.strokeStyle = 'rgba(36,36,42,.55)';
+    ctx.stroke();
+    ctx.lineWidth = 1.2;
+    ctx.strokeStyle = 'rgba(185,138,60,' + (0.85*boost) + ')';
+    epitrochoidPath(ctx, CX, CY, 1.055, 0);
+    ctx.stroke();
+    ctx.lineWidth = 1.0;
+    ctx.strokeStyle = 'rgba(255,255,255,.55)';
+    epitrochoidPath(ctx, CX, CY, 0.955, 0);
+    ctx.stroke();
+    ctx.restore();
+    return;
+  }
+
+  /* 外圈 */
+  epitrochoidPath(ctx, CX, CY, 1.0, 0);
+  ctx.lineWidth = 30;
+  ctx.strokeStyle = '#2C2C33';
+  ctx.stroke();
+
+  ctx.lineWidth = 30;
+  const grd = ctx.createLinearGradient(CX-290, CY-290, CX+290, CY+290);
+  grd.addColorStop(0,   'rgba(255,255,255,' + (0.28*boost) + ')');
+  grd.addColorStop(0.35,'rgba(255,255,255,0.02)');
+  grd.addColorStop(0.7, 'rgba(0,0,0,0.22)');
+  grd.addColorStop(1,   'rgba(255,255,255,0.10)');
+  ctx.strokeStyle = grd;
+  ctx.stroke();
+
+  ctx.lineWidth = 2.4;
+  ctx.strokeStyle = 'rgba(185,138,60,' + (0.55*boost) + ')';
+  epitrochoidPath(ctx, CX, CY, 1.055, 0);
+  ctx.stroke();
+
+  ctx.lineWidth = 1.6;
+  ctx.strokeStyle = 'rgba(255,255,255,0.30)';
+  epitrochoidPath(ctx, CX, CY, 0.955, 0);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+/* 壳体螺栓落在 30px 宽的壳壁带去上，按当地轮廓半径定位 —— 定半径圈会在
+   四个凹点（局部半径仅 185）落到壳外，形成游离黑点。壳壁在中性灰上，
+   螺栓用亮钢色才读得出。透明模式下壳壁被压薄，螺栓一并撤掉。 */
+function drawHousingBolts(boost){
+  const n = 9;
+  for (let i = 0; i < n; i++){
+    /* 壳体螺栓：原写法把 θ 代进 epitrochoid 的极坐标近似 R+E·cos3θ 求半径，
+       再沿同一 θ 的方向落点——那是"半径对了、方向错了"。真轮廓的极角 φ 与参量 θ
+       不相等（x=R cosθ+E cos3θ, y=R sinθ+E sin3θ），所以四个凹点附近仍会掉出壳外。
+       改为：取轮廓上的实际点，沿该点外法线向内收 11px。 */
+    const th = i / n * Math.PI * 2 + 0.18;
+    const px = R_H * Math.cos(th) + E_E * Math.cos(3 * th);
+    const py = R_H * Math.sin(th) + E_E * Math.sin(3 * th);
+    const L = Math.hypot(px, py) || 1;              // 以质心为原点，法线≈径向
+    const x = CX + px - px / L * 11;
+    const y = CY + py - py / L * 11;
+    ctx.beginPath(); ctx.arc(x, y, 5.0, 0, 7);
+    ctx.fillStyle = '#848B94'; ctx.fill();
+    ctx.lineWidth = 1.4; ctx.strokeStyle = 'rgba(20,20,24,.55)'; ctx.stroke();
+    ctx.beginPath(); ctx.arc(x - 1.4, y - 1.4, 1.9, 0, 7);
+    ctx.fillStyle = 'rgba(255,255,255,' + (0.55 * boost).toFixed(2) + ')'; ctx.fill();
+  }
+}
+
+function drawChambers(st, amt){
+  ctx.save();
+  epitrochoidPath(ctx, CX, CY, 0.995, 0);
+  ctx.clip();
+  for (let i = 0; i < 3; i++){
+    const b = st.alpha + Math.PI/3 + i * Math.PI * 2/3;
+    const rr = (R_H + E_E) * 0.66;
+    const x = CX + rr * Math.cos(b), y = CY + rr * Math.sin(b);
+    const g = ctx.createRadialGradient(x, y, 6, x, y, 96);
+    g.addColorStop(0, CHAMBER[i] + (amt > 0.5 ? 'B0' : '70'));
+    g.addColorStop(1, CHAMBER[i] + '00');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(x, y, 96, 0, 7); ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawRotor(st, boost, ghost){
+  ctx.save();
+  ctx.globalAlpha = ghost ? 0.20 : 1;
+
+  /* 转子本体 */
+  rotorPath(ctx, st);
+  const g = ctx.createLinearGradient(st.cx-R_H, st.cy-R_H, st.cx+R_H, st.cy+R_H);
+  g.addColorStop(0,   ghost ? '#9AA0A8' : '#6E747C');
+  g.addColorStop(0.45,ghost ? '#B9BEC6' : '#4B5058');
+  g.addColorStop(1,   ghost ? '#8C9299' : '#33373D');
+  ctx.fillStyle = g;
+  ctx.fill();
+  ctx.lineWidth = ghost ? 2 : 3.2;
+  ctx.strokeStyle = ghost ? 'rgba(36,36,42,.35)' : 'rgba(20,20,24,.85)';
+  ctx.stroke();
+
+  if (!ghost){
+    /* 转子顶面高光 */
+    ctx.save();
+    rotorPath(ctx, st); ctx.clip();
+    const hg = ctx.createLinearGradient(st.cx, st.cy-190, st.cx, st.cy+190);
+    hg.addColorStop(0, 'rgba(255,255,255,0.20)');
+    hg.addColorStop(0.5, 'rgba(255,255,255,0.02)');
+    hg.addColorStop(1, 'rgba(0,0,0,0.18)');
+    ctx.fillStyle = hg; ctx.fillRect(st.cx-300, st.cy-300, 600, 600);
+    ctx.restore();
+
+    /* 三个密封顶点 —— 跟随同一组顶点，不随镜头或开口重置 */
+    for (let i = 0; i < 3; i++){
+      const v = st.v[i];
+      ctx.beginPath(); ctx.arc(v[0], v[1], 11, 0, 7);
+      ctx.fillStyle = CHAMBER[i]; ctx.fill();
+      ctx.lineWidth = 2.4; ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.stroke();
+      ctx.beginPath(); ctx.arc(v[0], v[1], 3.4, 0, 7);
+      ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.fill();
+    }
+
+    /* 内腔 */
+    ctx.beginPath(); ctx.arc(st.cx, st.cy, 34, 0, 7);
+    ctx.fillStyle = 'rgba(20,20,24,.55)'; ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(185,138,60,' + (0.75*boost) + ')'; ctx.stroke();
+    ctx.beginPath(); ctx.arc(st.cx, st.cy, 13, 0, 7);
+    ctx.fillStyle = '#C9CDD4'; ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawCover(p, boost){
+  /* 端盖不从画面外飞出——那会在实测区左边界 x=240 留下硬边。
+     它沿轴向"退进壳体"：缩小 + 轻微下移 + 淡出，始终落在剖切区内，
+     读作一块端盖被收进后半，而不是一块零件擦过镜头。 */
+  const q  = 1 - p;
+  const sc = 1 - 0.36 * p;
+  const dx = -46 * p, dy = 18 * p, rot = -0.055 * p;
+  const alpha = Math.pow(q, 0.72);
+
+  cctx.clearRect(0, 0, REG.w, REG.h);
+  cctx.save();
+  cctx.globalAlpha = alpha;
+  cctx.translate(CX - REG.x + dx, CY - REG.y + dy);
+  cctx.rotate(rot);
+  cctx.scale(sc, sc);
+
+  cctx.globalAlpha = alpha;
+  /* 端盖明度：原渐变 #DFE3E8→#9AA0A9 全程 154–226，左右两半几乎一样亮，
+     实测 p10=172.9（参考 59.4）——整幅没有暗部，读起来像图纸不像实物。
+     压到 #C9CED6→#5E646E，让端盖自身带出高光与背光两侧。 */
+  epitrochoidPath(cctx, 0, 0, 0.962, 0);
+  const g = cctx.createLinearGradient(-280, -280, 280, 280);
+  g.addColorStop(0,   '#D3D8DF');
+  g.addColorStop(0.35,'#A2A9B4');
+  g.addColorStop(0.62,'#B2B8C1');
+  g.addColorStop(1,   '#5E646E');
+  cctx.fillStyle = g; cctx.fill();
+
+  cctx.lineWidth = 4;  cctx.strokeStyle = 'rgba(30,30,36,.55)'; cctx.stroke();
+  cctx.lineWidth = 1.6; cctx.strokeStyle = 'rgba(255,255,255,.65)';
+  epitrochoidPath(cctx, 0, 0, 0.930, 0); cctx.stroke();
+
+  /* 拉丝纹 */
+  cctx.save();
+  epitrochoidPath(cctx, 0, 0, 0.955, 0); cctx.clip();
+  cctx.strokeStyle = 'rgba(255,255,255,.20)'; cctx.lineWidth = 1;
+  for (let i = -14; i <= 14; i++){
+    cctx.beginPath(); cctx.moveTo(-300, i*20); cctx.lineTo(300, i*20 - 40); cctx.stroke();
+  }
+  cctx.restore();
+
+  /* 端盖螺栓 —— 0.735·(R+E)=217 的定半径圈。
+     用 epitrochoid 比例会在轮廓内凹处落到端盖边线外，形成"游离黑点"。 */
+  const boltRing = (R_H + E_E) * 0.735;
+  for (let i = 0; i < 8; i++){
+    const th = i / 8 * Math.PI * 2 + 0.39;
+    const x = boltRing * Math.cos(th), y = boltRing * Math.sin(th);
+    cctx.beginPath(); cctx.arc(x, y, 9, 0, 7);
+    cctx.fillStyle = '#8F959E'; cctx.fill();
+    cctx.lineWidth = 2; cctx.strokeStyle = 'rgba(30,30,36,.45)'; cctx.stroke();
+    cctx.beginPath(); cctx.arc(x - 2, y - 2, 5, 0, 7);
+    cctx.fillStyle = 'rgba(255,255,255,.55)'; cctx.fill();
+  }
+
+  /* 中心凸台 */
+  cctx.beginPath(); cctx.arc(0, 0, 62, 0, 7);
+  cctx.fillStyle = '#A9AFB8'; cctx.fill();
+  cctx.lineWidth = 3; cctx.strokeStyle = 'rgba(30,30,36,.4)'; cctx.stroke();
+  cctx.beginPath(); cctx.arc(0, 0, 30, 0, 7);
+  cctx.fillStyle = 'rgba(185,138,60,' + (0.85*boost) + ')'; cctx.fill();
+
+  /* 中性几何刻印，不含任何商标 */
+  cctx.strokeStyle = 'rgba(30,30,36,.35)'; cctx.lineWidth = 1.6;
+  cctx.beginPath(); cctx.arc(0, 0, 118, -0.9, 0.9); cctx.stroke();
+  cctx.beginPath(); cctx.arc(0, 0, 118, Math.PI-0.9, Math.PI+0.9); cctx.stroke();
+  cctx.restore();
+
+  /* 贴近实测区左边界时柔化，避免在 x<240 处出现被硬裁的轮廓 */
+  const grad = cctx.createLinearGradient(0, 0, 120, 0);
+  grad.addColorStop(0, 'rgba(0,0,0,0)');
+  grad.addColorStop(1, 'rgba(0,0,0,1)');
+  cctx.globalCompositeOperation = 'destination-in';
+  cctx.fillStyle = grad;
+  cctx.fillRect(0, 0, REG.w, REG.h);
+  cctx.globalCompositeOperation = 'source-over';
+
+  ctx.drawImage(coverBuf, REG.x, REG.y);
+}
+
+function drawSectionEdge(p, boost){
+  if (p < 0.02) return;
+  const a = smooth(0.05, 0.55, p);
+  ctx.save();
+  ctx.globalAlpha = a * 0.9;
+  /* 剖切口的斜线封口（工程制图习惯），沿壳体内缘左侧一列 */
+  ctx.strokeStyle = 'rgba(185,138,60,' + (0.55*boost) + ')';
+  ctx.lineWidth = 2.4;
+  ctx.beginPath();
+  for (let i = 0; i <= 20; i++){
+    const y = CY - 250 + i * 25;
+    ctx.moveTo(CX - 268 + i*1.5, y);
+    ctx.lineTo(CX - 248 + i*1.5, y + 18);
+  }
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawAnnotations(t, p){
+  const a = smooth(0.86, 1.0, p);
+  const tag = transparentAmount(t);
+  ctx.save();
+  ctx.textBaseline = 'middle';
+  ctx.lineWidth = 1.2;
+
+  if (a > 0.01){
+    ctx.globalAlpha = a;
+    const items = [
+      ['壳体 / HOUSING', 300, 300, CX - 246, CY - 176],
+      ['三角转子 / ROTOR', 268, 792, CX - 188, CY + 132],
+      ['偏心轴 3 : 1', 268, 700, CX - 14, CY + 34]
+    ];
+    for (const [label, tx, ty, lx, ly] of items){
+      ctx.strokeStyle = 'rgba(36,36,42,.42)';
+      ctx.beginPath(); ctx.moveTo(tx + 138, ty); ctx.lineTo(lx, ly); ctx.stroke();
+      ctx.beginPath(); ctx.arc(lx, ly, 3.2, 0, 7);
+      ctx.fillStyle = GOLD; ctx.fill();
+      ctx.fillStyle = INK;
+      ctx.font = '500 15px "Helvetica Neue",Helvetica,Arial,"PingFang SC",sans-serif';
+      ctx.fillText(label, tx, ty);
+    }
+  }
+
+  if (tag > 0.01){
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = INK2;
+    ctx.font = '400 15px "Helvetica Neue",Helvetica,Arial,"PingFang SC",sans-serif';
+    ctx.fillText('外壳透明 · 轮廓与深度保留 · 内部不做 depthTest=false', 268, 230);
+  }
+  ctx.restore();
+}
+
+function drawHeader(t, p){
+  ctx.save();
+  ctx.fillStyle = GOLD;
+  ctx.font = '600 14px "Helvetica Neue",Helvetica,Arial,sans-serif';
+  ctx.letterSpacing = '3.2px';
+  ctx.fillText('MOTION ATELIER  /  复现板', 60, 96);
+  ctx.letterSpacing = '0px';
+
+  ctx.fillStyle = INK;
+  ctx.font = '600 30px "Helvetica Neue",Helvetica,Arial,"PingFang SC",sans-serif';
+  ctx.fillText('切开只是 4 帧，落定之后才见功夫', 60, 140);
+
+  /* 时间码 —— 固定在左上，行于实测区之外 */
+  ctx.textAlign = 'right';
+  ctx.font = '500 15px ui-monospace,Menlo,Consolas,monospace';
+  ctx.fillStyle = INK2;
+  ctx.fillText(
+    t.toFixed(3).padStart(6,'0') + ' s   ·   F' + String(Math.round(t*30)).padStart(4,'0')
+    + '   ·   端盖 ' + p.toFixed(3),
+    RIGHT_X - 40, 96
+  );
+  ctx.restore();
+}
+
+function drawHUD(t, p){
+  const ph = phaseAt(t);
+  const st = rotorState(rotorAngle(t));
+
+  ctx.save();
+  ctx.strokeStyle = 'rgba(36,36,42,.16)';
+  ctx.beginPath(); ctx.moveTo(60, 902); ctx.lineTo(RIGHT_X - 40, 902); ctx.stroke();
+
+  ctx.fillStyle = INK2;
+  ctx.font = '400 13px "Helvetica Neue",Helvetica,Arial,"PingFang SC",sans-serif';
+  ctx.fillText('阶段', 60, 936);
+  ctx.fillText('残余运动档', 60, 966);
+  ctx.fillText('转子相位', 60, 996);
+  ctx.fillText('偏心轴', 60, 1026);
+
+  ctx.fillStyle = INK;
+  ctx.font = '500 15px "Helvetica Neue",Helvetica,Arial,"PingFang SC",sans-serif';
+  ctx.fillText(ph.name, 148, 936);
+
+  ctx.fillStyle = ph.meas ? GOLD : 'rgba(36,36,42,.42)';
+  ctx.fillRect(148, 961, 26, 3);
+  ctx.fillStyle = INK;
+  ctx.font = '500 15px ui-monospace,Menlo,Consolas,monospace';
+  ctx.fillText(ph.res.toFixed(2) + (ph.meas ? '（实测中位 pix_diff）' : '（推定）'), 186, 966);
+
+  ctx.font = '500 15px ui-monospace,Menlo,Consolas,monospace';
+  ctx.fillText((rotorAngle(t)*180/Math.PI).toFixed(1).padStart(7,' ') + '°', 148, 996);
+  ctx.fillText((rotorAngle(t)*3*180/Math.PI).toFixed(1).padStart(7,' ') + '°   轴:转子 3:1', 148, 1026);
+
+  /* 时间轴条，只画在实测区内，避免污染右侧静止区 */
+  const bx = 700, bw = RIGHT_X - 40 - bx, by = 990;
+  ctx.strokeStyle = 'rgba(36,36,42,.15)';
+  ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx + bw, by); ctx.stroke();
+  for (const ph2 of PHASES){
+    const x0 = bx + ph2.t0 / TOTAL * bw, x1 = bx + ph2.t1 / TOTAL * bw;
+    if (ph2.meas){
+      ctx.fillStyle = 'rgba(185,138,60,.55)';
+      ctx.fillRect(x0, by - 2.5, x1 - x0, 5);
+    } else {
+      ctx.fillStyle = 'rgba(36,36,42,.22)';
+      for (let x = x0; x < x1; x += 6) ctx.fillRect(x, by - 1.5, 3, 3);
+    }
+  }
+  ctx.fillStyle = INK;
+  ctx.fillRect(bx + t / TOTAL * bw - 1, by - 11, 2.4, 22);
+
+  ctx.fillStyle = 'rgba(36,36,42,.45)';
+  ctx.font = '400 12px "Helvetica Neue",Helvetica,Arial,"PingFang SC",sans-serif';
+  ctx.fillText('实测窗口', bx, by + 30);
+  ctx.fillText('推定段', bx + 76, by + 30);
+  ctx.restore();
+}
+
+function render(t){
+  t = clamp(t, 0, TOTAL);
+  const p = cutProgress(t);
+  const boost = rimBoost(t);
+  const trans = transparentAmount(t);
+  const ang = rotorAngle(t);
+  const st = rotorState(ang);
+
+  drawBackground();
+  drawRightColumn(t);
+
+  const cr = crawl(t);
+  const lift = clamp(st.cy - CY, -E_E, E_E);      // 转子离台座的高度
+
+  /* --- 左区：机构 --- */
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(REG.x, REG.y, REG.w, REG.h);
+  ctx.clip();
+
+  /* 台座阴影 —— 随转子高度变软变淡，承担"实体落在台座上"的一部分读数 */
+  ctx.save();
+  const sh = ctx.createRadialGradient(
+    st.cx + cr.x, 852, 12,
+    st.cx + cr.x, 852, 268
+  );
+  const soft = (lift + E_E) / (2 * E_E);          // 0 低 1 高
+  sh.addColorStop(0,   'rgba(36,36,42,' + (0.26 - 0.10*soft).toFixed(3) + ')');
+  sh.addColorStop(0.55,'rgba(36,36,42,' + (0.10 - 0.04*soft).toFixed(3) + ')');
+  sh.addColorStop(1,   'rgba(36,36,42,0)');
+  ctx.fillStyle = sh;
+  ctx.beginPath(); ctx.ellipse(st.cx + cr.x, 852, 268, 26, 0, 0, 7); ctx.fill();
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(cr.x, cr.y);
+
+  /* 内腔底色 */
+  epitrochoidPath(ctx, CX, CY, 0.99, 0);
+  ctx.fillStyle = trans ? 'rgba(232,230,223,0.92)' : '#1E1E23';
+  ctx.fill();
+
+  /* 透明模式：先画一层错位的幽灵轮廓，制造前后层读法 */
+  if (trans){
+    ctx.save();
+    ctx.translate(22, -14);
+    ctx.globalAlpha = 0.55;
+    drawRotor(rotorState(ang - 0.28), boost, true);
+    ctx.restore();
+  }
+
+  drawChambers(st, trans);
+  drawRotor(st, boost, false);
+
+  /* 端盖（压在机构之上、壳体圈之下） */
+  drawCover(p, boost);
+
+  /* 壳体圈永远在最上层，端盖从它下面退出去 */
+  if (trans){
+    drawHousingRim(0.26, boost);              // 壳壁整体压低，内部仍深度可读
+    drawHousingRim(1.0, boost * 0.9, true);   // 边缘保留
+  } else {
+    drawHousingRim(1.0, boost);
+    drawHousingBolts(boost);
+  }
+
+  drawSectionEdge(p, boost);
+
+  ctx.restore();          // 结束 crawl 平移
+  drawAnnotations(t, p);
+  ctx.restore();          // 结束剖切区裁剪
+
+  drawHeader(t, p);
+  drawHUD(t, p);
+
+  /* 外框 */
+  ctx.strokeStyle = 'rgba(36,36,42,.18)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(0.5, 0.5, W - 1, H - 1);
+}
+
+/* =========================================================================
+   5. 声音 —— 全部程序化合成，噪点底 + 宽带首击 + 人声级事件流
+   ========================================================================= */
+const Audio = {
+  ctx:null, master:null, bedGain:null, bedBuf:null, nodes:[], base:0, t0:0, on:false
+};
+
+function makeNoiseBuffer(sec){
+  const sr = Audio.ctx.sampleRate;
+  const n = Math.floor(sec * sr);
+  const buf = Audio.ctx.createBuffer(1, n, sr);
+  const d = buf.getChannelData(0);
+  let sum = 0;
+  for (let i = 0; i < n; i++){ const v = Math.random()*2 - 1; d[i] = v; sum += v*v; }
+  const rms = Math.sqrt(sum / n) || 1;
+  for (let i = 0; i < n; i++) d[i] /= rms;   // 归一到 RMS=1，使增益即 dBFS
+  return buf;
+}
+
+function audioInit(){
+  if (Audio.ctx) return true;
+  const C = window.AudioContext || window.webkitAudioContext;
+  if (!C) return false;
+  Audio.ctx = new C();
+  Audio.master = Audio.ctx.createGain();
+  Audio.master.gain.value = 0.5;
+  Audio.master.connect(Audio.ctx.destination);
+  Audio.bedGain = Audio.ctx.createGain();
+  Audio.bedGain.gain.value = 0;
+  Audio.bedGain.connect(Audio.master);
+  Audio.bedBuf = makeNoiseBuffer(3.0);
+  return true;
+}
+
+const dbToGain = db => Math.pow(10, db/20);
+
+/* 480ms 级 RMS 包络：A −18.68→−6.40（+12.3）、B −20.70→−8.70（+12.0）、
+   C −14.52→−8.61（+5.9）；每次台阶前 0.35–0.50s 保持低电平。 */
+const BED_DB = [
+  [0.000, -19.50],
+  [1.050, -18.68],   // A 前铺垫 0.353s
+  [1.403,  -6.40],   // A 首击
+  [2.100, -14.20],
+  [5.644, -20.70],   // B 前铺垫 0.350s
+  [5.994,  -8.70],   // B 首击
+  [6.500, -16.80],
+  [6.794,  -8.20],   // B 第二脉冲
+  [7.400, -15.40],
+  [8.830, -14.52],   // C 前铺垫 0.350s
+  [9.180,  -8.61],   // C 材质跃迁
+  [10.200,-16.20],
+  [TOTAL, -19.00]
+];
+
+/* 首击对齐（onsets vs 帧 PTS）：A 5.503/5.500 = +3ms，B 121.394/121.400 = −6ms，
+   C 145.287/145.267 = +20ms。取数值对而非文字描述（两者相互矛盾）。 */
+const HITS = [
+  { t: 1.403, db:  -6.40, f: 2988, dur: 0.120, thump: 0.32, kind:'structure' },
+  { t: 1.589, db:  -6.90, f: 3410, dur: 0.110, thump: 0.26, kind:'structure' },
+  { t: 1.728, db:  -5.90, f: 3783, dur: 0.140, thump: 0.30, kind:'structure' },
+  { t: 5.994, db:  -8.70, f: 3120, dur: 0.110, thump: 0.22, kind:'structure' },
+  { t: 6.794, db:  -8.20, f: 3560, dur: 0.130, thump: 0.24, kind:'structure' },
+  { t: 9.180, db:  -8.61, f: 3400, dur: 0.230, thump: 0.12, kind:'material'  }
+];
+
+/* 事件流密度：C 静帧段 5.73/s、A 窗 5.78/s、全片 5.41/s —— 画面停，声音不停 */
+const DENSITY = [
+  [0.000, 5.400, 5.78],
+  [5.400, 8.600, 5.41],
+  [8.600, 11.470, 5.73],
+  [11.470, TOTAL, 5.41]
+];
+
+function mulberry32(a){
+  return function(){
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function buildOnsets(){
+  const out = [];
+  const rnd = mulberry32(20261026);
+  const PENTA = [261.6, 293.7, 349.2, 392.0, 440.0, 523.3, 587.3, 698.5];
+  for (const [a, b, dens] of DENSITY){
+    let t = a;
+    while (t < b){
+      t += 1 / dens + (rnd() - 0.5) * 0.055;
+      if (t >= b) break;
+      const tonal = rnd() < 0.865;                   // 920 中 796 tonal ≈ 86.5%
+      const f = PENTA[Math.floor(rnd() * PENTA.length)] * (rnd() < 0.35 ? 2 : 1);
+      out.push({ t, tonal, f, amp: dbToGain(-30 + rnd() * 5), pan: (rnd()*2 - 1) * 0.45 });
+    }
+  }
+  return out;
+}
+const ONSETS = buildOnsets();
+
+function stopAll(){
+  for (const n of Audio.nodes){ try { n.stop(); } catch(e){} try { n.disconnect(); } catch(e){} }
+  Audio.nodes.length = 0;
+}
+
+function scheduleHit(hit, when){
+  /* 宽带噪声首击：带通 2.9–3.8 kHz，宽带噪声源 */
+  const src = Audio.ctx.createBufferSource();
+  src.buffer = Audio.bedBuf; src.loop = true;
+  const bp = Audio.ctx.createBiquadFilter();
+  bp.type = 'bandpass'; bp.frequency.value = hit.f; bp.Q.value = 0.85;
+  const g = Audio.ctx.createGain();
+  const makeup = 2.4;                                  // 带通后能量补偿（近似）
+  const amp = dbToGain(hit.db) * makeup;
+  g.gain.setValueAtTime(0.0001, when);
+  g.gain.linearRampToValueAtTime(amp, when + 0.005);
+  g.gain.exponentialRampToValueAtTime(0.0001, when + hit.dur);
+  src.connect(bp); bp.connect(g); g.connect(Audio.master);
+  src.start(when); src.stop(when + hit.dur + 0.05);
+  Audio.nodes.push(src);
+
+  /* 低频重量 */
+  if (hit.thump > 0){
+    const o = Audio.ctx.createOscillator();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(hit.kind === 'material' ? 132 : 78, when);
+    o.frequency.exponentialRampToValueAtTime(46, when + 0.16);
+    const og = Audio.ctx.createGain();
+    og.gain.setValueAtTime(0.0001, when);
+    og.gain.linearRampToValueAtTime(hit.thump * dbToGain(hit.db), when + 0.006);
+    og.gain.exponentialRampToValueAtTime(0.0001, when + 0.19);
+    o.connect(og); og.connect(Audio.master);
+    o.start(when); o.stop(when + 0.22);
+    Audio.nodes.push(o);
+  }
+}
+
+function scheduleOnset(ev, when){
+  const env = Audio.ctx.createGain();
+  env.gain.setValueAtTime(0.0001, when);
+  env.gain.linearRampToValueAtTime(ev.amp, when + 0.006);
+  env.gain.exponentialRampToValueAtTime(0.0001, when + (ev.tonal ? 0.15 : 0.09));
+
+  let tail = env;
+  if (Audio.ctx.createStereoPanner){
+    const p = Audio.ctx.createStereoPanner();
+    p.pan.value = ev.pan;
+    env.connect(p); tail = p;
+  }
+  tail.connect(Audio.master);
+
+  if (ev.tonal){
+    const o = Audio.ctx.createOscillator();
+    o.type = 'sine'; o.frequency.value = ev.f;
+    o.connect(env); o.start(when); o.stop(when + 0.2);
+    Audio.nodes.push(o);
+  } else {
+    const s = Audio.ctx.createBufferSource();
+    s.buffer = Audio.bedBuf; s.loop = true;
+    const bp = Audio.ctx.createBiquadFilter();
+    bp.type = 'bandpass'; bp.frequency.value = 1600 + (ev.f % 400); bp.Q.value = 1.4;
+    s.connect(bp); bp.connect(env); s.start(when); s.stop(when + 0.12);
+    Audio.nodes.push(s);
+  }
+}
+
+function audioPlayFrom(t0){
+  if (!audioInit()) return;
+  if (Audio.ctx.state === 'suspended') Audio.ctx.resume();
+  stopAll();
+
+  const base = Audio.ctx.currentTime + 0.06;
+
+  /* 噪点底 */
+  const bed = Audio.ctx.createBufferSource();
+  bed.buffer = Audio.bedBuf; bed.loop = true;
+  const lp = Audio.ctx.createBiquadFilter();
+  lp.type = 'lowpass'; lp.frequency.value = 1250; lp.Q.value = 0.6;
+  bed.connect(lp); lp.connect(Audio.bedGain);
+
+  Audio.bedGain.gain.cancelScheduledValues(Audio.ctx.currentTime);
+  Audio.bedGain.gain.setValueAtTime(dbToGain(BED_DB[0][1]), base);
+  for (const [tt, db] of BED_DB){
+    if (tt <= t0) continue;
+    Audio.bedGain.gain.exponentialRampToValueAtTime(dbToGain(db), base + (tt - t0));
+  }
+  bed.start(base);
+  Audio.nodes.push(bed);
+
+  for (const h of HITS) if (h.t >= t0) scheduleHit(h, base + (h.t - t0));
+  for (const ev of ONSETS) if (ev.t >= t0) scheduleOnset(ev, base + (ev.t - t0));
+
+  Audio.on = true;
+}
+
+function audioStop(){
+  if (!Audio.ctx) return;
+  stopAll();
+  try { Audio.bedGain.gain.cancelScheduledValues(Audio.ctx.currentTime); } catch(e){}
+  try { Audio.bedGain.gain.setValueAtTime(0.0001, Audio.ctx.currentTime); } catch(e){}
+  Audio.on = false;
+}
+
+/* =========================================================================
+   6. 播放控制
+   ========================================================================= */
+const qs = new URLSearchParams(location.search);
+let t = 0;
+let playing = true;
+let muted = qs.get('audio') === '0';
+
+if (qs.has('t')){
+  const v = parseFloat(qs.get('t'));
+  if (isFinite(v)) t = clamp(v, 0, TOTAL);
+  playing = false;
+}
+
+const elPlay = document.getElementById('play');
+const elSeek = document.getElementById('seek');
+const elTC   = document.getElementById('tc');
+const elMute = document.getElementById('mute');
+elSeek.max = TOTAL.toFixed(3);
+
+function syncPlayBtn(){ elPlay.textContent = playing ? '暂停' : '播放'; }
+function syncMuteBtn(){
+  elMute.textContent = muted ? '声音 关' : '声音 开';
+  elMute.setAttribute('aria-pressed', muted ? 'true' : 'false');
+}
+function setMuted(m){
+  muted = m;
+  if (muted){ audioStop(); }
+  else if (playing){ audioPlayFrom(t); }
+  syncMuteBtn();
+}
+
+function play(){
+  playing = true; syncPlayBtn();
+  if (!muted) audioPlayFrom(t);
+}
+function pause(){
+  playing = false; syncPlayBtn();
+  audioStop();
+}
+function seek(v, keepAudio){
+  t = clamp(v, 0, TOTAL);
+  if (playing && keepAudio !== false && !muted) audioPlayFrom(t);
+  else if (playing) { /* 静默播放 */ }
+}
+
+elPlay.addEventListener('click', () => { playing ? pause() : play(); });
+elSeek.addEventListener('input', () => { seek(parseFloat(elSeek.value)); });
+elMute.addEventListener('click', () => setMuted(!muted));
+document.getElementById('prev').addEventListener('click', () => { pause(); seek(t - FRAME); });
+document.getElementById('next').addEventListener('click', () => { pause(); seek(t + FRAME); });
+document.querySelectorAll('.jump').forEach(b => {
+  b.addEventListener('click', () => { pause(); seek(parseFloat(b.dataset.t)); });
+});
+window.addEventListener('keydown', e => {
+  if (e.code === 'Space'){ e.preventDefault(); playing ? pause() : play(); }
+  if (e.code === 'ArrowLeft'){ e.preventDefault(); pause(); seek(t - FRAME); }
+  if (e.code === 'ArrowRight'){ e.preventDefault(); pause(); seek(t + FRAME); }
+});
+
+let lastTS = 0;
+function loop(ts){
+  if (!lastTS) lastTS = ts;
+  let dt = (ts - lastTS) / 1000;
+  lastTS = ts;
+  if (dt > 0.12) dt = 0.12;                 // 标签页切回时防跳
+  if (playing){
+    t += dt;
+    if (t >= TOTAL){ t = 0; if (!muted) audioPlayFrom(0); }
+  }
+  render(t);
+
+  elSeek.value = t.toFixed(3);
+  elTC.textContent = t.toFixed(3).padStart(6,'0') + ' / ' + TOTAL.toFixed(3)
+                   + ' · F' + String(Math.round(t*30)).padStart(4,'0');
+  requestAnimationFrame(loop);
+}
+
+/* ---- 供外部逐帧核对的接口 ---- */
+window.__repro = {
+  total: TOTAL,
+  /* 定格 / 逐帧跳转必须同时掐掉已排程的声音，否则画面停住而声音继续跑 */
+  seek(v){ playing = false; syncPlayBtn(); audioStop(); seek(v); render(t); return t; },
+  play, pause,
+  get t(){ return t; },
+  shot(tt){
+    if (typeof tt === 'number'){ playing = false; syncPlayBtn(); seek(clamp(tt,0,TOTAL)); }
+    render(t);
+    return cv.toDataURL('image/png');
+  },
+  state(){
+    const p = cutProgress(t);
+    return {
+      t:+t.toFixed(3), frame: Math.round(t*30),
+      phase: phaseAt(t).name,
+      cut: +p.toFixed(3),
+      rotorDeg: +(rotorAngle(t)*180/Math.PI).toFixed(2),
+      transparent: transparentAmount(t),
+      rimBoost: +rimBoost(t).toFixed(2),
+      audio: Audio.on, muted, playing
+    };
+  }
+};
+
+syncPlayBtn();
+syncMuteBtn();
+render(t);
+requestAnimationFrame(loop);
+
+})();
+</script>
+</body>
+</html>

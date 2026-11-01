@@ -1,0 +1,1434 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>复现 · UI 动效 35.6 s ／ MAX 运动组织</title>
+<style>
+  :root{
+    --bg:#0d1114; --panel:#141a1f; --line:#243038; --ink:#dfe7ec; --dim:#8a9aa5;
+    --cyan:#7dbdda; --blue:#2045EB; --purple:#3E1EDA;
+    --ok:#6fbf8b; --bad:#d9786a; --warn:#cbad5d;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.65 "Inter","Helvetica Neue","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+  a{color:var(--cyan)}
+  code{font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#b7cdd8;
+    background:#0a0e11;border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  header{padding:22px 26px 12px;border-bottom:1px solid var(--line)}
+  header h1{margin:0 0 4px;font-size:19px;font-weight:600;letter-spacing:.01em}
+  header p{margin:0;color:var(--dim);font-size:12.5px;max-width:104ch}
+  main{display:grid;grid-template-columns:minmax(0,1fr) 372px;gap:0;align-items:start}
+  @media (max-width:1180px){main{grid-template-columns:1fr}}
+  .stage{padding:16px 18px 20px;min-width:0}
+  canvas#scene{width:100%;height:auto;display:block;border-radius:8px;background:#000;
+    border:1px solid var(--line)}
+  .transport{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .transport{position:relative;z-index:2}
+  .transport button{position:relative;z-index:3;background:#1a2229;color:var(--ink);border:1px solid var(--line);
+    border-radius:6px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer;min-width:38px}
+  .transport button:hover{background:#222c34}
+  .transport button[aria-pressed="true"]{background:#25404d;border-color:#356b80;color:#cfeef9}
+  #seek{flex:1;min-width:180px;accent-color:#7dbdda}
+  #tc{font:12.5px ui-monospace,Menlo,Consolas,monospace;color:var(--dim);white-space:nowrap}
+  .marks{position:relative;height:20px;margin:2px 2px 0;pointer-events:none}
+  .marks span{pointer-events:none}
+  .marks span{position:absolute;top:2px;transform:translateX(-50%);
+    font:10.5px ui-monospace,Menlo,Consolas,monospace;color:var(--dim);white-space:nowrap}
+  .marks span::before{content:"";position:absolute;left:50%;top:-3px;width:1px;height:5px;
+    background:#3a4a55;transform:translateX(-50%)}
+  aside.panel{border-left:1px solid var(--line);padding:18px 18px 40px;background:var(--panel);
+    min-height:100%}
+  @media (max-width:1180px){aside.panel{border-left:0;border-top:1px solid var(--line)}}
+  .panel h2{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);
+    margin:18px 0 8px;font-weight:600}
+  .panel h2:first-child{margin-top:0}
+  .kv{display:grid;grid-template-columns:96px 1fr;gap:2px 10px;
+    font:12.5px ui-monospace,Menlo,Consolas,monospace}
+  .kv dt{color:var(--dim)}
+  .kv dd{margin:0;color:var(--ink)}
+  .ok{color:var(--ok)} .bad{color:var(--bad)} .warn{color:var(--warn)} .dim{color:var(--dim)}
+  .row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .row button{flex:1;background:#1a2229;border:1px solid var(--line);border-radius:6px;
+    color:var(--ink);padding:6px 8px;font:inherit;font-size:12px;cursor:pointer}
+  .row button:hover{background:#222c34}
+  ul.params{margin:0;padding-left:16px;font-size:12px;color:#b7c8d2}
+  ul.params li{margin:0 0 7px}
+  ul.params li b{color:#dfe7ec;font-weight:600}
+  ul.params li em{color:var(--dim);font-style:normal;font-size:11.5px;display:block}
+  pre#log{margin:6px 0 0;padding:8px;background:#0a0e11;border:1px solid var(--line);
+    border-radius:6px;font:11px/1.55 ui-monospace,Menlo,Consolas,monospace;color:#9fb4c0;
+    max-height:300px;overflow:auto;white-space:pre-wrap}
+  footer{padding:14px 26px 40px;color:var(--dim);font-size:12px;border-top:1px solid var(--line);
+    max-width:150ch}
+  footer b{color:#b7c8d2;font-weight:600}
+</style>
+</head>
+<body>
+<header>
+  <h1>复现 ／ UI 动效 35.6 s 的运动组织</h1>
+  <p>按 <code>studies/max-ui-motion.md</code>「2026-10-26 量化补充」重建：动作默认 2 帧、一帧硬出现、97 px 两段式上移（62% + 36%，中间 0.13 s 低速谷）、0.1–0.8 px/帧单向漂移、按背景亮度分三档收尾、一半时间不动。
+     画面与声音全部由本页程序生成，不含原片素材、音轨、水印或商标。加 <code>?t=25.4</code> 定格到指定秒数，便于逐帧比对。</p>
+</header>
+
+<main>
+  <section class="stage">
+    <canvas id="scene" width="1280" height="720" aria-label="UI 动效复现画布"></canvas>
+    <div class="transport">
+      <button id="play" title="空格">播放</button>
+      <button id="prev" title="←">◀</button>
+      <button id="next" title="→">▶</button>
+      <input id="seek" type="range" min="0" max="1067" step="1" value="0" aria-label="时间轴">
+      <span id="tc">f000 · 0.000 s</span>
+      <button id="sound" aria-pressed="false">声音</button>
+      <button id="png">PNG</button>
+    </div>
+    <div class="marks" id="marks"></div>
+  </section>
+
+  <aside class="panel">
+    <h2>当前帧</h2>
+    <dl class="kv">
+      <dt>frame / t</dt><dd id="vT">—</dd>
+      <dt>段落</dt><dd id="vSeg">—</dd>
+      <dt>按钮行程</dt><dd id="vLift">—</dd>
+      <dt>组位移</dt><dd id="vDrift">—</dd>
+      <dt>pix_diff</dt><dd id="vPd">—</dd>
+    </dl>
+
+    <h2>照抄的参数与来源</h2>
+    <ul class="params">
+      <li><b>单动作 0.067 s / 2 帧</b>为默认；&gt;0.5 s 的动作全片仅 2 处。<em>43 段 pix_diff≥1.0 的中位与分布</em></li>
+      <li><b>入场 1 帧硬出现</b>，不做缩放补间。<em>24.467 s 蓝色面积 ×16.4、x +34 px 同帧完成</em></li>
+      <li><b>一次缓出 ≤0.6 s</b>，超了拆两段，中间留 0.13 s 低速谷。<em>24.467–25.60 s，97 px，62%+36%</em></li>
+      <li><b>缓出起手 12 px/帧，每 3–5 帧减半</b>（12→8→4→2→1）。<em>同上段逐帧速度表</em></li>
+      <li><b>收尾三档</b>：0.11 s 黑场 / ≈0.24 s UI 位移 / 0.41 s 亮场卡。<em>12.90、24.47、9.33 三处拟合</em></li>
+      <li><b>静置 ≥1.0 s，占全片约 50%</b>，最长 2.3–2.4 s。<em>pix_diff&lt;0.5 连续区间</em></li>
+      <li><b>漂移 0.1–0.8 px/帧单向</b>；&gt;1 px/帧改走加速出画。<em>25.77–27.37 s 相位相关</em></li>
+      <li><b>对齐两档</b>：峰动作 ±20 ms；单帧硬切声音提前 55–85 ms。<em>19 帧 × 7 簇</em></li>
+      <li><b>静止时 onset 提到 6.3 个/秒</b>（全片 5.15）。<em>24.4–27.7 s vs 全片</em></li>
+      <li><b>色</b> #2045EB 一族、#0C093E 深紫、亮部 #3E1EDA。<em>调色板众数，H.264 压缩色</em></li>
+    </ul>
+
+    <h2>自检</h2>
+    <div class="row">
+      <button id="mAll">逐帧预算</button>
+      <button id="mAudio">音频密度</button>
+    </div>
+    <pre id="log">点「逐帧预算」在 320×180 上渲染全部 1068 帧，统计静止额度、运动段长度与 onset 密度，并与研究结论对比。这是自家画面的统计，不是原片数值。</pre>
+
+    <h2>说明</h2>
+    <p style="font-size:12px;color:#8a9aa5;margin:0">
+      位置为本页重新排布（1280×720），<b>时间与位移量 1:1 取自研究结论</b>。按钮逐帧位移表求和
+      <span id="vSum">—</span> px，实测为 97 px（结论本身给出 62%+36%=98% 的分配）。
+    </p>
+  </aside>
+</main>
+
+<footer>
+  <b>不复制的东西</b>：原片画面、音轨、字体、水印、商标、工程文件一概没有；所有声音由 WebAudio 振荡器与确定性噪声即时合成。
+  <b>与原片的差距</b>：原档 SHA256 不一致（本页没有原档），研究结论本身缺完整连续观看与人工听审，所以这里能做到的是「时间结构一致」，不是「观感相同」。
+</footer>
+
+<script>
+(function(){
+'use strict';
+
+/* ═══════════════ 常量 ═══════════════ */
+const FPS    = 30;
+const DUR    = 35.6;
+const FRAMES = Math.round(DUR * FPS);           // 1068
+const W = 1280, H = 720;
+
+const COL = {
+  ink:'#000000', ink2:'#050407',
+  panel:'#100E19', panelB:'#161324', line:'#272238', line2:'#352D4A',
+  dim:'#6B6680', dim2:'#4B4760', text:'#E9E7F2', text2:'#A9A4BE',
+  blue:'#2045EB', blueD:'#1C40E3', blueL:'#2046ED',
+  purple:'#0C093E', purpleL:'#3E1EDA',
+  light:'#F2F1F5', light2:'#E4E2EA', dark:'#141220'
+};
+
+const SANS = '"Helvetica Neue","PingFang SC","Microsoft YaHei",system-ui,sans-serif';
+const MONO = 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace';
+
+const canvas = document.getElementById('scene');
+const ctx = canvas.getContext('2d');
+
+/* ═══════════════ 关键帧 ═══════════════ */
+const K = {
+  aPop19: 19, aPop24: 24, aPop29: 29, aPop34: 34,   // 0.633 / 0.800 / 0.967 / 1.133
+  aExpand: 38,          // 1.267 s  峰动作
+  aManager: 70,         // 2.333 s  缩小 + 管理器层级
+  aSelect: 85,          // 2.833 s
+  bType: 122,           // 4.067 s
+  bShift: 134,          // 4.467 s  强变化（非切）
+  bRow: 161,            // 5.367 s
+  bDup: 178,            // 5.933 s  起，4 行逐张
+  cutLight: 277,        // 9.233 s  单帧硬切 → 亮
+  cSettle: 280,         // 9.333 s  τ = 0.408
+  cutDark: 320,         // 10.667 s 单帧硬切 → 黑
+  dSettle: 387,         // 12.900 s τ = 0.107
+  dPanels: 437,         // 14.567 s 多面板一次就位
+  still1: 451, still1e: 519,   // 15.033–17.300 静置 2.30 s
+  pushIn: 520, pushInEnd: 534, // 17.333–17.800 推近 0.467 s
+  drag: 600, land: 620,
+  btnAnchor: 726,       // 24.200 s 52×28 锚点
+  btnShrink: 730,       // 24.333 s 50×26
+  btnJump: 734,         // 24.467 s 一帧 208×67
+  btnSeg1e: 752,        // 25.067 s 第一段结束
+  valley: 756,          // 25.200 s 低速谷结束
+  btnSeg2e: 768,        // 25.600 s 第二段结束
+  clip: 769,            // 25.633 s 紫色片段落下
+  drift: 773,           // 25.767 s 起漂移
+  driftEnd: 821,        // 27.367 s
+  exitEnd: 827,         // 27.567 s 出画
+  endCard: 840,         // 28.000 s
+  wordmark: 900,        // 30.000 s
+  still2: 970, still2e: 1040 // 32.333–34.667 静置 2.37 s
+};
+
+/* ═══════════════ 工具 ═══════════════ */
+const clamp = (v,a,b) => v < a ? a : v > b ? b : v;
+const lerp  = (a,b,t) => a + (b-a)*t;
+
+function hash(n){
+  const x = Math.sin(n * 12.9898 + 78.233) * 43758.5453;
+  return x - Math.floor(x);
+}
+
+function rr(c,x,y,w,h,r){
+  r = Math.max(0, Math.min(r, Math.abs(w)/2, Math.abs(h)/2));
+  c.beginPath();
+  if (r <= 0.01){ c.rect(x,y,w,h); return; }
+  c.moveTo(x+r,y);
+  c.arcTo(x+w,y,   x+w,y+h, r);
+  c.arcTo(x+w,y+h, x,  y+h, r);
+  c.arcTo(x,  y+h, x,  y,   r);
+  c.arcTo(x,  y,   x+w,y,   r);
+  c.closePath();
+}
+
+function write(c, s, x, y, o){
+  o = o || {};
+  c.save();
+  const size = o.size || 14;
+  c.font = (o.weight || 500) + ' ' + size + 'px ' + (o.mono ? MONO : SANS);
+  c.fillStyle = o.color || COL.dim;
+  c.textAlign = o.align || 'left';
+  c.textBaseline = o.base || 'middle';
+  try { c.letterSpacing = (o.ls || 0) + 'px'; } catch(e){}
+  c.fillText(s, x, y);
+  c.restore();
+}
+
+function box(c, x, y, w, h, o){
+  o = o || {};
+  c.save();
+  rr(c, x, y, w, h, o.r === undefined ? 8 : o.r);
+  if (o.fill){ c.fillStyle = o.fill; c.fill(); }
+  if (o.stroke){
+    c.lineWidth = o.lw || 1;
+    c.strokeStyle = o.stroke;
+    c.stroke();
+  }
+  c.restore();
+}
+
+/* 阴影在逐帧自检时关闭，否则 1068 帧要跑太久 */
+let FAST = false;
+function shadow(c, blur, color, ox, oy){
+  if (FAST){ c.shadowBlur = 0; return; }
+  c.shadowBlur = blur; c.shadowColor = color; c.shadowOffsetX = ox || 0; c.shadowOffsetY = oy || 0;
+}
+function noShadow(c){ c.shadowBlur = 0; c.shadowColor = 'transparent'; }
+
+/* ═══════════════ 逐帧位移表（研究结论，1:1） ═══════════════
+   24.467–25.600 s，上边缘 97 px。第一段 12→8→4→2→1 px/帧 走掉 62%，
+   中间 4 帧低速谷（0.13 s），第二段先 7 帧 −2 px/帧再 4 帧加速到 −5.8。 */
+const BTN_DY = [
+  12,12,8,8,4,4,4,2,2,2,1,1,1,1,1,0,0,0,   // 18 帧 · 24.467–25.067
+  0,0,0,0,                                   //  4 帧 · 25.067–25.200 低速谷
+  2,2,2,2,2,2,2,4,4,4,5.8,0                  // 12 帧 · 25.200–25.600
+];
+const BTN_CUM = (function(){
+  const a = [0];
+  for (let i = 0; i < BTN_DY.length; i++) a.push(a[i] + BTN_DY[i]);
+  return a;
+})();
+const BTN_SUM = BTN_CUM[BTN_CUM.length - 1];   // 94.8 px
+
+function btnLift(f){
+  const i = clamp(f - K.btnJump, 0, BTN_DY.length);
+  return BTN_CUM[i];
+}
+
+/* 漂移 0.1–0.8 px/帧（均值 0.52 → 48 帧约 25 px），单向；出画加速到 16–23 px/帧 */
+function driftLift(f){
+  let L = 0;
+  for (let k = K.drift; k < Math.min(f, K.driftEnd); k++) L += 0.14 + 0.76 * hash(k);
+  return L;
+}
+function exitLift(f){
+  let L = 0;
+  for (let k = K.exitEnd - 6; k < Math.min(f, K.exitEnd); k++) L += 16 + 7 * hash(k + 91);
+  return L;
+}
+function groupShift(f){ return driftLift(f) + exitLift(f); }
+
+/* ═══════════════ 段落 ═══════════════ */
+function segName(f){
+  if (f < K.aExpand)  return '01 文件夹 → 相邻卡（碎动作）';
+  if (f < K.aManager) return '02 网格展开（1 帧）';
+  if (f < K.bShift)   return '03 管理器层级 + 查找';
+  if (f < K.cutLight) return '04 重复导入（强变化点 4.47）';
+  if (f < K.cutDark)  return '05 亮场卡 τ=0.408';
+  if (f < K.still1)   return '06 黑场冲击 τ=0.107';
+  if (f < K.still1e)  return '07 静置 2.30 s';
+  if (f < K.dPanels)  return '08 推近 → 局部';
+  if (f < K.btnAnchor)return '09 多面板 / 拖入空槽';
+  if (f < K.btnJump)  return '10 锚点 52×28 → 50×26';
+  if (f < K.valley)   return '11 第一段缓出 62%';
+  if (f < K.btnSeg2e) return '12 低速谷 + 第二段 36%';
+  if (f < K.drift)    return '13 片段 2 帧落下';
+  if (f < K.exitEnd)  return '14 单向漂移 0.1–0.8 px/帧';
+  if (f < K.still2)   return '15 收束段';
+  return '16 静置 2.37 s → 停';
+}
+
+/* ═══════════════ 场景 A/B（0 – 9.233 s） ═══════════════ */
+const GRID = (function(){
+  const cw = 186, ch = 126, g = 20;
+  const x0 = 640 - (3*cw + 2*g)/2;
+  const y0 = 360 - (3*ch + 2*g)/2;
+  const out = [];
+  for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++)
+    out.push({ x:x0 + c*(cw+g), y:y0 + r*(ch+g), w:cw, h:ch, i:r*3+c });
+  return out;
+})();
+
+const PRE_POP = { 5:19, 3:24, 7:26, 1:29, 8:32, 0:34, 6:36 };
+
+/* 查找结果行：出现帧 + 文案 + 右侧徽章 */
+const ROWS = [
+  { f:140, y:196, name:'hero_plate_04',   badge:'' },
+  { f:144, y:246, name:'title_card_v11',  badge:'' },
+  { f:148, y:296, name:'grid_loop_b',     badge:'' },
+  { f:K.bDup+0,  y:362, name:'hero_plate_04',  badge:'x2' },
+  { f:K.bDup+4,  y:410, name:'hero_plate_04',  badge:'x3' },
+  { f:K.bDup+8,  y:458, name:'hero_plate_04',  badge:'x4' },
+  { f:K.bDup+12, y:506, name:'hero_plate_04',  badge:'x4' }
+];
+
+/* 界面表面的一层极淡网格。原片的 UI 面板自带细纹理，
+   0.25 px/帧 的亚像素漂移会让整片纹理逐帧变化，静止帧的 pix_diff 因此
+   落在 0.5–1.0；纯色底加同样的漂移只会得到 0.1。这层是补足细节密度，
+   不是放大运动。 */
+/* 颗粒：原版是 14 px 网格线，抬高了整片黑场底噪（实测 p1=p50=7，
+   原片 p50=0、零像素占 58–95%），静置窗的 lap 均值 3.5 也远高于原片 0.6–1.0。
+   改成稀疏随机点，只保留“静置帧仍有 1 LSB 活度”，不再有结构性网格。 */
+function grain(c, seed){
+  c.save();
+  c.fillStyle = 'rgba(255,255,255,0.075)';
+  const n = 16000;                      // 1.7% 覆盖率、1 px、alpha 0.075：读作压缩噪声，不着眼成点
+  for (let i = 0; i < n; i++){
+    const r1 = hash(seed * 7.13 + i * 1.37);
+    const r2 = hash(seed * 3.71 + i * 2.91 + 11);
+    c.fillRect((r1 * W) | 0, (r2 * H) | 0, 1, 1);
+  }
+  c.restore();
+}
+
+function bg(c, light){
+  if (light){
+    c.fillStyle = COL.light; c.fillRect(0,-16,W,H+32);
+    const g = c.createRadialGradient(W*0.5, H*0.35, 80, W*0.5, H*0.5, H*1.05);
+    g.addColorStop(0,'rgba(255,255,255,0.85)');
+    g.addColorStop(1,'rgba(226,224,234,0)');
+    c.fillStyle = g; c.fillRect(0,-16,W,H+32);
+  } else {
+    c.fillStyle = COL.ink; c.fillRect(0,-16,W,H+32);
+    const g = c.createRadialGradient(W*0.5, H*0.40, 60, W*0.5, H*0.5, H*1.0);
+    g.addColorStop(0,'rgba(52,44,92,0.30)');
+    g.addColorStop(1,'rgba(7,6,13,0)');
+    g.fillStyle = g; c.fillRect(0,-16,W,H+32);
+  }
+}
+
+function itemFlash(f, start){
+  const a = f - start;
+  return a >= 0 && a < 2 ? (2 - a) / 2 : 0;
+}
+
+/* 把文字压到给定宽度内（避免越界） */
+function fitText(c, s, maxW, size, weight, family, ls){
+  c.save();
+  try { c.letterSpacing = (ls || 0) + 'px'; } catch(e){}
+  let px = size;
+  while (px > 8){
+    c.font = (weight || 600) + ' ' + px + 'px ' + (family || SANS);
+    if (c.measureText(s).width <= maxW) break;
+    px -= 1;
+  }
+  c.restore();
+  return px;
+}
+
+function drawAB(c, f){
+  bg(c, false);
+  grain(c, f);
+
+  const zoom = f < K.aManager ? 1 : 1 - 0.20 * clamp((f - K.aManager + 1)/3, 0, 1);
+  const sp   = f < K.bShift ? 0 : clamp((f - K.bShift + 1)/3, 0, 1);
+
+  c.save();
+  c.translate(W/2, H/2);
+  c.scale(zoom, zoom);
+  c.translate(-W/2, -H/2);
+  c.translate(40 * sp - 190 * sp, -14 * sp);
+
+  // 4.47 的强变化：不打切，整体提亮一点、构图位移
+  if (sp > 0){
+    c.fillStyle = 'rgba(150,140,190,' + (0.055 * sp) + ')';
+    c.fillRect(-80, -80, W + 160, H + 160);
+  }
+
+  // —— 管理器外框（2.33 s 一帧出现）——
+  if (f >= K.aManager){
+    c.fillStyle = COL.ink2;
+    c.fillRect(-40, -40, 210 + 40, H + 80);
+    c.strokeStyle = COL.line; c.lineWidth = 1;
+    c.beginPath(); c.moveTo(210, -40); c.lineTo(210, H + 40); c.stroke();
+
+    write(c, 'assets', 34, 46, { size:13, color:COL.text2 });
+    write(c, 'projects', 34, 88, { size:13, color:COL.dim });
+    write(c, 'search', 34, 130, { size:13, color:COL.dim });
+    c.fillStyle = COL.blue; c.fillRect(24, 38, 3, 16);
+
+    c.fillStyle = COL.panel;
+    c.fillRect(210, -40, W - 170, 92);
+    c.strokeStyle = COL.line;
+    c.beginPath(); c.moveTo(210, 52); c.lineTo(W + 40, 52); c.stroke();
+    write(c, 'Library', 248, 16, { size:15, weight:600, color:COL.text });
+
+    c.fillStyle = COL.panelB;
+    c.fillRect(248, 74, 520, 42);
+    c.strokeStyle = COL.line; c.lineWidth = 1;
+    rr(c, 248, 74, 520, 42, 7); c.stroke();
+
+    // 查找词：分 2 段、每段 2 帧
+    let q = '';
+    if (f >= K.bType) q = 'Lost';
+    if (f >= K.bType + 4) q = 'Lost asset';
+    write(c, q, 266, 95, { size:14, color:COL.text2 });
+    if (f >= K.bType && f < K.bType + 40 && (Math.floor(f/8) % 2 === 0))
+      write(c, '|', 266 + (q.length * 8), 95, { size:14, color:COL.blue });
+  }
+
+  // —— 段落小标题（本页自拟的上下文，不是原片文字）——
+  write(c, 'LIBRARY', 96, 84, { size:10.5, color:COL.dim2, ls:1.6, mono:true });
+  write(c, 'one asset, many copies', 96, 108, { size:17, weight:600, color:'#8F8AA6' });
+
+  // —— 卡片网格 ——
+  for (const it of GRID){
+    let vis = false;
+    if (f >= K.aExpand) vis = true;
+    else if (it.i === 4) vis = true;
+    else if (PRE_POP[it.i] !== undefined) vis = f >= PRE_POP[it.i];
+    if (!vis) continue;
+
+    const isCore = it.i === 4;
+    const sel = f >= K.aSelect && it.i === 0;
+    const bornAt = PRE_POP[it.i] === undefined ? K.aExpand : PRE_POP[it.i];
+    // 一帧硬出现的余辉：只染 2 帧、很淡，否则小卡会被闪成整块蓝
+    const fl = itemFlash(f, bornAt);
+
+    const fill = isCore ? 'rgba(32,69,235,0.10)' : COL.panel;
+    const stroke = sel ? COL.blueL : (isCore ? COL.blue : COL.line);
+
+    box(c, it.x, it.y, it.w, it.h, { r:10, fill:fill, stroke:stroke, lw: sel ? 2 : 1 });
+
+    // 只有核心卡保留出现描边；其余卡靠一帧的亮度台阶带过，避免读成“多选”
+    if (fl > 0){
+      c.save();
+      if (isCore){
+        c.globalAlpha = 0.85 * fl;
+        c.strokeStyle = COL.blueL; c.lineWidth = 2;
+        rr(c, it.x + 1, it.y + 1, it.w - 2, it.h - 2, 9); c.stroke();
+      } else {
+        c.globalAlpha = 0.12 * fl;
+        c.fillStyle = COL.blueL;
+        rr(c, it.x, it.y, it.w, it.h, 10); c.fill();
+      }
+      c.restore();
+    }
+
+    // 缩略图的“内容”占位
+    c.save();
+    rr(c, it.x, it.y, it.w, it.h, 10); c.clip();
+    c.fillStyle = isCore ? 'rgba(32,69,235,0.16)' : 'rgba(255,255,255,0.035)';
+    c.fillRect(it.x + 14, it.y + 14, it.w - 28, it.h - 44);
+    // 占位图里的一点点纹理，让卡片不至于像空色块
+    c.fillStyle = isCore ? 'rgba(62,30,218,0.30)' : 'rgba(255,255,255,0.05)';
+    c.fillRect(it.x + 26, it.y + it.h - 62, (it.w - 52) * 0.62, 6);
+    c.restore();
+
+    write(c, 'card_' + String(it.i + 1).padStart(2,'0'), it.x + 14, it.y + it.h - 18,
+          { size:11, color: isCore ? COL.blueL : COL.dim, mono:true });
+  }
+
+  // —— 查找结果行（右侧，压在网格右侧空白区）——
+  if (f >= K.bShift){
+    c.fillStyle = 'rgba(16,14,25,0.95)';
+    c.fillRect(872, 152, 360, 452);
+    c.strokeStyle = COL.line; c.lineWidth = 1;
+    c.strokeRect(872.5, 152.5, 359, 451);
+    write(c, 'DUPLICATES', 890, 178, { size:10.5, color:COL.dim, ls:1.4, mono:true });
+
+    for (const r of ROWS){
+      if (f < r.f) continue;
+      const fl = itemFlash(f, r.f);
+      const hot = (r.f === 148 && f >= K.bRow);
+      box(c, 888, r.y, 328, 40, { r:7, fill: hot ? 'rgba(32,69,235,0.16)' : COL.panel,
+                                  stroke: hot ? COL.blue : COL.line });
+      write(c, r.name, 900, r.y + 20, { size:11.5, color:COL.text2, mono:true });
+      if (r.badge) write(c, r.badge, 1204, r.y + 20, { size:12, color:COL.blueL, mono:true, align:'right' });
+      else write(c, 'ok', 1204, r.y + 20, { size:11, color:COL.dim2, mono:true, align:'right' });
+      if (fl > 0){
+        c.save(); c.globalAlpha = 0.7 * fl;
+        c.strokeStyle = COL.blueL; c.lineWidth = 1.6;
+        rr(c, 889, r.y + 1, 326, 38, 6); c.stroke(); c.restore();
+      }
+    }
+  }
+
+  // —— 6.0–9.2 s：重复计数逐张推进 + 投影切换，全是 1–2 帧的碎动作 ——
+  // 画在右侧面板里、结果行下方，必须在面板底色之后绘制
+  if (f >= 192){
+    const marks = [198, 210, 224, 238, 252, 264, 274];
+    c.fillStyle = 'rgba(16,14,25,0.95)';
+    c.fillRect(872, 152, 360, 452);
+    c.strokeStyle = COL.line; c.lineWidth = 1;
+    c.strokeRect(872.5, 152.5, 359, 451);
+    write(c, 'DUPLICATES', 890, 178, { size:10.5, color:COL.dim, ls:1.4, mono:true });
+
+    for (const r of ROWS){
+      if (f < r.f) continue;
+      const hot = (r.f === 148 && f >= K.bRow);
+      box(c, 888, r.y, 328, 40, { r:7, fill: hot ? 'rgba(32,69,235,0.16)' : COL.panel,
+                                  stroke: hot ? COL.blue : COL.line });
+      write(c, r.name, 900, r.y + 20, { size:11.5, color:COL.text2, mono:true });
+      const bg2 = r.badge ? r.badge : 'ok';
+      write(c, bg2, 1204, r.y + 20,
+            { size: r.badge ? 12 : 11, color: r.badge ? COL.blueL : COL.dim2, mono:true, align:'right' });
+    }
+
+    // 投影逐张切换：每段 1–2 帧，一次全宽扫带 + 标签跳变
+    let cur = 0;
+    marks.forEach((mf, i) => { if (f >= mf) cur = i + 1; });
+    marks.forEach((mf) => sweep(c, f, mf, COL.blueL, 46, 0.30));
+    write(c, 'proj_' + String(Math.max(1, cur)).padStart(2,'0'), 900, 551,
+          { size:10.5, color: cur ? COL.text2 : COL.dim2, mono:true });
+    write(c, String(cur) + ' / 7', 1204, 551,
+          { size:11, color: cur ? COL.blueL : COL.dim2, mono:true, align:'right' });
+    const lastM = marks[cur - 1];
+    if (lastM !== undefined && f - lastM < 2){
+      c.save();
+      c.globalAlpha = 0.55 * (2 - (f - lastM)) / 2;
+      c.fillStyle = COL.blueL;
+      c.fillRect(888, 540, 328, 22);
+      c.restore();
+    }
+  }
+
+
+  c.restore();
+}
+
+/* ═══════════════ 场景 C（9.233 – 10.667 s）亮场 ═══════════════ */
+function drawC(c, f){
+  bg(c, true);
+  grain(c, f);
+
+  // 内容卡：单帧硬出现，随后 τ=0.408 s 收到 1.00
+  const dt = Math.max(0, (f - K.cSettle) / FPS);
+  const s  = 1 + 0.10 * Math.exp(-dt / 0.408);
+
+  const cx = W/2, cy = H/2 - 10;
+  c.save();
+  c.translate(cx, cy); c.scale(s, s); c.translate(-cx, -cy);
+
+  shadow(c, 42, 'rgba(20,18,32,0.16)', 0, 18);
+  box(c, 250, 130, 780, 460, { r:14, fill:'#FFFFFF', stroke:'rgba(20,18,32,0.08)' });
+  noShadow(c);
+
+  // 蓝色环（2 帧画出）
+  const ringP = clamp((f - K.cutLight + 1)/2, 0, 1);
+  c.save();
+  c.globalAlpha = ringP;
+  c.strokeStyle = COL.blue; c.lineWidth = 24;
+  c.beginPath(); c.arc(452, 350, 104, -Math.PI/2, -Math.PI/2 + Math.PI*2*ringP); c.stroke();
+  c.restore();
+
+  write(c, '4', 452, 350, { size:104, weight:700, color: COL.dark, align:'center' });
+
+  // 标题按可用宽度收字，不越出卡片
+  const headW = 460;
+  const headSize = fitText(c, 'COPIES', headW, 82, 700, SANS, -2);
+  write(c, 'COPIES', 636, 318, { size:headSize, weight:700, color: COL.dark, align:'left', ls:-2 });
+  write(c, 'same asset', 638, 378, { size:17, color:'#6C6880' });
+  write(c, 'imported into four', 638, 404, { size:17, color:'#6C6880' });
+  write(c, 'separate projects', 638, 430, { size:17, color:'#6C6880' });
+
+  // 细蓝线（2 帧）
+  if (f >= K.cSettle){
+    const lp = clamp((f - K.cSettle + 1)/2, 0, 1);
+    c.fillStyle = COL.blue;
+    c.fillRect(272, 512, 736 * lp, 3);
+  }
+  write(c, 'DURATION  READ  0.41 s', 272, 552, { size:11, color:'#8D89A0', mono:true });
+  c.restore();
+}
+
+/* ═══════════════ 场景 D/E（10.667 – 24.200 s） ═══════════════ */
+const PANELS = [
+  { x:150, y:392, w:420, h:220, rot:-0.040, title:'TIMELINE',  tint:'#100E19' },
+  { x:620, y:372, w:400, h:196, rot: 0.028, title:'VIEWER',    tint:'#0F0D17' },
+  { x:238, y:466, w:330, h:166, rot: 0.016, title:'BIN',       tint:'#100E19' },
+  { x:646, y:452, w:416, h:200, rot:-0.018, title:'INSPECTOR', tint:'#0F0D17' }
+];
+
+function panelAt(c, p, alpha){
+  c.save();
+  c.globalAlpha = alpha === undefined ? 1 : alpha;
+  c.translate(p.x + p.w/2, p.y + p.h/2);
+  c.rotate(p.rot);
+  c.translate(-(p.x + p.w/2), -(p.y + p.h/2));
+  box(c, p.x, p.y, p.w, p.h, { r:12, fill:p.tint, stroke:COL.line2 });
+  write(c, p.title, p.x + 18, p.y + 24, { size:11, color:COL.dim, ls:1.4 });
+  c.fillStyle = 'rgba(32,69,235,0.10)';
+  c.fillRect(p.x + 18, p.y + 42, p.w - 36, p.h - 64);
+  c.restore();
+}
+
+function drawDE(c, f){
+  bg(c, false);
+  grain(c, f);
+
+  const pushing = f >= K.pushIn;
+
+  // 10.667：单帧硬切到黑，蓝线 + 大字 2 帧内到位
+  if (!pushing){
+    write(c, 'COMP', 640, 208, { size:128, weight:700, color:COL.text, align:'center', ls:-4 });
+    c.fillStyle = COL.blue;
+    c.fillRect(640 - 180, 288, 360, 4);
+    write(c, 'one click, one result', 640, 322, { size:15, color:COL.dim, align:'center' });
+  }
+
+  // 12.90：面板快速收尾 τ=0.107 s（3.2 帧）
+  if (!pushing && f >= K.dSettle){
+    const dt = (f - K.dSettle) / FPS;
+    const off = 60 * Math.exp(-dt / 0.107);
+    c.save();
+    c.translate(off, 0);
+    panelAt(c, PANELS[0], 1);
+    c.restore();
+  }
+
+  // 14.567：多面板一次就位（1 帧）
+  if (!pushing && f >= K.dPanels){
+    for (let i = 1; i < PANELS.length; i++) panelAt(c, PANELS[i], 1);
+  }
+
+  // 14.6–17.33 之间的两处 1 帧高亮，打断 2.7 s 的静置
+  if (!pushing){
+    for (const hf of [452, 486]){
+      if (f < hf) continue;
+      const a = f - hf;
+      if (a < 2){
+        c.save();
+        c.globalAlpha = 0.30 * (2 - a) / 2;
+        c.fillStyle = COL.blueL;
+        c.fillRect(PANELS[1].x + 18, PANELS[1].y + 42, PANELS[1].w - 36, PANELS[1].h - 64);
+        c.restore();
+      }
+    }
+  }
+
+  // 17.333–17.800：推近 0.467 s（14 帧）进入局部
+  if (pushing){
+    const p = clamp((f - K.pushIn + 1)/(K.pushInEnd - K.pushIn), 0, 1);
+    const z = 1 + 0.22 * p;
+    c.save();
+    c.translate(480, 380); c.scale(z, z); c.translate(-480, -380);
+
+    // 局部视图：BIN 面板放大，占满画面
+    box(c, 100, 96, 1080, 520, { r:14, fill:COL.panel, stroke:COL.line2 });
+    write(c, 'BIN  /  local', 128, 128, { size:11, color:COL.dim, ls:1.4 });
+    write(c, 'drop to fill the empty slot', 1152, 128,
+          { size:11, color:COL.dim2, align:'right' });
+
+    for (let i = 0; i < 6; i++){
+      const bx = 128 + (i % 3) * 330;
+      const by = 168 + Math.floor(i / 3) * 212;
+      const empty = (i === 4);
+      const filled = empty && f >= K.land;
+      box(c, bx, by, 300, 186, {
+        r:9,
+        fill: filled ? 'rgba(32,69,235,0.13)' : COL.ink2,
+        stroke: filled ? COL.blue : COL.line
+      });
+      if (!empty){
+        c.fillStyle = 'rgba(255,255,255,0.04)';
+        c.fillRect(bx + 16, by + 16, 268, 118);
+      } else if (!filled){
+        c.save();
+        c.setLineDash([6, 6]);
+        c.strokeStyle = COL.line2; c.lineWidth = 1.5;
+        rr(c, bx + 16, by + 16, 268, 118, 6); c.stroke();
+        c.restore();
+        write(c, '+', bx + 150, by + 75, { size:30, color:COL.line2, align:'center' });
+      }
+      write(c, empty ? (filled ? 'clip_07' : 'empty slot') : 'clip_0' + (i+1),
+            bx + 16, by + 162,
+            { size:11, color: filled ? COL.blueL : COL.dim2, mono:true });
+    }
+
+    // 局部视图里的浏览动作：每段 1–2 帧，把 18–24 s 撑住
+    const browse = [546, 580, 640, 676, 700];
+    for (const bf of browse) sweep(c, f, bf, COL.blueL, 54, 0.26);
+
+    // 拖入：在手 2 帧内落到空槽
+    if (f >= K.drag && f < K.land){
+      const p2 = clamp((f - K.drag)/2, 0, 1);
+      const dx = lerp(560, 128 + 330 + 16, p2);
+      const dy = lerp(720, 168 + 212 + 16, p2);
+      shadow(c, 24, 'rgba(62,30,218,0.5)', 0, 8);
+      box(c, dx, dy, 268, 118, { r:7, fill:'rgba(12,9,62,0.95)', stroke:COL.purpleL });
+      noShadow(c);
+      write(c, 'clip_07', dx + 12, dy + 100, { size:10.5, color:COL.purpleL, mono:true });
+    }
+    c.restore();
+  }
+}
+
+/* ═══════════════ 24.2–27.6 s：按钮段的组变换（逐帧量自原片） ═══════════════
+   研究结论里的 97 px / 1.13 s 只覆盖 24.467–25.600 这一小段。把原片这一场
+   24.467–27.400 s 逐帧量完，看到的是另一回事：
+     组中心 y 从 476 一路走到 25（= 位移 452 canvas px，旧实现只有 95 px），
+     组缩放从 1.000 收到 0.596（旧实现全程 208x67 不变）；
+     按钮宽度 208→124 band px，按钮、文字、播放头、片段、轨道线一起缩，是一个整组。
+   下面这张表就是那段轨迹的取样（[帧, 组缩放, 组中心 y]），中间线性插值。 */
+const BTN_TRACK = [  // [帧, 组缩放, 组中心 y]（逐帧量自原片 720x406 内容带，y 乘 1280/720）
+  [734, 1.000, 476.4], [735, 1.000, 456.9], [736, 1.000, 440.9], [738, 1.000, 421.3], [740, 1.000, 407.1],
+  [742, 1.000, 396.4], [744, 1.000, 388.4], [746, 1.000, 384.0], [748, 1.000, 376.9], [750, 1.000, 373.3],
+  [752, 1.000, 368.0], [753, 0.971, 366.2], [754, 0.933, 364.4], [756, 0.889, 360.9], [758, 0.942, 355.6],
+  [760, 0.966, 349.3], [762, 0.947, 341.3], [764, 0.923, 328.9], [766, 0.885, 316.4], [768, 0.837, 295.1],
+  [770, 0.779, 273.8], [772, 0.731, 256.0], [774, 0.702, 245.3], [776, 0.683, 236.4], [778, 0.673, 229.3],
+  [780, 0.654, 224.0], [782, 0.644, 220.4], [784, 0.635, 216.9], [786, 0.635, 213.3], [788, 0.625, 211.6],
+  [790, 0.615, 209.8], [792, 0.615, 208.0], [794, 0.615, 208.0], [796, 0.615, 204.4], [800, 0.601, 204.4],
+  [805, 0.596, 197.3], [810, 0.596, 182.2], [815, 0.596, 147.6], [820, 0.596, 69.3], [822, 0.596, 24.9]
+];
+
+function trackAt(f){
+  const A = BTN_TRACK;
+  if (f <= A[0][0]) return { k: A[0][1], cy: A[0][2] };
+  if (f >= A[A.length-1][0]) return { k: A[A.length-1][1], cy: A[A.length-1][2] };
+  for (let i = 1; i < A.length; i++){
+    if (f <= A[i][0]){
+      const t = (f - A[i-1][0]) / (A[i][0] - A[i-1][0]);
+      return { k: lerp(A[i-1][1], A[i][1], t), cy: lerp(A[i-1][2], A[i][2], t) };
+    }
+  }
+  return { k: 1, cy: A[0][2] };
+}
+
+/* 基准布局（组缩放 = 1 时，1280x720 画布）。
+   原片内容带是 720x405，复现画布 1280x720：横轴比例 1280/720 = 1.778，
+   而“组缩放 k”是从按钮宽度反推的（208 band px = 1.000），它同时作用在两轴。
+   所以 base 横坐标要再乘 1.778、纵坐标乘 720/405 = 1.778 —— 两轴因子相同，
+   变换写成 scale(k, k) 即可；之前把横坐标当 1:1 用，画面右侧的片段被挤出了画框。 */
+const GF = {
+  cx: 640, btnW: 370, btnH: 114,
+  /* 原片 27.0 s（组缩放 0.596）实测，换算回基准：
+     按钮中心 y=182、上句基线 129、下句基线 270；播放头 x=360 band -> 640，上沿 262 -> 466；
+     片段 647–1231 x 352–438；四条轨道线 y 305/371/437/502。 */
+  capTop: -89, capBot: 148, capSize: 34,
+  playTop: -118, playTip: -80, playBot: 148,
+  clipOffX: 7, clipOffY: 286, clipW: 527, clipH: 86,
+  lanes: [-5, 52, 109, 161]
+};
+
+/* ═══════════════ 场景 F（24.200 – 27.567 s）按钮 + 片段 ═══════════════ */
+/* 原片实测：按钮中心 x = 206/2+258 = 361（720 宽）= 640（1280 宽），正好骑在播放头上；
+   逐帧收紧 208x64 → 124x38（0.596），不是恒定的 208x67。 */
+const BTN_BASE = { x:536, y:600, w:52, h:28 };  // 底宽 208：与 720 宽原片的 206 同尺度
+const BTN_CX = 640;
+const BTN_W0 = 208, BTN_H0 = 60;
+const BTN_SCALE = [   // [帧, 宽高比例] 取样自 24.467–27.400 的逐帧 bbox
+  [734, 1.000], [749, 1.000], [750, 0.976], [752, 0.899], [755, 0.918],
+  [757, 0.971], [762, 0.957], [768, 0.904], [769, 0.841], [772, 0.755],
+  [775, 0.712], [781, 0.654], [787, 0.635], [793, 0.615], [799, 0.611],
+  [805, 0.596], [822, 0.596]
+];
+function btnScale(f){
+  const A = BTN_SCALE;
+  if (f <= A[0][0]) return A[0][1];
+  if (f >= A[A.length-1][0]) return A[A.length-1][1];
+  for (let i = 1; i < A.length; i++){
+    if (f <= A[i][0]){
+      const t = (f - A[i-1][0]) / (A[i][0] - A[i-1][0]);
+      return lerp(A[i-1][1], A[i][1], t);
+    }
+  }
+  return 1;
+}
+
+function btnBox(f){
+  if (f < K.btnJump){
+    if (f < K.btnShrink) return { x:BTN_CX - 26, y:600, w:52, h:28, a:1 };
+    return { x:BTN_CX - 25, y:596, w:50, h:26, a:1 };
+  }
+  const k = btnScale(f);
+  const w = BTN_W0 * k, h = BTN_H0 * k;
+  return { x:BTN_CX - w/2, y:600 - btnLift(f), w, h, a:1 };
+}
+
+function drawF(c, f){
+  bg(c, false);
+  grain(c, f);
+
+  const tr = trackAt(f);
+  const lift = 476.6 - tr.cy;
+  const k = tr.k;
+  const appear = f >= K.btnJump;
+
+  c.save();
+  c.translate(GF.cx, tr.cy);
+  c.scale(k, k);
+
+  if (appear){
+    if (f >= K.clip){
+      c.fillStyle = 'rgba(255,255,255,0.085)';
+      for (const ly of GF.lanes) c.fillRect(-640, ly, 1280, 2);
+
+      c.fillStyle = '#2B5BFF';
+      c.fillRect(-3, GF.playTip, 6, GF.playBot - GF.playTip);
+      c.beginPath();
+      c.moveTo(-41, GF.playTop); c.lineTo(41, GF.playTop);
+      c.lineTo(0, GF.playTop + 40); c.closePath(); c.fill();
+
+      const p = clamp((f - K.clip + 1)/2, 0, 1);
+      const ch = GF.clipH * p;
+      shadow(c, 30, 'rgba(100,0,241,0.55)', 0, 6);
+      box(c, GF.clipOffX, GF.clipOffY - ch/2, GF.clipW, ch,
+          { r: 9, fill: 'rgba(96,0,238,0.97)', stroke: '#8A3CFF' });
+      noShadow(c);
+      if (p >= 1 && f < K.clip + 40) write(c, 'clip_07', GF.clipOffX + 22, GF.clipOffY,
+                        { size: 24, color: '#E4D6FF', mono: true });
+    }
+
+    shadow(c, 46, 'rgba(32,69,235,0.60)', 0, 12);
+    box(c, -GF.btnW/2, -GF.btnH/2, GF.btnW, GF.btnH,
+        { r: 51, fill: COL.blue, stroke: COL.blueL, lw: 0 });
+    noShadow(c);
+    write(c, '+', -GF.btnW/2 + 52, 2, { size: 46, weight: 500, color: '#EEF1FF', base: 'middle' });
+    write(c, 'Comp', -GF.btnW/2 + 90, 3, { size: 43, weight: 500, color: '#EEF1FF' });
+
+    // 正文最后画，压在轨道线和片段之上（原片 26.4 s 的 caption 是浮在播放头前面的）
+    const capA = f < K.clip ? 1 : Math.max(0, 1 - (f - K.clip + 1)/9);
+    if (capA > 0){
+      c.save();
+      c.globalAlpha = capA;
+      write(c, 'Just one click...', 0, GF.capTop,
+            { size: GF.capSize, color: '#CFCBE0', align: 'center' });
+      c.restore();
+    }
+    write(c, f >= K.clip ? 'on your playhead' : 'And the result lands', 0, GF.capBot,
+          { size: GF.capSize, color: '#C4BFD8', align: 'center' });
+
+    if (f >= K.btnJump + 26 && f < K.clip + 6){
+      c.save();
+      c.translate(20, 10);
+      c.beginPath();
+      c.moveTo(0, 0); c.lineTo(0, 38); c.lineTo(10, 29); c.lineTo(17, 44);
+      c.lineTo(24, 41); c.lineTo(17, 27); c.lineTo(29, 27); c.closePath();
+      c.fillStyle = '#F5F5F7'; c.fill();
+      c.lineWidth = 1.8; c.strokeStyle = 'rgba(0,0,0,0.65)'; c.stroke();
+      c.restore();
+    }
+  }
+
+  if (!appear){
+    c.font = '600 76px ' + SANS;
+    const wBlue = c.measureText('and use it ').width;
+    const wWhite = c.measureText('forever').width;
+    const x0 = -(wBlue + wWhite)/2;
+    write(c, 'and use it', x0, -42, { size: 76, weight: 600, color: 'rgba(43,70,235,0.95)' });
+    write(c, 'forever',  x0 + wBlue, -42, { size: 76, weight: 600, color: '#F2F2F7' });
+  }
+
+  c.restore();
+}
+
+/* ═══════════════ 场景 G（27.567 – 35.6 s） ═══════════════ */
+function drawG(c, f){
+  bg(c, false);
+  grain(c, f);
+
+  // 收束：大字 1 帧出现
+  const wm = f >= K.wordmark;
+  if (f >= K.endCard){
+    // 细线
+    c.fillStyle = COL.blue;
+    c.fillRect(240, 268, clamp((f - K.endCard + 1)/2, 0, 1) * 800, 3);
+
+    if (wm){
+      const fl = itemFlash(f, K.wordmark);
+      write(c, 'UI MOTION', 240, 348, { size:76, weight:700, color:COL.text, ls:-1 });
+      write(c, 'movement is the budget, not the curve', 244, 416, { size:16, color:COL.text2 });
+      if (fl > 0){
+        c.save(); c.globalAlpha = 0.16 * fl;
+        c.fillStyle = COL.blueL; c.fillRect(236, 302, 810, 98); c.restore();
+      }
+      // 三条量到的事实，右侧小字
+      const facts = ['2 frames per move', '50% of the film does not move', 'cut: sound leads 55-85 ms'];
+      facts.forEach((t, i) => {
+        write(c, t, 1040, 348 + i * 26, { size:12, color:COL.dim, align:'right', mono:true });
+      });
+    }
+    // 收束段的两处小动作（各 2 帧），避免片尾连续 5.5 s 全静
+    for (const [cf, label] of [[842, 'BUDGET'], [960, 'HOLD'], [1002, 'STOP']]){
+      sweep(c, f, cf, COL.blue, 60, 0.30);
+      if (f >= cf) write(c, label, 240, 486, { size:10.5, color:COL.dim2, ls:1.8, mono:true });
+    }
+
+    write(c, 'study · reproduction', 240, 616, { size:12, color:COL.dim2, mono:true });
+    write(c, '35.6 s ／ 30 fps ／ programmatic', 1040, 616,
+          { size:11, color:COL.dim2, mono:true, align:'right' });
+  }
+}
+
+/* 2 帧扫带：没有补间，直接从一帧跳到下一帧。
+   研究结论里 24 段动作只有 1 帧、11 段 2 帧，这种“跳一下”才是默认动作。 */
+function sweep(c, f, mark, color, h, alpha){
+  const a = f - mark;
+  if (a < 0 || a >= 2) return;
+  c.save();
+  c.globalAlpha = (alpha || 0.34) * (2 - a) / 2;
+  c.fillStyle = color;
+  c.fillRect(0, ((mark * 37) % 560) + 80, W, h || 44);
+  c.restore();
+}
+
+/* 静置段的持续漂移。研究结论给的是 0.1–0.8 px/帧的单向位移，
+   但那是在 48 帧（1.6 s）窗口内累计约 25 px；全片尺度上它必须换向，
+   否则画面会一路漂出画外。这里用 200 帧周期的三角波，速度 0.6 px/帧，
+   幅度上限 0.6 x 100 = 60 px 量级……过大，实测取 ±9 px：
+   0.18 px/帧 才在“看得出在动、看不出在移”的区间。 */
+const DRIFT_AMP = 9;      // px
+const DRIFT_PERIOD = 200; // 帧
+
+function panFor(f){
+  const ph = (f % DRIFT_PERIOD) / DRIFT_PERIOD;
+  const tri = ph < 0.5 ? ph * 2 : (1 - ph) * 2;
+  return DRIFT_AMP * tri;
+}
+
+/* ═══════════════ 分发 ═══════════════ */
+function drawAt(f){
+  f = clamp(Math.round(f), 0, FRAMES - 1);
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.globalAlpha = 1;
+  ctx.save();
+  ctx.translate(0, -panFor(f));
+
+  if (f < K.cutLight)      drawAB(ctx, f);
+  else if (f < K.cutDark)  drawC(ctx, f);
+  else if (f < K.btnAnchor)drawDE(ctx, f);
+  else if (f < K.exitEnd)  drawF(ctx, f);
+  else                     drawG(ctx, f);
+
+  ctx.restore();
+}
+
+/* ═══════════════ 音频（全部程序化合成） ═══════════════ */
+const ONSETS = (function(){
+  const list = [];
+  const add = (t, kind, tag) => list.push({ t: Math.max(0, t), kind, tag });
+
+  // 已测锚点：峰值动作 ±20 ms；单帧硬切声音提前 55–84 ms
+  add(4.000 + 0.017, 'blip',  'peak');
+  add(9.233 - 0.084, 'impact','cut');
+  add(10.600 + 0.012,'blip',  'peak');
+  add(10.700 - 0.021,'blip',  'peak');
+  add(10.667 - 0.055,'impact','cut');
+  add(12.967 + 0.013,'thump', 'peak');
+  add(13.033 - 0.020,'blip',  'peak');
+  add(24.467 + 0.012,'impact','peak');
+  add(25.633 + 0.012,'whoosh','peak');
+
+  // 分区填充：126 / 21 / 36 个，加 9 个锚点 = 183
+  const regions = [
+    { a:0.0,  b:24.4, n:119 },
+    { a:24.4, b:27.7, n:19  },
+    { a:27.7, b:35.6, n:36  }
+  ];
+  const pat = [0.12,0.14,0.16,0.16,0.14,0.30,0.16,0.14,0.42,0.16];
+
+  for (const r of regions){
+    let sum = 0;
+    const ints = [];
+    for (let i = 0; i < r.n; i++){ const v = pat[i % pat.length]; ints.push(v); sum += v; }
+    const scale = (r.b - r.a - 0.2) / sum;
+    let cur = r.a + 0.1;
+    for (let i = 0; i < r.n; i++){
+      cur += ints[i] * scale;
+      if (cur >= r.b - 0.05) break;
+      const kind = (i % 7 === 3) ? 'thump' : (i % 3 === 0 ? 'blip' : 'tick');
+      add(cur, kind, 'fill');
+    }
+  }
+
+  list.sort((p, q) => p.t - q.t);
+  return list;
+})();
+
+const Sound = {
+  ctx:null, master:null, on:false, playing:false, nodes:[],
+  ensure(){
+    if (this.ctx) return this.ctx;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    const c = new AC();
+    this.ctx = c;
+    this.master = c.createGain();
+    this.master.gain.value = 0.5;
+    this.master.connect(c.destination);
+    return c;
+  },
+  noise(c, dur){
+    const n = Math.max(1, Math.floor(c.sampleRate * dur));
+    const buf = c.createBuffer(1, n, c.sampleRate);
+    const d = buf.getChannelData(0);
+    let s = 22222;
+    for (let i = 0; i < n; i++){
+      s = (s * 16807) % 2147483647;
+      d[i] = (s / 1073741823) - 0.85;
+    }
+    const src = c.createBufferSource();
+    src.buffer = buf;
+    return src;
+  },
+  tick(c, at, g){
+    const src = this.noise(c, 0.03);
+    const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 3400; bp.Q.value = 1.1;
+    const gn = c.createGain();
+    gn.gain.setValueAtTime(0.0001, at);
+    gn.gain.exponentialRampToValueAtTime(g, at + 0.002);
+    gn.gain.exponentialRampToValueAtTime(0.0001, at + 0.034);
+    src.connect(bp); bp.connect(gn); gn.connect(this.master);
+    src.start(at); src.stop(at + 0.05);
+    this.nodes.push(src);
+  },
+  blip(c, at, g){
+    const o = c.createOscillator(); o.type = 'square';
+    o.frequency.setValueAtTime(940, at);
+    o.frequency.exponentialRampToValueAtTime(680, at + 0.05);
+    const gn = c.createGain();
+    gn.gain.setValueAtTime(0.0001, at);
+    gn.gain.exponentialRampToValueAtTime(g, at + 0.004);
+    gn.gain.exponentialRampToValueAtTime(0.0001, at + 0.07);
+    o.connect(gn); gn.connect(this.master);
+    o.start(at); o.stop(at + 0.09);
+    this.nodes.push(o);
+  },
+  thump(c, at, g){
+    const o = c.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(95, at);
+    o.frequency.exponentialRampToValueAtTime(44, at + 0.16);
+    const gn = c.createGain();
+    gn.gain.setValueAtTime(0.0001, at);
+    gn.gain.exponentialRampToValueAtTime(g, at + 0.008);
+    gn.gain.exponentialRampToValueAtTime(0.0001, at + 0.20);
+    o.connect(gn); gn.connect(this.master);
+    o.start(at); o.stop(at + 0.22);
+    this.nodes.push(o);
+  },
+  whoosh(c, at, g){
+    const src = this.noise(c, 0.26);
+    const lp = c.createBiquadFilter(); lp.type = 'lowpass';
+    lp.frequency.setValueAtTime(500, at);
+    lp.frequency.exponentialRampToValueAtTime(4800, at + 0.16);
+    const gn = c.createGain();
+    gn.gain.setValueAtTime(0.0001, at);
+    gn.gain.exponentialRampToValueAtTime(g, at + 0.02);
+    gn.gain.exponentialRampToValueAtTime(0.0001, at + 0.24);
+    src.connect(lp); lp.connect(gn); gn.connect(this.master);
+    src.start(at); src.stop(at + 0.3);
+    this.nodes.push(src);
+  },
+  impact(c, at, g){
+    this.thump(c, at, g * 1.6);
+    this.tick(c, at, g * 1.1);
+    this.whoosh(c, at, g * 0.7);
+  },
+  fire(kind, at, g){
+    const c = this.ctx;
+    if (kind === 'tick')   this.tick(c, at, g * 0.55);
+    else if (kind === 'blip')  this.blip(c, at, g * 0.42);
+    else if (kind === 'thump') this.thump(c, at, g * 0.75);
+    else if (kind === 'whoosh') this.whoosh(c, at, g * 0.9);
+    else if (kind === 'impact') this.impact(c, at, g * 0.75);
+  },
+  start(fromT){
+    const c = this.ensure();
+    if (!c) return;
+    if (c.state === 'suspended') c.resume();
+    this.stop(true);
+    const t0 = c.currentTime + 0.04;
+    for (const o of ONSETS){
+      if (o.t < fromT - 0.02) continue;
+      const at = t0 + (o.t - fromT);
+      if (at < c.currentTime) continue;
+      this.fire(o.kind, at, o.tag === 'fill' ? 0.16 : 0.5);
+    }
+    this.playing = true;
+  },
+  stop(quiet){
+    if (!this.ctx) return;
+    this.playing = false;
+    if (quiet){
+      for (const n of this.nodes){ try { n.stop(); } catch(e){} }
+      this.nodes = [];
+      return;
+    }
+    for (const n of this.nodes){ try { n.stop(this.ctx.currentTime + 0.02); } catch(e){} }
+    this.nodes = [];
+  }
+};
+
+/* ═══════════════ 播放状态 ═══════════════ */
+const state = { t: 0, playing: false, soundOn: false };
+const seekEl = document.getElementById('seek');
+const tcEl   = document.getElementById('tc');
+
+function draw(){
+  const f = Math.round(state.t * FPS);
+  drawAt(f);
+  if (seekEl.value !== String(f)) seekEl.value = String(f);
+  tcEl.textContent = 'f' + String(f).padStart(4,'0') + ' · ' + (f/FPS).toFixed(3) + ' s';
+  updatePanel(f);
+}
+
+function updatePanel(f){
+  document.getElementById('vT').textContent = f + ' / ' + (f/FPS).toFixed(3) + ' s';
+  document.getElementById('vSeg').textContent = segName(f);
+  const bl = btnLift(f);
+  document.getElementById('vLift').textContent = (f < K.btnJump ? '—' : bl.toFixed(1) + ' px');
+  const gs = groupShift(f);
+  document.getElementById('vDrift').textContent = gs.toFixed(1) + ' px';
+}
+
+/* 播放钟：以墙钟为基准，而不是把每帧 dt 相加。
+   把 dt 相加时，任何一次掉帧（这里是节流环境下常见）都会被 0.1 s 的上限吃掉，
+   30 秒的片子会播出 2 分钟。用 performance.now() 的差值算绝对时间即可。 */
+let rafId = 0, playStartWall = 0, playStartT = 0;
+
+function loop(ts){
+  if (!state.playing) return;
+  const wall = performance.now();
+  let t = playStartT + (wall - playStartWall) / 1000;
+
+  // 掉帧超过 0.25 s 时重新对齐，避免长时间挂起后一次性跳过一段
+  if ((wall - playStartWall) / 1000 - (state.t - playStartT) > 2.0){
+    playStartWall = wall;
+    playStartT = state.t;
+    t = state.t;
+  }
+
+  if (t >= DUR){
+    state.t = DUR;
+    draw();
+    setPlaying(false);
+    return;
+  }
+  state.t = t;
+  draw();
+  rafId = requestAnimationFrame(loop);
+}
+
+function setPlaying(on){
+  if (on && state.t >= DUR - 1e-6) state.t = 0;
+  state.playing = on;
+  document.getElementById('play').textContent = on ? '暂停' : '播放';
+  if (on){
+    playStartWall = performance.now();
+    playStartT = state.t;
+    cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(loop);
+    if (state.soundOn) Sound.start(state.t);
+  } else {
+    cancelAnimationFrame(rafId);
+    Sound.stop();
+  }
+}
+
+/* ═══════════════ 自检：逐帧预算 ═══════════════ */
+function measureAll(done){
+  FAST = true;
+  const octx = canvas.getContext('2d', { willReadFrequently: true });
+  const SW = W >> 2, SH = H >> 2;            // 每 4 像素取 1，保真度≈全分辨率均值
+  const N = SW * SH;
+
+  const pd = new Float32Array(FRAMES);
+  let prev = new Float32Array(N);
+  let f = 0;
+
+  function step(){
+    const t0 = performance.now();
+    while (f < FRAMES && performance.now() - t0 < 60){
+      drawAt(f);
+      const d = octx.getImageData(0, 0, W, H).data;
+      const cur = new Float32Array(N);
+      let sum = 0, k = 0;
+      for (let y = 0; y < H; y += 4){
+        let row = y * W * 4;
+        for (let x = 0; x < W; x += 4, k++){
+          const i = row + x * 4;
+          const v = 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2];
+          cur[k] = v;
+          if (f > 0) sum += Math.abs(v - prev[k]);
+        }
+      }
+      pd[f] = f > 0 ? sum / N : 0;
+      prev = cur;
+      f++;
+    }
+    if (f < FRAMES){
+      document.getElementById('log').textContent = '渲染 ' + f + ' / ' + FRAMES + ' 帧…';
+      setTimeout(step, 0);
+      return;
+    }
+    FAST = false;
+    done(pd);
+  }
+  step();
+}
+
+function summarise(pd){
+  let low = 0, high = 0;
+  for (let i = 0; i < FRAMES; i++){ if (pd[i] < 0.5) low++; if (pd[i] >= 5.0) high++; }
+
+  // 运动段
+  const segs = [];
+  let run = -1;
+  for (let i = 0; i < FRAMES; i++){
+    if (pd[i] >= 1.0){ if (run < 0) run = i; }
+    else if (run >= 0){ segs.push(i - run); run = -1; }
+  }
+  if (run >= 0) segs.push(FRAMES - run);
+
+  const srt = segs.slice().sort((a,b) => a - b);
+  const med = srt.length ? srt[Math.floor(srt.length/2)] : 0;
+  const over1s = segs.filter(n => n > FPS).length;
+  const longestSeg = srt.length ? srt[srt.length-1] : 0;
+
+  // 最长静置
+  let best = 0, cur = 0;
+  for (let i = 0; i < FRAMES; i++){
+    if (pd[i] < 0.5){ cur++; if (cur > best) best = cur; }
+    else cur = 0;
+  }
+
+  // onset 密度
+  const total = ONSETS.length;
+  const win = ONSETS.filter(o => o.t >= 24.4 && o.t <= 27.7).length;
+
+  return {
+    lowPct: low / FRAMES * 100,
+    highPct: high / FRAMES * 100,
+    segCount: segs.length,
+    medFrames: med,
+    medSec: med / FPS,
+    over1s,
+    longestSegFrames: longestSeg,
+    longestStillSec: best / FPS,
+    onsetTotal: total,
+    onsetAll: total / DUR,
+    onsetWin: win / 3.3
+  };
+}
+
+/* ═══════════════ 绑定 ═══════════════ */
+seekEl.addEventListener('input', () => {
+  if (state.playing) setPlaying(false);
+  state.t = clamp(Number(seekEl.value) / FPS, 0, DUR);
+  draw();
+});
+document.getElementById('play').addEventListener('click', () => setPlaying(!state.playing));
+document.getElementById('prev').addEventListener('click', () => {
+  if (state.playing) setPlaying(false);
+  state.t = clamp((Math.round(state.t*FPS) - 1)/FPS, 0, DUR); draw();
+});
+document.getElementById('next').addEventListener('click', () => {
+  if (state.playing) setPlaying(false);
+  state.t = clamp((Math.round(state.t*FPS) + 1)/FPS, 0, DUR); draw();
+});
+document.getElementById('sound').addEventListener('click', (e) => {
+  state.soundOn = !state.soundOn;
+  e.currentTarget.setAttribute('aria-pressed', state.soundOn ? 'true' : 'false');
+  e.currentTarget.textContent = state.soundOn ? '声音开' : '声音';
+  if (!state.soundOn) Sound.stop();
+  else if (state.playing) Sound.start(state.t);
+});
+document.getElementById('png').addEventListener('click', () => {
+  const a = document.createElement('a');
+  a.download = 'repro-ui-f' + String(Math.round(state.t*FPS)).padStart(4,'0') + '.png';
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+});
+document.getElementById('mAll').addEventListener('click', () => {
+  const log = document.getElementById('log');
+  log.textContent = '渲染 0 / ' + FRAMES + ' 帧…';
+  measureAll((pd) => {
+    const r = summarise(pd);
+    const line = (name, got, want, unit) =>
+      name.padEnd(16) + String(got.toFixed(3)).padStart(9) + (unit||'') +
+      '   目标 ' + want;
+    log.textContent = [
+      '自家画面 · 320×180 · 全 ' + FRAMES + ' 帧',
+      '',
+      line('pix_diff<0.5', r.lowPct, '51.0 %', ' %'),
+      line('pix_diff>=5.0', r.highPct, '4.0 %', ' %'),
+      line('运动段数', r.segCount, '43', ''),
+      line('段中位(帧)', r.medFrames, '2 帧 / 0.067 s', ''),
+      line('段中位(秒)', r.medSec, '0.067 s', ' s'),
+      line('>1 s 的段', r.over1s, '2', ''),
+      line('最长段(帧)', r.longestSegFrames, '49 (1.633 s)', ''),
+      line('最长静置', r.longestStillSec, '2.37 s', ' s'),
+      line('onset 总数', r.onsetTotal, '183', ''),
+      line('onset 全片', r.onsetAll, '5.15 /s', ' /s'),
+      line('onset 24.4-27.7', r.onsetWin, '6.36 /s', ' /s'),
+      '',
+      '按钮逐帧位移表求和 ' + BTN_SUM.toFixed(1) + ' px（实测 97 px，差 ' +
+        (Math.abs(BTN_SUM-97)/97*100).toFixed(1) + '%）',
+      '组位移（漂移+出画）' + groupShift(FRAMES) .toFixed(1) + ' px'
+    ].join('\n');
+    window.__lastMeasure = r;
+    draw();
+  });
+});
+document.getElementById('mAudio').addEventListener('click', () => {
+  const log = document.getElementById('log');
+  const win = ONSETS.filter(o => o.t >= 24.4 && o.t <= 27.7);
+  const gaps = [];
+  for (let i = 1; i < ONSETS.length; i++) gaps.push(ONSETS[i].t - ONSETS[i-1].t);
+  gaps.sort((a,b) => a-b);
+  log.textContent = [
+    'onset 总数 ' + ONSETS.length + ' / ' + DUR + ' s = ' + (ONSETS.length/DUR).toFixed(2) + ' 个/秒',
+    '24.4–27.7 s：' + win.length + ' 个 = ' + (win.length/3.3).toFixed(2) + ' 个/秒（比全片高 ' +
+      ((win.length/3.3)/(ONSETS.length/DUR)*100 - 100).toFixed(0) + '%）',
+    '相邻间距中位 ' + gaps[Math.floor(gaps.length/2)].toFixed(3) + ' s',
+    '锚点（tag=peak/cut）：',
+    ...ONSETS.filter(o => o.tag !== 'fill').map(o =>
+      '  ' + o.t.toFixed(3) + ' s  ' + o.kind.padEnd(7) + o.tag)
+  ].join('\n');
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' && e.target.type !== 'range') return;
+  if (e.code === 'Space'){ e.preventDefault(); setPlaying(!state.playing); }
+  else if (e.code === 'ArrowRight'){
+    e.preventDefault(); if (state.playing) setPlaying(false);
+    state.t = clamp((Math.round(state.t*FPS) + 1)/FPS, 0, DUR); draw();
+  } else if (e.code === 'ArrowLeft'){
+    e.preventDefault(); if (state.playing) setPlaying(false);
+    state.t = clamp((Math.round(state.t*FPS) - 1)/FPS, 0, DUR); draw();
+  }
+});
+
+/* 进度条刻度 */
+(function marks(){
+  const boxEl = document.getElementById('marks');
+  const labels = [['1.27',38],['4.47',134],['9.23',277],['10.67',320],['12.90',387],
+                  ['15.03',451],['24.47',734],['25.63',769],['27.37',821],['32.33',970]];
+  for (const [lab, fr] of labels){
+    const s = document.createElement('span');
+    s.textContent = lab;
+    s.style.left = (fr / (FRAMES-1) * 100) + '%';
+    boxEl.appendChild(s);
+  }
+})();
+
+document.getElementById('vSum').textContent = BTN_SUM.toFixed(1);
+
+/* 定格参数 */
+(function boot(){
+  const p = new URLSearchParams(location.search);
+  if (p.has('t')){
+    const v = parseFloat(p.get('t'));
+    state.t = isFinite(v) ? clamp(v, 0, DUR) : 0;
+  }
+  if (p.get('sound') === '1'){
+    state.soundOn = true;
+    const sb = document.getElementById('sound');
+    sb.setAttribute('aria-pressed','true'); sb.textContent = '声音开';
+  }
+  draw();
+})();
+
+/* 供验证脚本调用 */
+window.__repro = {
+  get duration(){ return DUR; },
+  get frames(){ return FRAMES; },
+  get fps(){ return FPS; },
+  get params(){ return { btnSum: BTN_SUM, seg1: K.btnSeg1e - K.btnJump, valley: K.valley - K.btnSeg1e }; },
+  get onsets(){ return ONSETS.map(o => ({ t: o.t, kind: o.kind, tag: o.tag })); },
+  setTime(t){
+    state.t = clamp(Number(t) || 0, 0, DUR);
+    if (state.playing) setPlaying(false);
+    draw();
+    return { t: state.t, frame: Math.round(state.t * FPS), seg: segName(Math.round(state.t*FPS)) };
+  },
+  getTime(){ return state.t; },
+  canvas,
+  toDataURL(){ return canvas.toDataURL('image/png'); },
+  statsNow(){
+    const d = ctx.getImageData(0, 0, W, H).data;
+    let sum = 0, non = 0;
+    const buckets = new Set();
+    for (let i = 0; i < d.length; i += 4){
+      const y = 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2];
+      sum += y;
+      if (y > 6) non++;
+      if (i % 160 === 0) buckets.add(((d[i]>>4)<<8) | ((d[i+1]>>4)<<4) | (d[i+2]>>4));
+    }
+    const n = d.length / 4;
+    return { meanLum: sum/n, nonDarkRatio: non/n, colorBuckets: buckets.size };
+  },
+  measureAll(){ return new Promise(res => measureAll(pd => res(summarise(pd)))); },
+  audioProbe(fromT){
+    const c = Sound.ensure();
+    if (!c) return { ok:false };
+    const sched = ONSETS.filter(o => o.t >= fromT - 0.02);
+    return {
+      ok: true,
+      ctxState: c.state,
+      scheduled: sched.length,
+      first5: sched.slice(0, 5).map(o => ({ t: +o.t.toFixed(3), kind: o.kind, tag: o.tag }))
+    };
+  },
+  ready: true
+};
+
+})();
+</script>
+</body>
+</html>

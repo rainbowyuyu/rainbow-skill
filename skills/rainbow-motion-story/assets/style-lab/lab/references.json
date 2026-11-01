@@ -1,0 +1,1416 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-23",
+  "method": "Initial eight-reference sparse/dense study with separately logged playback; later reference-specific deepStudy records state their own coverage. No implied complete viewing or subjective listening.",
+  "references": [
+    {
+      "id": "car-ignition",
+      "title": "汽车飞行：为什么最后才点火",
+      "author": "浙大猫学长",
+      "url": "https://v.douyin.com/KQ8ups9a_D4/",
+      "shortTitle": "汽车飞行",
+      "duration": 172.133333,
+      "sourceVideo": "D:/projects/manim_extend_rainbow/video_project/pid_embodied_control/work/v02/references/car-ignition/media-01.mp4",
+      "sourceSha256": "b56e5c4c4315c62862cc8dc53b15756e37f0d88c830740db66af7e2a2fd66432",
+      "pageTitle": "985数学系3分钟带你剖析roadster2的下落轨迹 #创作阶梯计划 #vibe知识大赏 #抖音前沿科技首发计划 #抖音精选App知识充电站 - 抖音",
+      "playbackWindows": [
+        {
+          "start": 20,
+          "end": 32.526668,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedAndScreenshotsReviewed",
+          "report": "../evidence/car-ignition/earlier-playback.json"
+        },
+        {
+          "start": 70,
+          "end": 88.643796,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedAndScreenshotsReviewed",
+          "report": "../evidence/car-ignition/later-playback.json"
+        }
+      ],
+      "observations": [
+        {
+          "start": 83,
+          "end": 87.5,
+          "observed": "83.000–83.500s，车底占据上沿，桥墩和路面提供高度参照。 83.667–85.333s，0.7秒被单独放大，喷口环被标出；85.500s后喷流迅速增强，下降速度读数开始回落。 86.167–87.500s换为近地侧面，车、喷流和地面接触距离同时可见；同一动作没有被切成无关镜头。 退出低机位时仍保留车辆方向和道路坐标，观众能继续判断下降。",
+          "transfer": "让机位服务作用点：力发生在底部时靠近底部，结果阶段恢复完整轮廓；强动作之后留出读数窗口。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "83.000–83.500s，车底占据上沿，桥墩和路面提供高度参照。",
+            "action": "83.667–85.333s，0.7秒被单独放大，喷口环被标出；85.500s后喷流迅速增强，下降速度读数开始回落。",
+            "settle": "86.167–87.500s换为近地侧面，车、喷流和地面接触距离同时可见；同一动作没有被切成无关镜头。",
+            "handoff": "退出低机位时仍保留车辆方向和道路坐标，观众能继续判断下降。"
+          }
+        },
+        {
+          "start": 42,
+          "end": 47,
+          "observed": "42.000s保留车辆、倾角、下降速度和下方代价轴，术语有实体锚点。 43.500–45.833s速度箭头变长、车辆变斜时，代价标记逐渐右移；只有当前量逐步变橙。 45.833–46.000s几何量与代价值同时可见，让读者确认对应关系。 46.167–47.000s车淡出，速度曲线接替原解释区域，上方公式增加积分项。",
+          "transfer": "固定公式基线与颜色身份，先在实体上动一次量，再点亮式子对应项；不要同时飞入所有字符。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "42.000s保留车辆、倾角、下降速度和下方代价轴，术语有实体锚点。",
+            "action": "43.500–45.833s速度箭头变长、车辆变斜时，代价标记逐渐右移；只有当前量逐步变橙。",
+            "settle": "45.833–46.000s几何量与代价值同时可见，让读者确认对应关系。",
+            "handoff": "46.167–47.000s车淡出，速度曲线接替原解释区域，上方公式增加积分项。"
+          }
+        },
+        {
+          "start": 56,
+          "end": 61,
+          "observed": "56.000s一组开度矩阵与多条轨迹同场，约束和时间坐标没有消失。 56.333–58.667s无效/较差候选逐渐退暗，选中的轨迹与矩阵边框变亮；不是重新生成一条无关曲线。 58.833–59.167s只有一条主曲线清晰保留，选择结果可读。 59.333–59.833s黄色曲线穿过过渡，在街道中接成车辆将执行的路径；随后才出现控制方法标题。",
+          "transfer": "用同一条数据路径在图表坐标和世界坐标之间做投影迁移，迁移前后对齐起点、终点与方向。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "56.000s一组开度矩阵与多条轨迹同场，约束和时间坐标没有消失。",
+            "action": "56.333–58.667s无效/较差候选逐渐退暗，选中的轨迹与矩阵边框变亮；不是重新生成一条无关曲线。",
+            "settle": "58.833–59.167s只有一条主曲线清晰保留，选择结果可读。",
+            "handoff": "59.333–59.833s黄色曲线穿过过渡，在街道中接成车辆将执行的路径；随后才出现控制方法标题。"
+          }
+        }
+      ],
+      "windows": [
+        {
+          "start": 83,
+          "end": 87.5,
+          "label": "低机位接管下落",
+          "sheet": "../evidence/car-ignition/detail-0.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 28,
+          "ptsManifest": "../evidence/car-ignition/detail-0.json"
+        },
+        {
+          "start": 42,
+          "end": 47,
+          "label": "从对象抽出代价",
+          "sheet": "../evidence/car-ignition/detail-1.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 31,
+          "ptsManifest": "../evidence/car-ignition/detail-1.json"
+        },
+        {
+          "start": 56,
+          "end": 61,
+          "label": "候选选择回到执行",
+          "sheet": "../evidence/car-ignition/detail-2.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 31,
+          "ptsManifest": "../evidence/car-ignition/detail-2.json"
+        }
+      ],
+      "audioStatus": "原声未主观实听；未将画面判断当作音效或配音听感结论。",
+      "analysisPath": "../studies/car-ignition-deep.md",
+      "overview": "../evidence/car-ignition/overview.jpg",
+      "recommendedCandidateIds": [
+        "visualization-route-bridge",
+        "visualization-entity-formula",
+        "camera-orbit-bank",
+        "continuity-shell-to-force",
+        "continuity-quantity-to-term"
+      ],
+      "focus": "同一对象贯穿实体、控制量、代价函数和执行结果；大动作先制造问题，小图解释取舍。",
+      "codeNotes": [
+        "保存 trajectory[i].time/position/control/cost；选择动画只修改显示权重，不改候选值。",
+        "chartToWorld(p,u) 可把同一曲线的屏幕坐标映射到三维投影；身份ID、采样顺序和颜色始终不变。",
+        "cameraPose(t) 分别保存 position/target/fov/roll，低机位目标锁喷口，结果段目标平滑回到质心；给近裁面和地面留距离。"
+      ],
+      "limitations": "画面中的控制方法与参数仅作原片观察；本研究没有取得原求解代码，也没有独立验证其最优性、燃料数值或车辆模型。",
+      "deepStudy": {
+        "manifest": "../evidence/car-ignition-deep/manifest.json",
+        "guide": "../guides/continuity.md",
+        "date": "2026-10-23",
+        "sampling": "173 full-film 1fps samples; three 5fps windows; three all-frame windows; overlaps retained",
+        "playback": "1x muted with sparse screenshots; not continuous visual or auditory review"
+      }
+    },
+    {
+      "id": "ai-draw",
+      "title": "AI 到底怎么画出一张图",
+      "author": "浙大猫学长",
+      "url": "https://v.douyin.com/OF33isAG9j0/",
+      "shortTitle": "AI 到底怎么画出一张图",
+      "duration": 226.333333,
+      "sourceVideo": "D:/projects/manim_extend_rainbow/video_project/pid_embodied_control/work/v02/references/ai-draw/media-01.mp4",
+      "sourceSha256": "f529bcd19435ba077f2f051a0b1ae8477dfe1911a5c19705ea9db52f798b4b2c",
+      "pageTitle": "Vibe知识大赏｜ AI 到底怎么画出一张图? #vibe知识大赏 #抖音前沿科技首发计划 #抖音精选App知识充电站 @抖音科技 - 抖音",
+      "playbackWindows": [
+        {
+          "start": 0,
+          "end": 12.400156,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedAndScreenshotsReviewed",
+          "report": "../evidence/ai-draw/earlier-playback.json"
+        },
+        {
+          "start": 104,
+          "end": 122.654249,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedAndScreenshotsReviewed",
+          "report": "../evidence/ai-draw/later-playback.json"
+        },
+        {
+          "start": 35,
+          "end": 46.204588,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedWithSparseScreenshots",
+          "report": "../evidence/ai-draw-deep/playback.json"
+        },
+        {
+          "start": 112,
+          "end": 126.083708,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedWithSparseScreenshots",
+          "report": "../evidence/ai-draw-deep/playback.json"
+        },
+        {
+          "start": 165,
+          "end": 179.111232,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedWithSparseScreenshots",
+          "report": "../evidence/ai-draw-deep/playback.json"
+        }
+      ],
+      "observations": [
+        {
+          "start": 118,
+          "end": 122.5,
+          "observed": "118.000–119.000s金色云团已存在，顶端时间参数渐入，观众先看见分布。 120.000–121.833s云团逐步拉长弯曲，散点没有突然全量重抽；亮度集中在即将成形的曲线上。 122.000–122.500s明确留下弯曲主干；问号出现时，轮廓已经可认。 收敛结果成为后续解释对象，背景依旧深色，空间中心不换。",
+          "transfer": "固定点身份和目标位置，用可保存的中间态表达收敛；不要每帧噪声，也不要只有开头云和结尾线。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "118.000–119.000s金色云团已存在，顶端时间参数渐入，观众先看见分布。",
+            "action": "120.000–121.833s云团逐步拉长弯曲，散点没有突然全量重抽；亮度集中在即将成形的曲线上。",
+            "settle": "122.000–122.500s明确留下弯曲主干；问号出现时，轮廓已经可认。",
+            "handoff": "收敛结果成为后续解释对象，背景依旧深色，空间中心不换。"
+          }
+        },
+        {
+          "start": 38,
+          "end": 43,
+          "observed": "38.000–39.833s斜置的格纸平面和图片坐标持续可见，环境有窗光与接触阴影。 40.167–41.167s图片先散离，格纸网格退去，平面在原位置皱缩成团。 41.333–42.167s小纸团在房间中心停留；对象变形后留出辨认时间。 42.333–43.000s三维坐标从房间角落进入，原纸团仍在坐标空间中。",
+          "transfer": "先保持同一平面的边界和中心，再做逐顶点变形；坐标轴进入时保留房间尺度，避免每次讲维度就另切一页。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "38.000–39.833s斜置的格纸平面和图片坐标持续可见，环境有窗光与接触阴影。",
+            "action": "40.167–41.167s图片先散离，格纸网格退去，平面在原位置皱缩成团。",
+            "settle": "41.333–42.167s小纸团在房间中心停留；对象变形后留出辨认时间。",
+            "handoff": "42.333–43.000s三维坐标从房间角落进入，原纸团仍在坐标空间中。"
+          }
+        },
+        {
+          "start": 168,
+          "end": 173,
+          "observed": "168.000s干净图、噪声、加噪图与下方曲线对应；原图仍在。 168.833–170.167s输入和标签依次写入；170.333–171.167s板擦横向带走上方演算，曲线不动。 171.333–172.333s新图片一张张出现，观众能看到同一位置可能关联多个来源。 172.333–173.000s四张图片与路径共存，后续多方向解释有明确落脚点。",
+          "transfer": "用擦除遮挡过桥，但保留解释锚点；新样本分批出现，不能同时摆满屏幕。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "168.000s干净图、噪声、加噪图与下方曲线对应；原图仍在。",
+            "action": "168.833–170.167s输入和标签依次写入；170.333–171.167s板擦横向带走上方演算，曲线不动。",
+            "settle": "171.333–172.333s新图片一张张出现，观众能看到同一位置可能关联多个来源。",
+            "handoff": "172.333–173.000s四张图片与路径共存，后续多方向解释有明确落脚点。"
+          }
+        }
+      ],
+      "windows": [
+        {
+          "start": 118,
+          "end": 122.5,
+          "label": "云团收成曲线",
+          "sheet": "../evidence/ai-draw/detail-0.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 28,
+          "ptsManifest": "../evidence/ai-draw/detail-0.json"
+        },
+        {
+          "start": 38,
+          "end": 43,
+          "label": "平面折成空间里的对象",
+          "sheet": "../evidence/ai-draw/detail-1.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 31,
+          "ptsManifest": "../evidence/ai-draw/detail-1.json"
+        },
+        {
+          "start": 168,
+          "end": 173,
+          "label": "单个样本扩展为多种来源",
+          "sheet": "../evidence/ai-draw/detail-2.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 31,
+          "ptsManifest": "../evidence/ai-draw/detail-2.json"
+        }
+      ],
+      "audioStatus": "原声未主观实听；未将画面判断当作音效或配音听感结论。",
+      "analysisPath": "../studies/ai-draw-deep.md",
+      "overview": "../evidence/ai-draw/overview.jpg",
+      "recommendedCandidateIds": [
+        "visualization-cloud-aggregation",
+        "visualization-entity-formula",
+        "look-material-palette",
+        "visualization-paper-space",
+        "visualization-directed-flow",
+        "visualization-observation-fan"
+      ],
+      "focus": "让抽象概念拥有持续身份：图片、点、曲线、噪声和方向场能在同一解释空间里接力。",
+      "codeNotes": [
+        "particles 使用固定seed，保存 from/to/id；允许 pathFor(id,t) 弯曲迁移，sample(frame) 不依赖播放历史。",
+        "morphPlane(u,v,t) 保持拓扑、UV与中心；材质粗糙度和法线应随几何计算，避免把皱纸画成任意噪声背景。",
+        "maskSweep(x,t) 只擦目标图层，坐标轴/主曲线单独保留；文字布局在动画前测量。"
+      ],
+      "limitations": "点云收敛可以是教学表现，不能凭画面认定它是实际扩散网络采样。纸张变形也不能凭片段判断用了真实布料仿真。",
+      "deepStudy": {
+        "manifest": "../evidence/ai-draw-deep/manifest.json",
+        "guide": "../guides/generative-style.md",
+        "date": "2026-10-23",
+        "sampling": "560 sampled entries / 493 unique source frames / 27 contact sheets; all contact sheets statically reviewed",
+        "playback": "Three 1x muted playback windows logged with sparse screenshots, not continuous human visual or auditory review",
+        "playbackReport": "../evidence/ai-draw-deep/playback.json"
+      }
+    },
+    {
+      "id": "shuffle",
+      "title": "你洗的这副牌，很可能是人类历史第一次",
+      "author": "世界的暗线",
+      "url": "https://v.douyin.com/YqnE1Zz943k/",
+      "shortTitle": "你洗的这副牌，很可能是人类历史第一次",
+      "duration": 138,
+      "sourceVideo": "D:/projects/manim_extend_rainbow/video_project/pid_embodied_control/work/v02/references/shuffle/media-01.mp4",
+      "sourceSha256": "ebd452ef40bb4c1063f41ab0b3e011af75c20c75cf79f1ee5e864fe6eb44807e",
+      "pageTitle": "Vibe 知识大赏丨你洗的这副牌，很可能是人类历史第一次 一副 52 张的牌，有多少种排法？52 × 51 × 50 × … × 1，是一个 68 位的数。 就算 80 亿人从宇宙大爆炸开始，每人每秒洗一副，洗到今天，也还差着整整 40 位数。 前提是，真的洗乱了。 把牌按彩虹色排好再洗，就能看见“乱”是怎么来的： · 洗一次，牌里还藏着两道彩虹；每多洗一次，最多翻一倍 · 1992 年，Baye - 抖音",
+      "playbackWindows": [
+        {
+          "start": 0,
+          "end": 12.51897,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedAndScreenshotsReviewed",
+          "report": "../evidence/shuffle/earlier-playback.json"
+        },
+        {
+          "start": 66,
+          "end": 86.774476,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedAndScreenshotsReviewed",
+          "report": "../evidence/shuffle/later-playback.json"
+        }
+      ],
+      "observations": [
+        {
+          "start": 69,
+          "end": 73.5,
+          "observed": "69.000–69.333s两叠牌先分离，仍能看到连续彩虹边。 69.500–70.833s两端弯起，逐张交织；71.000–71.500s合拢成一叠。 71.667–72.000s牌堆转向并短暂停住，动作完成后才换观察形式。 72.167–72.833s摊成平面，73.000–73.500s再分成两行，带入下一次洗牌。",
+          "transfer": "同一对象按相位变换：预备、交错、落定、摊开；不要给所有牌同相位弹簧。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "69.000–69.333s两叠牌先分离，仍能看到连续彩虹边。",
+            "action": "69.500–70.833s两端弯起，逐张交织；71.000–71.500s合拢成一叠。",
+            "settle": "71.667–72.000s牌堆转向并短暂停住，动作完成后才换观察形式。",
+            "handoff": "72.167–72.833s摊成平面，73.000–73.500s再分成两行，带入下一次洗牌。"
+          }
+        },
+        {
+          "start": 42,
+          "end": 47,
+          "observed": "42.000–43.167s螺旋牌列与左侧排列条共存，先保留数量感。 43.333–44.167s左侧收束成第一次数列；44.500–45.833s螺旋底部逐张伸出，接成新队列。 新队列的底部暂时稳定，观众能识别从螺旋到直线的对应。 46.000–47.000s上方结构继续接到新的洗牌章节，字幕转为是否真正洗乱。",
+          "transfer": "用队列局部变形承接章节，先完成部分再传给下一部分；不是整组瞬间变换矩阵。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "42.000–43.167s螺旋牌列与左侧排列条共存，先保留数量感。",
+            "action": "43.333–44.167s左侧收束成第一次数列；44.500–45.833s螺旋底部逐张伸出，接成新队列。",
+            "settle": "新队列的底部暂时稳定，观众能识别从螺旋到直线的对应。",
+            "handoff": "46.000–47.000s上方结构继续接到新的洗牌章节，字幕转为是否真正洗乱。"
+          }
+        },
+        {
+          "start": 94,
+          "end": 99,
+          "observed": "94.000–94.333s牌按矩阵整齐排列，下方随机比特条可见。 94.500、95.000、95.500s等采样出现散开状态，间隔采样回到整齐矩阵；实体卡仍有颜色和花色。 每次变换之后出现可读矩阵状态，不能把全部时间都做成混乱飞行。 97.500s后字幕转到程序随机数，下方发生器标签与比特条仍固定。",
+          "transfer": "快速多状态必须给出可重复的排列索引和读定窗口；状态之间插值只是表演，不改变数学排列结果。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "94.000–94.333s牌按矩阵整齐排列，下方随机比特条可见。",
+            "action": "94.500、95.000、95.500s等采样出现散开状态，间隔采样回到整齐矩阵；实体卡仍有颜色和花色。",
+            "settle": "每次变换之后出现可读矩阵状态，不能把全部时间都做成混乱飞行。",
+            "handoff": "97.500s后字幕转到程序随机数，下方发生器标签与比特条仍固定。"
+          }
+        }
+      ],
+      "windows": [
+        {
+          "start": 69,
+          "end": 73.5,
+          "label": "交错、合拢、摊开",
+          "sheet": "../evidence/shuffle/detail-0.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 28,
+          "ptsManifest": "../evidence/shuffle/detail-0.json"
+        },
+        {
+          "start": 42,
+          "end": 47,
+          "label": "空间队列接到新问题",
+          "sheet": "../evidence/shuffle/detail-1.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 31,
+          "ptsManifest": "../evidence/shuffle/detail-1.json"
+        },
+        {
+          "start": 94,
+          "end": 99,
+          "label": "计算状态的快变与停留",
+          "sheet": "../evidence/shuffle/detail-2.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 31,
+          "ptsManifest": "../evidence/shuffle/detail-2.json"
+        }
+      ],
+      "audioStatus": "0–138秒混合音轨量化；4个窗口1×原声播放已记录，未主观听审或分离声源。",
+      "analysisPath": "../studies/shuffle-story.md",
+      "previousAnalysisPaths": [
+        "../studies/shuffle-rhythm.md",
+        "../studies/shuffle.md"
+      ],
+      "storyStudy": {
+        "visualStudy": "../studies/shuffle-visual-story.md",
+        "scriptStudy": "../studies/shuffle-script.md",
+        "workbench": "./shuffle-story.html",
+        "guide": "../guides/shuffle-story.md",
+        "scope": "Visible subtitle review, visual evidence and original explanation examples; no verified spoken transcript."
+      },
+      "overview": "../evidence/shuffle/overview.jpg",
+      "recommendedCandidateIds": [
+        "rhythm-braid-settle",
+        "rhythm-state-relay",
+        "story-question-reveal",
+        "visualization-choice-product",
+        "storytelling-perfect-shuffle"
+      ],
+      "focus": "用可追踪的色彩顺序解释组合数量；快动作之后必须能认出新的排列。",
+      "codeNotes": [
+        "permutation 为显式数组；每张牌保留 cardId/color，动画的 targetIndex 从该数组读取。",
+        "交错阶段每张牌 delay=index*stagger，弯曲用沿长度的曲率包络；重排后稳定保持，不用永久随机摆动。",
+        "音效事件绑定 merge/land/reveal，不绑定每一个顶点；原声未实听，现阶段只能借用包络与视觉时机。"
+      ],
+      "limitations": "已分析混合音轨能量和频谱通量，未主观实听。不能将谱峰命名为牌声或鼓点，也不能证明每次落牌逐帧卡拍。",
+      "deepStudy": {
+        "date": "2026-10-23",
+        "sampleRecords": 245,
+        "uniqueFrames": 210,
+        "contactSheets": 15,
+        "visualStudy": "../studies/shuffle-rhythm-visual.md",
+        "audioStudy": "../studies/shuffle-sound-signal.md",
+        "events": "../evidence/shuffle-rhythm/visual-events.json",
+        "playback": "../evidence/shuffle-rhythm/browser-playback.json",
+        "workbench": "./shuffle-rhythm.html",
+        "guide": "../guides/shuffle-rhythm.md",
+        "scope": "Static visual review, logged 1x playback and mixed-audio signal measurements. Original 18s code study; no source audio samples or subjective listening claims."
+      }
+    },
+    {
+      "id": "transmission",
+      "title": "每发一包都等确认，视频要传一个多小时",
+      "author": "小事儿",
+      "url": "https://v.douyin.com/KhjwCTsjiNw/",
+      "shortTitle": "每发一包都等确认，视频要传一个多小时",
+      "duration": 480.433333,
+      "sourceVideo": "D:/projects/manim_extend_rainbow/video_project/pid_embodied_control/work/v02/references/transmission/media-01.mp4",
+      "sourceSha256": "a53ab07ce45f0bfe0c519b5c5d6dc6c0931f199485c1ff3c1815a09448fa5964",
+      "pageTitle": "每发一包都等确认，视频要传一个多小时｜尽力而为④ 一条八分钟的视频，为什么换一种发法就要传一个多小时？在片中往返约50毫秒的设定下，发一段、等一个确认，会让线路绝大部分时间空着。 《尽力而为》TCP/IP系列第四集：从停等到流水线与滑动窗口，看懂接收缓存和流量控制、零窗口探测、糊涂窗口综合征、Nagle算法与延迟确认，以及窗口缩放。 对面收得下，不等于路上装得下。下一集：TCP怎样摸清这条路的 - 抖音",
+      "playbackWindows": [
+        {
+          "start": 168,
+          "end": 178.445678,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedAndScreenshotsReviewed",
+          "report": "../evidence/transmission/earlier-playback.json"
+        },
+        {
+          "start": 360,
+          "end": 378.751567,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedAndScreenshotsReviewed",
+          "report": "../evidence/transmission/later-playback.json"
+        }
+      ],
+      "observations": [
+        {
+          "start": 367.5,
+          "end": 371.5,
+          "observed": "367.500–368.500s缓存逐步攒字节，发送端保持固定位置。 368.833–369.000s紫绿数据块填满；369.167s缓存清空；369.333–369.833s跟随数据高速横移，背景有方向性模糊。 370.000–370.500s镜头回拉到两端总览，100个包与另一条数量比较进入。 370.667–371.500s留给数字增长和结论读取；快速动作已退场。",
+          "transfer": "模糊用于位移信息，文字另层清晰；落位后给稳定比较，不把强模糊当全片滤镜。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "367.500–368.500s缓存逐步攒字节，发送端保持固定位置。",
+            "action": "368.833–369.000s紫绿数据块填满；369.167s缓存清空；369.333–369.833s跟随数据高速横移，背景有方向性模糊。",
+            "settle": "370.000–370.500s镜头回拉到两端总览，100个包与另一条数量比较进入。",
+            "handoff": "370.667–371.500s留给数字增长和结论读取；快速动作已退场。"
+          }
+        },
+        {
+          "start": 78,
+          "end": 83,
+          "observed": "78.000s两端、数据带和长度尺同时存在。 78.333–78.833s白色矩形框落到数据带；之后先让它固定。 79.000–80.667s结构保持，字幕解释框的含义。 81.000–81.500s放大到窗口局部，81.833–83.000s用已确认括号指出框左边的含义。",
+          "transfer": "先让观众看见完整空间，再让同一个框成为局部解释对象；放大时保留另一端的部分位置作参照。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "78.000s两端、数据带和长度尺同时存在。",
+            "action": "78.333–78.833s白色矩形框落到数据带；之后先让它固定。",
+            "settle": "79.000–80.667s结构保持，字幕解释框的含义。",
+            "handoff": "81.000–81.500s放大到窗口局部，81.833–83.000s用已确认括号指出框左边的含义。"
+          }
+        },
+        {
+          "start": 308,
+          "end": 313,
+          "observed": "308.000s接收缓冲44/44格、应用层和传输层分别可见。 309.000–310.333s讲述应用只取一个字节，画面大部分保持稳定以建立限制。 310.833–311.500s一个蓝色确认块出现，窗口1字样随后亮起。 311.500–313.000s蓝色块向下离开，窗口1仍在；控制信息不是凭空换成新面板。",
+          "transfer": "事件触发数据流，再让标签解释刚发生的变化；没有事件时允许静止，不强行造忙碌。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "308.000s接收缓冲44/44格、应用层和传输层分别可见。",
+            "action": "309.000–310.333s讲述应用只取一个字节，画面大部分保持稳定以建立限制。",
+            "settle": "310.833–311.500s一个蓝色确认块出现，窗口1字样随后亮起。",
+            "handoff": "311.500–313.000s蓝色块向下离开，窗口1仍在；控制信息不是凭空换成新面板。"
+          }
+        }
+      ],
+      "windows": [
+        {
+          "start": 367.5,
+          "end": 371.5,
+          "label": "快速位移之后回到比较",
+          "sheet": "../evidence/transmission/detail-0.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 25,
+          "ptsManifest": "../evidence/transmission/detail-0.json"
+        },
+        {
+          "start": 78,
+          "end": 83,
+          "label": "框就是可见的窗口",
+          "sheet": "../evidence/transmission/detail-1.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 31,
+          "ptsManifest": "../evidence/transmission/detail-1.json"
+        },
+        {
+          "start": 308,
+          "end": 313,
+          "label": "过程状态长于视觉装饰",
+          "sheet": "../evidence/transmission/detail-2.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 31,
+          "ptsManifest": "../evidence/transmission/detail-2.json"
+        }
+      ],
+      "audioStatus": "原声未主观实听；已有混合音轨 RMS/频谱通量分析，不能据此识别鼓点、拟音种类或宣称精确卡拍。",
+      "analysisPath": "../studies/transmission-deep.md",
+      "overview": "../evidence/transmission/overview.jpg",
+      "recommendedCandidateIds": [
+        "look-tracking-exposure",
+        "visualization-window-relay",
+        "look-multisample-shutter",
+        "visualization-flow-continuity",
+        "camera-occlusion-pass"
+      ],
+      "focus": "把不可见的过程放回两端之间；观察窗口只随解释需要改变，数字阅读时回稳。",
+      "codeNotes": [
+        "packet事件包含sent/ack/lost/time/byteRange，队列与标签读相同事件日志。",
+        "blur通过多个子帧场景采样叠加，固定HUD单独绘制；实际样本数与快门角度写入参数。",
+        "窗口位置映射 byteStart/byteEnd；camera的局部推近不可改变尺的意义，单位与标记保留。",
+        "新增tracking-exposure逐子时刻重算相机和数据块，固定/跟随机位共用世界轨迹；HUD在不透明场景均值合成后绘制。",
+        "新增window-relay用六个固定packet事件驱动发送、接收、ACK和窗口；确认到达后才平滑前移，100 B刻度与记录共用投影。"
+      ],
+      "limitations": "不能从观看结果推断原片具体渲染引擎或模糊算法。混合音轨瞬态可能是配音辅音、音乐或音效，只作待听审事件候选。",
+      "priorAnalysisPaths": [
+        "../studies/transmission.md"
+      ],
+      "relatedStudyPaths": [
+        "../studies/transmission.md",
+        "../guides/transmission-effects.md",
+        "../examples/transmission-effects/API.md"
+      ]
+    },
+    {
+      "id": "aesthetic",
+      "title": "怎么才能让 AI 的审美不千篇一律",
+      "author": "叶子的AI视界",
+      "url": "https://v.douyin.com/Ol44axSg3pI/",
+      "shortTitle": "怎么才能让 AI 的审美不千篇一律",
+      "duration": 26.733333,
+      "sourceVideo": "D:/projects/manim_extend_rainbow/video_project/pid_embodied_control/work/v02/references/aesthetic/media-01.mp4",
+      "sourceSha256": "ed9e361ef27fb8491e83bf4e647ed717c0c90af5e6ecf31abab90c13fd4e3529",
+      "pageTitle": "怎么才能让AI的审美不千篇一律 提示词在粉丝群置顶🔝 #Claude #视觉传达 #艺术 #ai #审美 - 抖音",
+      "playbackWindows": [
+        {
+          "start": 0,
+          "end": 12.466058,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedAndScreenshotsReviewed",
+          "report": "../evidence/aesthetic/earlier-playback.json"
+        },
+        {
+          "start": 12,
+          "end": 26.445212,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedAndScreenshotsReviewed",
+          "report": "../evidence/aesthetic/later-playback.json"
+        }
+      ],
+      "observations": [
+        {
+          "start": 17.8,
+          "end": 21.8,
+          "observed": "17.800–18.133s云层接到火焰与同心圆，暖色仍贯穿。 18.300–19.633s推进到金色环状结构，环中心成为下一镜入口；19.800–20.300s圆形结构接到天体纹理。 20.633–21.133s温度数字短暂落定，背景能量仍流动。 21.300–21.800s再由曲线与方向性位移接到天体边缘。",
+          "transfer": "保留轮廓中心、运动方向和主色，允许材料跳变；科学内容另有证据，不能靠漂亮图像代替。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "17.800–18.133s云层接到火焰与同心圆，暖色仍贯穿。",
+            "action": "18.300–19.633s推进到金色环状结构，环中心成为下一镜入口；19.800–20.300s圆形结构接到天体纹理。",
+            "settle": "20.633–21.133s温度数字短暂落定，背景能量仍流动。",
+            "handoff": "21.300–21.800s再由曲线与方向性位移接到天体边缘。"
+          }
+        },
+        {
+          "start": 2,
+          "end": 6,
+          "observed": "2.000–2.500s SPARK 先实心再轮廓，火柴头和燃烧方向接住字的能量。 2.833–3.333s圆形遮挡和火石接入；3.500–3.833s FLINT 字体呈材料光泽、斜向空间位移。 4.500–5.333s蓝焰加热容器相对稳定，HEAT 只强调一个动作。 5.500–6.000s推近红热材料，切白底温度数后回到加热对象。",
+          "transfer": "字形结构少变，填充/轮廓/材质随语义变；大字在快速转场里可做图形，关键信息读定时仍需稳定。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "2.000–2.500s SPARK 先实心再轮廓，火柴头和燃烧方向接住字的能量。",
+            "action": "2.833–3.333s圆形遮挡和火石接入；3.500–3.833s FLINT 字体呈材料光泽、斜向空间位移。",
+            "settle": "4.500–5.333s蓝焰加热容器相对稳定，HEAT 只强调一个动作。",
+            "handoff": "5.500–6.000s推近红热材料，切白底温度数后回到加热对象。"
+          }
+        },
+        {
+          "start": 22,
+          "end": 26.5,
+          "observed": "22.000–22.667s天体表面占满视野，金色黑色占主导。 22.833–23.500s天体快速缩小到一个亮点；23.667–24.167s接到打火机与小火焰。 24.333–25.000s打火机完整留在黑场中心，尺度释放之后重新认识物件。 25.333–26.500s标题形成、材质逐渐烧蚀，最终回到可识别产品形体。",
+          "transfer": "高潮不要只变大：宏观爆发后回到具体小物，是具有情绪收束的尺度弧。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "22.000–22.667s天体表面占满视野，金色黑色占主导。",
+            "action": "22.833–23.500s天体快速缩小到一个亮点；23.667–24.167s接到打火机与小火焰。",
+            "settle": "24.333–25.000s打火机完整留在黑场中心，尺度释放之后重新认识物件。",
+            "handoff": "25.333–26.500s标题形成、材质逐渐烧蚀，最终回到可识别产品形体。"
+          }
+        }
+      ],
+      "windows": [
+        {
+          "start": 17.8,
+          "end": 21.8,
+          "label": "同心轮廓跨材料接力",
+          "sheet": "../evidence/aesthetic/detail-0.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 25,
+          "ptsManifest": "../evidence/aesthetic/detail-0.json"
+        },
+        {
+          "start": 2,
+          "end": 6,
+          "label": "文字成为材料的一部分",
+          "sheet": "../evidence/aesthetic/detail-1.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 25,
+          "ptsManifest": "../evidence/aesthetic/detail-1.json"
+        },
+        {
+          "start": 22,
+          "end": 26.5,
+          "label": "巨大尺度回到手中物件",
+          "sheet": "../evidence/aesthetic/detail-2.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 28,
+          "ptsManifest": "../evidence/aesthetic/detail-2.json"
+        }
+      ],
+      "audioStatus": "原声未主观实听；未将画面判断当作音效或配音听感结论。",
+      "analysisPath": "../studies/aesthetic-deep.md",
+      "overview": "../evidence/aesthetic/overview.jpg",
+      "recommendedCandidateIds": [
+        "look-editorial-cutaway",
+        "look-industrial-focus",
+        "look-orbital-return",
+        "look-scale-return",
+        "look-type-material",
+        "look-material-palette"
+      ],
+      "focus": "小火焰、材料、机械、天体用方向和轮廓接力；用极端尺度反差形成有起落的短视觉诗。",
+      "codeNotes": [
+        "anchorMatch含screenCenter/radius/direction；下一材料入口与前材料出口匹配，过渡先对齐再替换材质。",
+        "标题保留同一文字路径，fillMix和edgeGlow独立动画；不复制原片字号/品牌语句。",
+        "scaleRelay用对数尺度插值，再配合目标锚点与前景层；不要把scale直接从1线性拉到10000。",
+        "新增三套14秒原创圆环候选保持同一对象ID、尺寸与故事阶段；纸白分栏、工业横排与暖色中轴采用不同构图，不只是换色。",
+        "完整模型先建立身份，再聚焦轮廓、进入材料和剖面，最后在11.4–14秒稳定阅读；极近景暂时收起尺寸标签。"
+      ],
+      "limitations": "没有证据证明原片所有素材来自同一三维引擎或真实拍摄。原片数字仅是其画面内容，本研究不为其科学正确性背书。原声未实听。",
+      "priorAnalysisPaths": [
+        "../studies/aesthetic.md"
+      ],
+      "relatedStudyPaths": [
+        "../studies/aesthetic.md",
+        "../studies/aesthetic-design-principles.md",
+        "../guides/aesthetic-direction.md",
+        "../examples/aesthetic-direction/API.md"
+      ]
+    },
+    {
+      "id": "mofs",
+      "title": "诺奖百人科普接力：神奇的 MOFs",
+      "author": "炫酷的Mr氧",
+      "url": "https://v.douyin.com/oghmB_72LbM/",
+      "shortTitle": "诺奖百人科普接力",
+      "duration": 233.700367,
+      "sourceVideo": "D:/projects/manim_extend_rainbow/video_project/pid_embodied_control/work/v02/references/mofs/media-02.mp4",
+      "sourceSha256": "7f7d697810874d641796df1a5ac7cec90b0863ea7f581f3b13f48458298aa55f",
+      "pageTitle": "诺奖百人科普接力｜第125棒 神奇的MOFs，你也能看懂 诺奖在即，希望大家也能拿到啊！欢迎7号晚上5点来看我直播，揭晓今年化学诺奖！ 部分素材使用AI；部分素材来源于网络 抖音精选App独家放送 #抖音精选App陪你看诺奖 #2025诺贝尔奖 #2026诺贝尔奖 #科普新锐扶持计划 #诺奖百人科普接力 - 抖音",
+      "playbackWindows": [
+        {
+          "start": 0,
+          "end": 12.690635,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedAndScreenshotsReviewed",
+          "report": "../evidence/mofs/earlier-playback.json"
+        },
+        {
+          "start": 78,
+          "end": 100.923032,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedAndScreenshotsReviewed",
+          "report": "../evidence/mofs/later-playback.json"
+        },
+        {
+          "start": 0,
+          "requestedEnd": 233.69,
+          "end": 233.667,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "playbackCallbacksWithSelectedSnapshotsOnly",
+          "report": "../evidence/mofs-script/browser-playback.json"
+        },
+        {
+          "start": 68,
+          "requestedEnd": 105,
+          "end": 104.971638,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "playbackCallbacksWithSelectedSnapshotsOnly",
+          "report": "../evidence/mofs-script/browser-playback.json"
+        }
+      ],
+      "observations": [
+        {
+          "start": 0,
+          "end": 15.515516,
+          "observed": "0–2.002秒样本先指认方框，2.502503–5.005005秒重复成骨架，6.006006–7.007007秒缩小，8.008008–12.012012秒依次映射支架与锌簇，13.513514–14.514515秒给出MOF名称，15.515516秒后接诺奖背景。时间为可见样本范围，不是逐帧字幕起止。",
+          "transfer": "先让观众能跟着操作，再给术语；名称为已经出现的对象服务，意义不代替机制。",
+          "mode": "visibleSubtitleSamplesReviewed",
+          "evidence": "../evidence/mofs-script/hook-crops-01.jpg"
+        },
+        {
+          "start": 85.985986,
+          "end": 90.49049,
+          "observed": "85.985986s一颗橙球与一根青色杆先建立最小单元。 86.820153–89.155822s连接数量从1逐步加到6；圆环和乘号提示当前计数。 89.322656–89.98999s八面体外轮廓围绕六配位结构，观众能看见总结构。 90.156823–90.49049s外框退去、镜头靠近一根连接杆，准备讲连接的另一端。",
+          "transfer": "先让1个单元可理解，再逐个累加；整体轮廓只在结果时出现，避免从第一帧就满屏原子。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "85.985986s一颗橙球与一根青色杆先建立最小单元。",
+            "action": "86.820153–89.155822s连接数量从1逐步加到6；圆环和乘号提示当前计数。",
+            "settle": "89.322656–89.98999s八面体外轮廓围绕六配位结构，观众能看见总结构。",
+            "handoff": "90.156823–90.49049s外框退去、镜头靠近一根连接杆，准备讲连接的另一端。"
+          }
+        },
+        {
+          "start": 176.009343,
+          "end": 181.014348,
+          "observed": "176.009343s容器、设备和空台座按左到右关系摆好。 176.84351–177.844511s弧形箭头依次连接设备；178.178178–178.511845s产物从台座出现。 178.678679–179.346013s问号围绕产物，结果并非立刻消失。 179.512846–180.013347s原有装置缩走，新单球落在同一台面；下个解释延续观看方向。",
+          "transfer": "先给出空位，让结果出现在观众期待的位置；所有图标同时弹出会损失因果。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "176.009343s容器、设备和空台座按左到右关系摆好。",
+            "action": "176.84351–177.844511s弧形箭头依次连接设备；178.178178–178.511845s产物从台座出现。",
+            "settle": "178.678679–179.346013s问号围绕产物，结果并非立刻消失。",
+            "handoff": "179.512846–180.013347s原有装置缩走，新单球落在同一台面；下个解释延续观看方向。"
+          }
+        },
+        {
+          "start": 185.985986,
+          "end": 190.990991,
+          "observed": "185.985986–186.820153s左右两个框架与下方配体结构对应。 187.320654–188.822155s新台座及结构按序补入，保留左右基准结构。 188.988989–190.156823s五种结构排齐，名称/论文来源才落定。 190.323657–190.990991s整列退出，留下新例子的结构与空位。",
+          "transfer": "对照组先确定端点，逐项插入中间变体；标签等排齐后出现，之后只带一个实例进入下一问题。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "185.985986–186.820153s左右两个框架与下方配体结构对应。",
+            "action": "187.320654–188.822155s新台座及结构按序补入，保留左右基准结构。",
+            "settle": "188.988989–190.156823s五种结构排齐，名称/论文来源才落定。",
+            "handoff": "190.323657–190.990991s整列退出，留下新例子的结构与空位。"
+          }
+        }
+      ],
+      "windows": [
+        {
+          "start": 85.985986,
+          "end": 90.49049,
+          "label": "一个连接长成六个连接",
+          "sheet": "../evidence/mofs/detail-0.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 28,
+          "ptsManifest": "../evidence/mofs/detail-0.json"
+        },
+        {
+          "start": 176.009343,
+          "end": 181.014348,
+          "label": "台面上发生一次可见的加工",
+          "sheet": "../evidence/mofs/detail-1.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 31,
+          "ptsManifest": "../evidence/mofs/detail-1.json"
+        },
+        {
+          "start": 185.985986,
+          "end": 190.990991,
+          "label": "同族对照排成一列",
+          "sheet": "../evidence/mofs/detail-2.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 31,
+          "ptsManifest": "../evidence/mofs/detail-2.json"
+        }
+      ],
+      "audioStatus": "原声未主观实听；未将画面判断当作音效或配音听感结论。",
+      "analysisPath": "../studies/mofs-script.md",
+      "overview": "../evidence/mofs/overview.jpg",
+      "recommendedCandidateIds": [
+        "story-mofs-build",
+        "story-mofs-result",
+        "story-mofs-predict",
+        "visualization-lattice-growth",
+        "story-scale-relay"
+      ],
+      "focus": "方框操作、重复、缩小与化学映射先建立对象，再命名和交代意义；每句推进可见变化，答案带出下一个问题。",
+      "codeNotes": [
+        "lattice由节点/边拓扑生成，revealOrder驱动边长从端点生长；新边不能穿过不相连节点。",
+        "comparisonRow先计算最终包围盒，再做stagger，台座/结构/标签共享itemId与同一最终位置。",
+        "文案动词应能绑定一个sceneEvent：拿起、连接、重复、换长、结果；无法绑定的宏大句删减或补真实证据。",
+        "mofs-explanation 提供结果回看、连接搭建、几何预测三套原创38秒分镜；固定框架与客体身份，动作完成才显示结果，区分几何通过和吸附。"
+      ],
+      "limitations": "不能从视频把MOFs复杂化学都归结为球杆示意；具体配位、结构和材料数字需回原论文核验。人物口播吸引力这里只结合画面字幕观察，未实听语气。",
+      "priorAnalysisPaths": [
+        "../studies/mofs.md"
+      ],
+      "relatedDocuments": [
+        "../studies/mofs.md",
+        "../studies/mofs-writing-principles.md",
+        "../guides/mofs-writing.md",
+        "../examples/mofs-explanation/API.md"
+      ]
+    },
+    {
+      "id": "camera",
+      "title": "38种影视神级镜头运镜",
+      "author": "木韦Muwei",
+      "url": "https://v.douyin.com/VYbjAJlF90Q/",
+      "shortTitle": "38种影视神级镜头运镜",
+      "duration": 544.16,
+      "sourceVideo": "D:/projects/manim_extend_rainbow/video_project/pid_embodied_control/work/v02/references/camera/media-01.mp4",
+      "sourceSha256": "71c1844e2dbefbb4747a7eb9ba32f3fa6834981b1d7b05d08ae565f552da1b9f",
+      "pageTitle": "38种影视神级镜头运镜-AI视觉导演通关指南 #新兴专业主理人 #欢迎来到我的专业 #抖音精选高考应援联盟 #抖音前沿科技首发计划 - 抖音",
+      "playbackWindows": [
+        {
+          "start": 130,
+          "end": 144.627617,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedAndScreenshotsReviewed",
+          "report": "../evidence/camera/earlier-playback.json"
+        },
+        {
+          "start": 324,
+          "end": 342.621554,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedAndScreenshotsReviewed",
+          "report": "../evidence/camera/later-playback.json"
+        },
+        {
+          "start": 130,
+          "end": 145,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedWithSparseScreenshots",
+          "report": "../evidence/camera-depth/browser-playback.json"
+        },
+        {
+          "start": 300,
+          "end": 320,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedWithSparseScreenshots",
+          "report": "../evidence/camera-depth/browser-playback.json"
+        },
+        {
+          "start": 334,
+          "end": 344,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedWithSparseScreenshots",
+          "report": "../evidence/camera-depth/browser-playback.json"
+        },
+        {
+          "start": 234,
+          "end": 243,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedWithSparseScreenshots",
+          "report": "../evidence/camera-depth/browser-playback.json"
+        },
+        {
+          "start": 146,
+          "end": 160,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedWithSparseScreenshots",
+          "report": "../evidence/camera-depth/browser-playback.json"
+        }
+      ],
+      "observations": [
+        {
+          "start": 130,
+          "end": 145,
+          "observed": "130–132秒仍是庭院画面，随后切入“焦点由虚转实”；135.8–137.8秒咖啡馆人物逐渐清晰。前后的案例切换不能写成一个空间连续的移焦。",
+          "transfer": "先区分整幅失焦到清晰与前后景的注意力交接；固定构图的移焦需要同时可见的不同深度参照。",
+          "mode": "sampledStaticReviewAndLoggedMutedPlayback"
+        },
+        {
+          "start": 146,
+          "end": 160,
+          "observed": "原片标注“前后景焦点转移”。146–148秒前景玻璃杯较清晰，150–154秒杯子变虚、后方人物更清楚；156秒附近已是另一组用餐示例。",
+          "transfer": "先认出前后两个对象，再改变焦平面，抵达后保留读图；不要将切换案例当作同一个连续镜头。",
+          "mode": "sampledStaticReviewAndLoggedMutedPlayback"
+        },
+        {
+          "start": 48,
+          "end": 52.96,
+          "observed": "48.000s影片标注希区柯克变焦，人物位于拱廊中心。 48.160–51.680s人物尺度与构图相对稳定而背景拱门关系变化；人脸逐渐更近。 51.680–52.000s面部是明确视觉落点。 52.160s切到另一个走廊人物案例，不能把这次硬切误写为同一连续运镜。",
+          "transfer": "在目标平面垂直光轴的针孔模型中，固定目标屏幕尺寸需保持 distance * tan(fovY/2) 常量，并单独检验投影尺寸；原片具体光学参数不能从画面还原。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "48.000s影片标注希区柯克变焦，人物位于拱廊中心。",
+            "action": "48.160–51.680s人物尺度与构图相对稳定而背景拱门关系变化；人脸逐渐更近。",
+            "settle": "51.680–52.000s面部是明确视觉落点。",
+            "handoff": "52.160s切到另一个走廊人物案例，不能把这次硬切误写为同一连续运镜。"
+          }
+        },
+        {
+          "start": 234,
+          "end": 238.96,
+          "observed": "234.000–235.120s大字标注慢弧移镜头，人物与树林的深度层明确。 235.280–235.920s标题退出；相机沿侧面缓慢移过，树干与主体产生相对位移。 236.080–238.960s身体到侧脸逐步进入观察重点，低角度阳光从背景树间透出。 窗口结束时仍在弧移，没有看到完整出场；不补写不存在的镜头落点。",
+          "transfer": "小弧度也能揭示结构：维持目标大小，改变方位让轮廓与前后层次自然出现。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "234.000–235.120s大字标注慢弧移镜头，人物与树林的深度层明确。",
+            "action": "235.280–235.920s标题退出；相机沿侧面缓慢移过，树干与主体产生相对位移。",
+            "settle": "236.080–238.960s身体到侧脸逐步进入观察重点，低角度阳光从背景树间透出。",
+            "handoff": "窗口结束时仍在弧移，没有看到完整出场；不补写不存在的镜头落点。"
+          }
+        },
+        {
+          "start": 300,
+          "end": 320,
+          "observed": "304.8–308秒画面标注“平滑光学拉焦”，308.4–314.4秒人物缩小、房间展开；314.8秒后切到“极速变焦”案例，面部迅速变大。画面主要支持取景范围变化，不能从标签认定发生前后景移焦。",
+          "transfer": "分别记录原片名称和可见动作。自己的实现将机位、焦距、焦平面分开控制，使用同场景对照。",
+          "mode": "sampledStaticReviewAndLoggedMutedPlayback"
+        },
+        {
+          "start": 334,
+          "end": 344,
+          "observed": "334.0秒仍为明亮山脊行人；334.2秒起已经切到暖色山脊上的马匹与骑乘者。后段沿地形向前移动，近处对象与地面比远山变化更快。",
+          "transfer": "用近景和地形提供速度及尺度参照；保留切点，不把两个地形案例误写为一条连续人物飞越。",
+          "mode": "sampledStaticReviewAndLoggedMutedPlayback"
+        }
+      ],
+      "windows": [
+        {
+          "start": 300.0,
+          "end": 320.0,
+          "label": "取景变化与移焦的区别",
+          "sheet": "../evidence/camera-depth/visual-300-320-step10-page-01.jpg",
+          "mode": "staticReviewedListedPagesOnly",
+          "frameCount": 51,
+          "ptsManifest": "../evidence/camera-depth/visual-300-320-step10.json",
+          "coverage": "../evidence/camera-depth/coverage.json"
+        },
+        {
+          "start": 130.0,
+          "end": 137.8,
+          "label": "失焦转清晰与案例切换",
+          "sheet": "../evidence/camera-depth/visual-130-145-step5-page-01.jpg",
+          "mode": "staticReviewedListedPagesOnly",
+          "frameCount": 40,
+          "ptsManifest": "../evidence/camera-depth/visual-130-145-step5.json",
+          "coverage": "../evidence/camera-depth/coverage.json"
+        },
+        {
+          "start": 334.0,
+          "end": 337.8,
+          "label": "地形飞越与实际切点",
+          "sheet": "../evidence/camera-depth/visual-334-344-step5-page-01.jpg",
+          "mode": "staticReviewedListedPagesOnly",
+          "frameCount": 20,
+          "ptsManifest": "../evidence/camera-depth/visual-334-344-step5.json",
+          "coverage": "../evidence/camera-depth/coverage.json"
+        }
+      ],
+      "audioStatus": "原声未主观实听；未将画面判断当作音效或配音听感结论。",
+      "analysisPath": "../studies/camera-depth.md",
+      "overview": "../evidence/camera/overview.jpg",
+      "recommendedCandidateIds": [
+        "camera-focus-handoff",
+        "camera-focus-track",
+        "camera-parallax-reveal",
+        "camera-hitchcock-zoom",
+        "camera-fpv-slalom"
+      ],
+      "focus": "按观察任务组合机位、焦点与景深：区别整幅失焦和前后景交接，用前景视差揭示空间，抵达后保留阅读。",
+      "codeNotes": [
+        "dollyZoom保持 distance*tan(fov/2) 常量（目标屏幕尺寸固定的针孔模型，目标平面垂直光轴）；target随场景保持。",
+        "bank使用路径切线与曲率，设置角度上限并在阅读区回正；不能每帧随机roll。",
+        "focusDistance用相机前向与目标相对位置点积求光轴深度（米）；镜头和传感器为毫米。新候选按薄透镜CoC直径控制分组高斯虚化，非散景或光追。"
+      ],
+      "limitations": "目录名称不证明片例全部由真实摄影机完成。只从图像不能恢复准确焦距、光圈、机位或曝光参数；本研究代码是原创近似实现。",
+      "legacyObservations": [
+        {
+          "start": 334,
+          "end": 338.96,
+          "observed": "334.000–335.120s人物在地形中较小，曲折路径贯穿远景。 335.280–337.680s逐渐接近人物，地面纹理视差增大，远山变化较小。 人物近处阶段仍有完整轮廓和脚下影子，空间深度可读。 338.000–338.960s人物逐渐到画面底部，向前的道路成为出口；此前连续播放还核对到341.563s人物离画。",
+          "transfer": "飞越不是无目的直冲：先让对象建立尺度，再让远处路径在对象退出前已可见。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "334.000–335.120s人物在地形中较小，曲折路径贯穿远景。",
+            "action": "335.280–337.680s逐渐接近人物，地面纹理视差增大，远山变化较小。",
+            "settle": "人物近处阶段仍有完整轮廓和脚下影子，空间深度可读。",
+            "handoff": "338.000–338.960s人物逐渐到画面底部，向前的道路成为出口；此前连续播放还核对到341.563s人物离画。"
+          }
+        },
+        {
+          "start": 48,
+          "end": 52.96,
+          "observed": "48.000s影片标注希区柯克变焦，人物位于拱廊中心。 48.160–51.680s人物尺度与构图相对稳定而背景拱门关系变化；人脸逐渐更近。 51.680–52.000s面部是明确视觉落点。 52.160s切到另一个走廊人物案例，不能把这次硬切误写为同一连续运镜。",
+          "transfer": "在目标平面垂直光轴的针孔模型中，固定目标屏幕尺寸需保持 distance * tan(fovY/2) 常量，并单独检验投影尺寸；原片具体光学参数不能从画面还原。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "48.000s影片标注希区柯克变焦，人物位于拱廊中心。",
+            "action": "48.160–51.680s人物尺度与构图相对稳定而背景拱门关系变化；人脸逐渐更近。",
+            "settle": "51.680–52.000s面部是明确视觉落点。",
+            "handoff": "52.160s切到另一个走廊人物案例，不能把这次硬切误写为同一连续运镜。"
+          }
+        },
+        {
+          "start": 234,
+          "end": 238.96,
+          "observed": "234.000–235.120s大字标注慢弧移镜头，人物与树林的深度层明确。 235.280–235.920s标题退出；相机沿侧面缓慢移过，树干与主体产生相对位移。 236.080–238.960s身体到侧脸逐步进入观察重点，低角度阳光从背景树间透出。 窗口结束时仍在弧移，没有看到完整出场；不补写不存在的镜头落点。",
+          "transfer": "小弧度也能揭示结构：维持目标大小，改变方位让轮廓与前后层次自然出现。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "234.000–235.120s大字标注慢弧移镜头，人物与树林的深度层明确。",
+            "action": "235.280–235.920s标题退出；相机沿侧面缓慢移过，树干与主体产生相对位移。",
+            "settle": "236.080–238.960s身体到侧脸逐步进入观察重点，低角度阳光从背景树间透出。",
+            "handoff": "窗口结束时仍在弧移，没有看到完整出场；不补写不存在的镜头落点。"
+          }
+        }
+      ],
+      "legacyObservationNote": "早期334秒窗口的主体描述与连续镜头判断已由camera-depth复核更正；旧观察仅留作研究历史。",
+      "deepStudy": {
+        "date": "2026-10-23",
+        "manifest": "../evidence/camera-depth/visual-manifest.json",
+        "rootStaticReview": "../evidence/camera-depth/root-static-review.json",
+        "guide": "../guides/camera-depth.md",
+        "technicalStudy": "../studies/camera-depth-technical.md",
+        "workbench": "./camera-depth.html",
+        "sampling": "451 extracted entries in 24 sheets; root inspected 251 entries in 13 listed sheets. Unreviewed generated pages excluded.",
+        "playback": "Five 1x muted windows logged; screenshots inspected at selected times, not continuous subjective viewing or listening",
+        "coverage": "../evidence/camera-depth/coverage.json"
+      },
+      "legacyWindows": [
+        {
+          "start": 334,
+          "end": 338.96,
+          "label": "飞越后让地形接住视线",
+          "sheet": "../evidence/camera/detail-0.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 32,
+          "ptsManifest": "../evidence/camera/detail-0.json"
+        },
+        {
+          "start": 48,
+          "end": 52.96,
+          "label": "变焦与移动塑造背景",
+          "sheet": "../evidence/camera/detail-1.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 32,
+          "ptsManifest": "../evidence/camera/detail-1.json"
+        },
+        {
+          "start": 234,
+          "end": 238.96,
+          "label": "小幅弧移读出侧面",
+          "sheet": "../evidence/camera/detail-2.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 32,
+          "ptsManifest": "../evidence/camera/detail-2.json"
+        }
+      ]
+    },
+    {
+      "id": "rotary-cutaway",
+      "title": "一句话让 AI 做出能切开的马自达转子发动机",
+      "author": "AI牧羊人Lab",
+      "url": "https://v.douyin.com/Suz_WeQk9Vg/",
+      "shortTitle": "一句话让 AI 做出能切开的马自达转子发动机",
+      "duration": 170,
+      "sourceVideo": "D:/projects/manim_extend_rainbow/video_project/pid_embodied_control/work/v02/references/rotary-cutaway/media-02.mp4",
+      "sourceSha256": "e67796a1b63d08e934d755a0daf6231f36b5b91f2340267bb343c5f13f3971b4",
+      "pageTitle": "一句话让AI做出能切开的马自达转子发动机 用 DeepSeek桌面版一步步演示，AI做的RX-7转子发动机，切开能看三角转子转，油门一推功率实时算 #转子发动机 #DeepSeek #AI工具 #开源项目 #发动机 - 抖音",
+      "playbackWindows": [
+        {
+          "start": 134,
+          "end": 144.440864,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedAndScreenshotsReviewed",
+          "report": "../evidence/rotary-cutaway/earlier-playback.json"
+        },
+        {
+          "start": 0,
+          "end": 8.313688,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedAndScreenshotsReviewed",
+          "report": "../evidence/rotary-cutaway/later-playback.json"
+        },
+        {
+          "start": 0,
+          "end": 11.966667,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedWithEndpointScreenshot",
+          "report": "../evidence/rotary-interaction/browser-playback.json"
+        },
+        {
+          "start": 121,
+          "end": 127.966667,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedWithEndpointScreenshot",
+          "report": "../evidence/rotary-interaction/browser-playback.json"
+        },
+        {
+          "start": 144,
+          "end": 149.966667,
+          "muted": true,
+          "playbackRate": 1,
+          "mode": "continuousPlaybackLoggedWithEndpointScreenshot",
+          "report": "../evidence/rotary-interaction/browser-playback.json"
+        }
+      ],
+      "observations": [
+        {
+          "start": 5,
+          "end": 9.5,
+          "observed": "5.000–5.333s完整壳体和端盖清晰可识别。 5.500–5.833s端盖退去/剖面打开，5.833s内部三角形构件已可见。 6.167–8.167s内部连续旋转，三角转子与壳体标签依次出现；镜头变化很小。 8.500–9.500s油门读数上升，功率数值同步变化，机构仍处于相同剖面。",
+          "transfer": "剖切、旋转与相机三个时钟独立；切开不能重置转动相位，标签不要遮住接触界面。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "5.000–5.333s完整壳体和端盖清晰可识别。",
+            "action": "5.500–5.833s端盖退去/剖面打开，5.833s内部三角形构件已可见。",
+            "settle": "6.167–8.167s内部连续旋转，三角转子与壳体标签依次出现；镜头变化很小。",
+            "handoff": "8.500–9.500s油门读数上升，功率数值同步变化，机构仍处于相同剖面。"
+          }
+        },
+        {
+          "start": 121,
+          "end": 126,
+          "observed": "121.000–121.333s屏幕里是完整模型和参数。 121.500–121.833s启用切开，模型正面露出结构。 122.000–126.000s观察旋转与三色工作区，用户可以把屏幕反馈归因到刚才的操作。 窗口末尾仍在剖面观察，没有另加炫技转场。",
+          "transfer": "交互面板要驱动同一几何状态；演示图、滑杆与数值不能各自播互不相关的动画。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "121.000–121.333s屏幕里是完整模型和参数。",
+            "action": "121.500–121.833s启用切开，模型正面露出结构。",
+            "settle": "122.000–126.000s观察旋转与三色工作区，用户可以把屏幕反馈归因到刚才的操作。",
+            "handoff": "窗口末尾仍在剖面观察，没有另加炫技转场。"
+          }
+        },
+        {
+          "start": 144,
+          "end": 149,
+          "observed": "144.000–145.167s从另一侧看完整外壳，转速/功率读数先稳定。 145.333–146.333s启用透视，外壳透明化；角度转向侧面以看前后两个工作单元。 146.500–148.833s保留外壳轮廓和内部深度，两个构件的前后排列可辨。 149.000s切回文字说明，此处是操作教学的编辑切换。",
+          "transfer": "透明模式只作必要解释：内部仍深度测试，外壳低不透明度且保留边缘；先检验多个角度再下结论。",
+          "mode": "staticReviewed",
+          "phases": {
+            "entry": "144.000–145.167s从另一侧看完整外壳，转速/功率读数先稳定。",
+            "action": "145.333–146.333s启用透视，外壳透明化；角度转向侧面以看前后两个工作单元。",
+            "settle": "146.500–148.833s保留外壳轮廓和内部深度，两个构件的前后排列可辨。",
+            "handoff": "149.000s切回文字说明，此处是操作教学的编辑切换。"
+          }
+        }
+      ],
+      "windows": [
+        {
+          "start": 5,
+          "end": 9.5,
+          "label": "整机变剖面，内部不停转",
+          "sheet": "../evidence/rotary-cutaway/detail-0.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 28,
+          "ptsManifest": "../evidence/rotary-cutaway/detail-0.json"
+        },
+        {
+          "start": 121,
+          "end": 126,
+          "label": "从按钮到结构变化",
+          "sheet": "../evidence/rotary-cutaway/detail-1.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 31,
+          "ptsManifest": "../evidence/rotary-cutaway/detail-1.json"
+        },
+        {
+          "start": 144,
+          "end": 149,
+          "label": "透明模式用于读取前后关系",
+          "sheet": "../evidence/rotary-cutaway/detail-2.jpg",
+          "mode": "staticReviewed",
+          "frameCount": 31,
+          "ptsManifest": "../evidence/rotary-cutaway/detail-2.json"
+        }
+      ],
+      "audioStatus": "原声未主观实听；未将画面判断当作音效或配音听感结论。",
+      "analysisPath": "../studies/rotary-interaction.md",
+      "initialAnalysisPath": "../studies/rotary-cutaway.md",
+      "overview": "../evidence/rotary-cutaway/overview.jpg",
+      "recommendedCandidateIds": [
+        "mechanics-rotary-section",
+        "mechanics-rotary-explode",
+        "mechanics-axial-exploded",
+        "mechanics-section-cut",
+        "mechanics-linked-gears"
+      ],
+      "focus": "外形、剖切、内部运动和交互状态有一一对应关系；认识完整对象之后再读结构。",
+      "codeNotes": [
+        "part记录restMatrix/pivot/axis，explode位移在局部轴计算，回装恢复原矩阵。",
+        "clipPlane用实体截面封口或专门剖面几何，不能只是半透明叠层；运动用kinematics(t)独立采样。",
+        "环绕验收投影包围盒与深度顺序，透明排序不能用depthTest=false解决；有齿轮时关系用齿数/轴约束求解。"
+      ],
+      "limitations": "只看视频不足以证明13B外形尺寸、功率计算或齿轮运动完全真实。未取得/审阅原作者代码；这里不复制其项目或宣称复原其源码。",
+      "deepStudy": {
+        "manifest": "../evidence/rotary-interaction/review.json",
+        "guide": "../guides/rotary-interaction.md",
+        "studio": "./rotary-interaction.html",
+        "kinematics": "../studies/rotary-kinematics.md",
+        "date": "2026-10-23",
+        "sampling": "Four existing contact sheets actually viewed: one 24-cell overview and three dense sheets containing 90 samples at decoded PTS. No new extraction.",
+        "playback": "Three additional 1x muted windows (0-11.966667, 121-127.966667, 144-149.966667 seconds) logged with endpoint screenshots; not a full-film or continuous frame-by-frame visual review, and no subjective audio listening.",
+        "playbackReport": "../evidence/rotary-interaction/browser-playback.json",
+        "observationNote": "Initial observations above are preserved. The new study qualifies the 145.333-145.500 second transition: view and power change together, so the power jump cannot be attributed to the transparency control. The final screenshot documents an on-screen simplification note, not independent verification of the source power model.",
+        "candidateIds": [
+          "mechanics-rotary-section",
+          "mechanics-rotary-explode"
+        ]
+      }
+    },
+    {
+      "id": "anatomy-mechanics",
+      "title": "Anatomy：可操作的机械原理",
+      "shortTitle": "可拆解原理",
+      "author": "Inspire King",
+      "url": "https://v.douyin.com/sXwW8AEByuc/",
+      "resolvedUrl": "https://www.douyin.com/video/7698665835858087204",
+      "duration": 61.077346,
+      "coverageLabel": "公开页面局部画面观察 + 固定版本开源文档与源码研究；未整片逐帧观看",
+      "observations": [
+        {
+          "start": 19.8,
+          "end": 20.7,
+          "observed": "机械按键剖开，页面字幕描述按下按键时内部机构跟随。",
+          "transfer": "从同一按压状态计算键轴、弹簧和触点。"
+        },
+        {
+          "start": 25.6,
+          "end": 26,
+          "observed": "灯光与人物所在空间同屏对应相机画面。",
+          "transfer": "控制条件与结果共用对象，局部观察不换成无关模型。"
+        },
+        {
+          "start": 32.05,
+          "end": 32.06,
+          "observed": "发动机剖面旁显示油门与推力读数，字幕说明联动。",
+          "transfer": "读数来自同一状态，同时保留简化模型边界。"
+        }
+      ],
+      "windows": [],
+      "playbackWindows": [],
+      "audioStatus": "未主观听审原声，不据画面推断音效或声音质量。",
+      "analysisPath": "../studies/anatomy-mechanics.md",
+      "recommendedCandidateIds": [
+        "mechanics-switch-section",
+        "mechanics-switch-explode"
+      ],
+      "focus": "实体装配、真实归属、交互先后条件与中间状态验收",
+      "deepStudy": {
+        "date": "2026-10-23",
+        "repository": "https://github.com/wheresryan22/anatomy",
+        "commit": "1482e8469b0a9e0d8cc18ea2740a01423d29ae80",
+        "sources": "../evidence/anatomy-mechanics/sources.json",
+        "guide": "../guides/anatomy-mechanics.md",
+        "studio": "./switch-anatomy.html",
+        "manifest": "../evidence/anatomy-mechanics/review.json"
+      }
+    },
+    {
+      "id": "motionface",
+      "kind": "website",
+      "title": "Motionface：卡片编排、文字呼吸与信息接力",
+      "shortTitle": "Motionface 动效",
+      "author": "Motionface",
+      "url": "https://motionface.cc/",
+      "coverageLabel": "公开首页11次暂停帧；公开源码与6秒示例12帧；授权登录后Focus 90帧与Mindset 167个不同源帧的静态研究",
+      "observations": [
+        {
+          "observed": "公开首页卡片的扇出、翻面与收束在11次暂停帧中分别观察；这些帧用于核对构图、身份延续与最终关系。",
+          "transfer": "先建立对象，再逐个交接符号；汇聚后留下可读停顿，不让所有元素同时争夺注意力。",
+          "mode": "pausedHomepageFramesReviewed"
+        },
+        {
+          "observed": "另行研究公开社区源码，并查看一个6秒示例视频的12张静态帧；静态帧观察不等于原片完整连续播放或逐帧验收。",
+          "transfer": "把文字、对象和强调动作分层，选用与解释任务有关的动作，不将可见效果直接认定为原作者未公开的实现。",
+          "mode": "publicSourceAndStaticFramesReviewed"
+        },
+        {
+          "observed": "Focus 2.6–3.4秒样本中，字粒圆片由环形收成两行文字；后续旋转画面有多重灰色轮廓，静止文字保持清楚。",
+          "transfer": "字粒保留身份并移动到最终句子的固定位置，动作停止后留完整阅读窗口；中文编排与路径独立实现。",
+          "mode": "authenticatedStaticFramesReviewed"
+        },
+        {
+          "observed": "Mindset 5.583–6.583秒逐帧样本中，同一物体向左上换位，旧属性退出，右下留白接住新属性。",
+          "transfer": "观测对象贯穿两种提问；先让出位置，再交接标签，避免同时叠字争夺注意力。",
+          "mode": "authenticatedStaticFramesReviewed"
+        }
+      ],
+      "windows": [
+        {
+          "label": "公开首页 · 11次暂停帧联系表",
+          "sheet": "../evidence/motionface/paused/contact-sheet.jpg",
+          "frameCount": 11,
+          "mode": "pausedHomepageFramesReviewed"
+        },
+        {
+          "label": "公开社区示例 · 12张静态帧联系表",
+          "sheet": "../evidence/motionface/public-data-type-sheet.jpg",
+          "frameCount": 12,
+          "mode": "staticReviewed"
+        },
+        {
+          "label": "Focus · 环字收成短句",
+          "sheet": "../evidence/motionface/focus/contact_01.jpg",
+          "frameCount": 30,
+          "mode": "authenticatedStaticFramesReviewed"
+        },
+        {
+          "label": "Mindset · 对象与概念换位",
+          "sheet": "../evidence/motionface/mindset/dense-handoff/contact-02.jpg",
+          "frameCount": 16,
+          "mode": "authenticatedStaticFramesReviewed"
+        }
+      ],
+      "playbackWindows": [],
+      "audioStatus": "未主观听审原作音轨；本次原创试作是静音动效研究，不据图像推断音效质量。",
+      "analysisPath": "../studies/motionface.md",
+      "recommendedCandidateIds": [
+        "mf-card-convergence",
+        "mf-mask-typeset",
+        "mf-focus-handoff",
+        "mf-trace-assembly",
+        "mf-type-orbit-lock",
+        "mf-concept-bridge"
+      ],
+      "focus": "对象到关系的编排、语义词组揭示、环字归位、同一对象的概念换位、结构按语义组装与阅读停顿",
+      "limitations": "经用户授权完成登录，补充研究Focus与Mindset；未学习完整素材库，未解锁收费仓库或消耗Face。原创代码只转译已观察的方法，不复制原片素材或音轨，也不声称知晓原作者的实现算法。",
+      "deepStudy": {
+        "date": "2026-10-24",
+        "guide": "../guides/motionface-type.md",
+        "studio": "./motionface.html",
+        "api": "../examples/motionface-type/API.md",
+        "homepagePausedFramesReviewed": 11,
+        "publicExampleDurationSeconds": 6,
+        "publicExampleStaticFramesReviewed": 12,
+        "sourceAudioReviewed": false,
+        "authenticatedDetailAccess": true,
+        "fullLibraryReviewed": false,
+        "originalTrials": 6,
+        "focusStaticFramesReviewed": 90,
+        "mindsetUniqueStaticFramesReviewed": 167,
+        "paidSourceUnlocked": false,
+        "faceCreditsSpent": 0,
+        "authenticatedWorks": [
+          {
+            "title": "Focus · Kinetic Typography",
+            "url": "https://motionface.cc/?recording=8b292133-ec1f-46dc-aea7-3da4319c76e5",
+            "study": "../studies/motionface-focus.md"
+          },
+          {
+            "title": "Mindset · FrameCo 动态思维模式",
+            "url": "https://motionface.cc/?recording=ac82ea9f-f45b-48bc-91ba-0be113ac9040",
+            "study": "../studies/motionface-mindset.md"
+          }
+        ]
+      }
+    },
+    {
+      "id": "lemo-opuscar",
+      "referenceType": "repository",
+      "title": "Lemo Opuscar：59种现成风格与98份电影档案",
+      "shortTitle": "Lemo 风格图谱",
+      "author": "LemoLab",
+      "url": "https://github.com/lemomo-ai/lemo-opuscar",
+      "coverageLabel": "59种现成风格与98份电影档案的文档研究；157张来源缩略帧观察；完整原片播放0",
+      "observations": [],
+      "windows": [],
+      "playbackWindows": [],
+      "audioStatus": "未主观听审原片音轨；文档中的音乐与音效方案不作为实听结果。",
+      "analysisPath": "../guides/lemo-opuscar.md",
+      "recommendedCandidateIds": [],
+      "focus": "从观察任务选择媒介规则、材料、运动与解释方法；14个原创局部技法试作独立展示。",
+      "limitations": "98份档案不是98套现成引擎；缩略帧与源码阅读不证明影片的动画连贯性、声音质量或全部实现已运行。",
+      "deepStudy": {
+        "date": "2026-10-23",
+        "repository": "https://github.com/lemomo-ai/lemo-opuscar",
+        "commit": "3961ddb3d24d8876e0e2754f7790d66908acee51",
+        "sources": "../evidence/lemo-opuscar/source-manifest.json",
+        "guide": "../guides/lemo-opuscar.md",
+        "studio": "./lemo-atlas.html",
+        "stillsManifest": "../evidence/lemo-opuscar/stills-manifest.json",
+        "readyStyles": 59,
+        "filmArchives": 98,
+        "originalTrials": 14,
+        "sourceThumbnailFramesReviewed": 157,
+        "fullSourceFilmsViewed": 0,
+        "sourceAudioReviewed": false
+      }
+    }
+  ]
+}

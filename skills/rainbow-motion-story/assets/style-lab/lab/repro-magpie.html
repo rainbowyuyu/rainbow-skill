@@ -1,0 +1,1724 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>复现 · 喜鹊谋杀案片头运动组织 ／ 37.8 s</title>
+<style>
+  :root{
+    --bg:#0b0e11; --panel:#13181d; --line:#232d35; --ink:#dde5ea; --dim:#8797a2;
+    --red:#c0392b; --paper:#e1bd8f; --cyan:#7dbdda; --ok:#6fbf8b; --bad:#d9786a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.65 "Inter","Helvetica Neue","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+  a{color:var(--cyan)}
+  code{font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#b7cdd8;
+    background:#080b0d;border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  header{padding:20px 26px 12px;border-bottom:1px solid var(--line)}
+  header h1{margin:0 0 4px;font-size:18px;font-weight:600;letter-spacing:.01em}
+  header p{margin:0;color:var(--dim);font-size:12.5px;max-width:104ch}
+  main{display:grid;grid-template-columns:minmax(0,1fr) 340px;align-items:start}
+  @media (max-width:1100px){main{grid-template-columns:1fr}}
+  .stage{padding:16px 18px 20px;min-width:0}
+  canvas#scene{width:100%;height:auto;display:block;border-radius:8px;background:#000;
+    border:1px solid var(--line)}
+  .transport{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .transport button{background:#182027;color:var(--ink);border:1px solid var(--line);
+    border-radius:6px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer;min-width:40px}
+  .transport button:hover{background:#212b33}
+  .transport button[data-on="1"]{background:#25404d;border-color:#356b80;color:#cfeef9}
+  #seek{flex:1;min-width:180px;accent-color:#7dbdda}
+  #tc{font:12.5px ui-monospace,Menlo,Consolas,monospace;color:var(--dim);white-space:nowrap}
+  .marks{position:relative;height:26px;margin:2px 0 0;pointer-events:none;width:100%}
+  .marks i{position:absolute;top:0;width:1px;height:7px;background:#3d5461}
+  .marks i.major{background:#5d8394;height:9px}
+  .marks span{position:absolute;top:10px;transform:translateX(-50%);
+    font:10px ui-monospace,Menlo,Consolas,monospace;color:#6c7f8b;white-space:nowrap}
+  aside.panel{border-left:1px solid var(--line);padding:18px 18px 40px;background:var(--panel);
+    min-height:100%}
+  @media (max-width:1100px){aside.panel{border-left:0;border-top:1px solid var(--line)}}
+  .panel h2{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);
+    margin:18px 0 8px;font-weight:600}
+  .panel h2:first-child{margin-top:0}
+  .kv{display:grid;grid-template-columns:96px 1fr;gap:2px 10px;
+    font:12.5px ui-monospace,Menlo,Consolas,monospace}
+  .kv dt{color:var(--dim)} .kv dd{margin:0;color:var(--ink)}
+  .ok{color:var(--ok)} .bad{color:var(--bad)} .dim{color:var(--dim)}
+  table.shots{width:100%;border-collapse:collapse;
+    font:11.5px ui-monospace,Menlo,Consolas,monospace}
+  table.shots th{text-align:left;color:var(--dim);font-weight:500;padding:3px 4px;
+    border-bottom:1px solid var(--line)}
+  table.shots td{padding:3px 4px;border-bottom:1px solid #1a2229}
+  table.shots tr.on td{background:#1b2a33}
+  table.shots tr{cursor:pointer}
+  .row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .row button{flex:1;background:#182027;border:1px solid var(--line);border-radius:6px;
+    color:var(--ink);padding:6px 8px;font:inherit;font-size:12px;cursor:pointer}
+  .row button:hover{background:#212b33}
+  .note{font-size:11.5px;color:var(--dim);margin:6px 0 0;line-height:1.55}
+  .bar{height:3px;background:#0a0e11;border-radius:2px;overflow:hidden;margin-top:3px}
+  .bar>i{display:block;height:100%;background:#4a8ea8}
+</style>
+</head>
+<body>
+<header>
+  <h1>复现 · 喜鹊谋杀案片头的运动组织</h1>
+  <p>37.8 s ／ 30 fps ／ 1134 帧。画面与声音全部程序生成，未使用原片任何素材、音轨、水印或商标。
+  每个数字都取自 <code>studies/magpie-title.md</code> 的 2026-10-26 量化补充；未列入结论的数值不引入。
+  用 <code>?t=12.4</code> 定格，或拖动进度条逐帧比对。</p>
+</header>
+<main>
+  <section class="stage">
+    <canvas id="scene" width="2560" height="1440"></canvas>
+    <div class="transport">
+      <button id="play" title="播放 / 暂停">▶</button>
+      <button id="prev" title="上一帧">◀</button>
+      <button id="next" title="下一帧">▶</button>
+      <input id="seek" type="range" min="0" max="1000" value="0" step="1">
+      <span id="tc">0.000</span>
+    </div>
+    <div class="marks" id="marks"></div>
+  </section>
+  <aside class="panel">
+    <h2>实时测量 @320×180</h2>
+    <dl class="kv">
+      <dt>明度 val</dt><dd id="m-val">–</dd>
+      <dt>饱和 sat</dt><dd id="m-sat">–</dd>
+      <dt>红字占比</dt><dd id="m-red">–</dd>
+      <dt>帧号</dt><dd id="m-frame">–</dd>
+      <dt>场景</dt><dd id="m-scene">–</dd>
+    </dl>
+
+    <h2>关键帧 · 与参考片对照</h2>
+    <table class="shots" id="ktable">
+      <thead><tr><th>t</th><th>参考 val/sat</th><th>本次</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <p class="note">参考值取自分析数据中同一时刻的实测帧，不是目标设计值。</p>
+
+    <h2>场景表</h2>
+    <table class="shots" id="stable"><tbody></tbody></table>
+
+    <h2>落地的参数</h2>
+    <dl class="kv" style="grid-template-columns:1fr">
+      <dt>真切点</dt><dd>12 个，中位 3.00 s</dd>
+      <dt>可见变化</dt><dd>20 个候选点，中位 1.10 s</dd>
+      <dt>爆发 / 停留</dt><dd>0.50 s / 0.58 s，约 1 : 1.6</dd>
+      <dt>压暗转场</dt><dd>4 帧，199→128，色相锁定</dd>
+      <dt>切前冻结</dt><dd>2 帧（0.067 s）</dd>
+      <dt>揭示黑场</dt><dd>0.27 s，val 11–19</dd>
+      <dt>片名</dt><dd>字面 1.63%，可读窗 1.8 s</dd>
+      <dt>末帧静置</dt><dd>3.07 s，逐帧相同</dd>
+      <dt>声音床</dt><dd>0.232 s 八分音符，4.12 次/秒</dd>
+      <dt>不卡拍</dt><dd>切点落半拍 p=0.37</dd>
+    </dl>
+
+    <h2>音频</h2>
+    <div class="row">
+      <button id="mute">声音：关</button>
+      <button id="rebuild">重建音床</button>
+    </div>
+    <p class="note">OfflineAudioContext 渲染整条 37.8 s 脉冲床后按偏移播放。
+      0.232 s 一拍恒定不变；画面停住后声音仍在，35 s 处推到 −5.5 dB，36 s 落到 −16.5 dB。</p>
+
+    <h2>精确跳转</h2>
+    <div class="row">
+      <button data-t="4.100">4.100 纯色卡</button>
+      <button data-t="14.567">14.567 冻结后切</button>
+      <button data-t="26.500">26.500 紫段</button>
+      <button data-t="33.600">33.600 片名</button>
+    </div>
+  </aside>
+</main>
+<script>
+"use strict";
+
+/* ============================================================
+   常量：全部来自 studies/magpie-title.md（2026-10-26 量化补充）
+   ============================================================ */
+const W = 2560, H = 1440, FPS = 30, DUR = 37.8, FR = 1 / FPS;
+
+// A 档真切点（12 个）
+const CUTS = [0.733, 3.733, 4.467, 9.967, 14.133, 14.567,
+              19.900, 24.500, 25.600, 28.667, 31.100, 32.300];
+
+// 片名验收
+const TITLE_IN   = 32.05;   // 红字首次可辨
+const TITLE_CLEAN= 32.50;   // 背景干净
+const TITLE_OUT  = 34.30;   // 红字离场
+// 亮带 34.300–34.630；绝对静止 34.700–37.770
+const BAND_IN = 34.300, BAND_OUT = 34.630, STILL_IN = 34.700;
+
+// 声音
+const PULSE = 0.232;        // 八分音符
+const GAPS  = [33.34, 35.23, 37.10];  // 各 0.67 s 空档
+
+const canvas = document.getElementById("scene");
+const ctx = canvas.getContext("2d", { alpha: false });
+
+/* ============================================================
+   小工具
+   ============================================================ */
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const lerp  = (a, b, k) => a + (b - a) * k;
+const smooth = (a, b, x) => { const k = clamp((x - a) / (b - a), 0, 1); return k * k * (3 - 2 * k); };
+const easeOut = k => 1 - Math.pow(1 - k, 3);
+const easeIn  = k => k * k * k;
+
+function mulberry32(a){ return function(){ a |= 0; a = a + 0x6D2B79F5 | 0;
+  let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+  return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+function hex2rgb(h){
+  return { r: parseInt(h.slice(1,3),16), g: parseInt(h.slice(3,5),16), b: parseInt(h.slice(5,7),16) };
+}
+
+// 全局明度倍率（压暗 / 淡出），只作用于场景自身绘制
+let GV = 1;
+function C(h, a){
+  const c = hex2rgb(h);
+  const r = Math.round(clamp(c.r * GV, 0, 255));
+  const g = Math.round(clamp(c.g * GV, 0, 255));
+  const b = Math.round(clamp(c.b * GV, 0, 255));
+  return a === undefined ? `rgb(${r},${g},${b})` : `rgba(${r},${g},${b},${a})`;
+}
+// 去饱和：k=1 原色，k=0 全灰
+function D(h, k, a){
+  const c = hex2rgb(h);
+  const L = 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
+  const r = Math.round(clamp(lerp(L, c.r, k) * GV, 0, 255));
+  const g = Math.round(clamp(lerp(L, c.g, k) * GV, 0, 255));
+  const b = Math.round(clamp(lerp(L, c.b, k) * GV, 0, 255));
+  return a === undefined ? `rgb(${r},${g},${b})` : `rgba(${r},${g},${b},${a})`;
+}
+
+function mixHex(a, b, k){
+  const A = hex2rgb(a), B = hex2rgb(b);
+  const h = v => Math.round(clamp(v, 0, 255)).toString(16).padStart(2, "0");
+  return "#" + h(lerp(A.r, B.r, k)) + h(lerp(A.g, B.g, k)) + h(lerp(A.b, B.b, k));
+}
+function bg(c){ ctx.fillStyle = c; ctx.fillRect(0, 0, W, H); }
+function rectf(x, y, w, h, c){ ctx.fillStyle = c; ctx.fillRect(x, y, w, h); }
+function tri(x1,y1,x2,y2,x3,y3,c){
+  ctx.fillStyle = c; ctx.beginPath();
+  ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.lineTo(x3,y3); ctx.closePath(); ctx.fill();
+}
+function circ(x, y, r, c){ ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x, y, Math.max(0.1,r), 0, 6.2832); ctx.fill(); }
+function ringw(x, y, r, w, c){
+  ctx.strokeStyle = c; ctx.lineWidth = w; ctx.beginPath();
+  ctx.arc(x, y, Math.max(0.1,r), 0, 6.2832); ctx.stroke();
+}
+function person(x, gy, h, c){
+  const hd = h * 0.115;
+  ctx.fillStyle = c;
+  ctx.beginPath(); ctx.arc(x, gy - h + hd, hd, 0, 6.2832); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(x - h*0.105, gy - h + hd*2.05);
+  ctx.lineTo(x + h*0.105, gy - h + hd*2.05);
+  ctx.lineTo(x + h*0.16,  gy - h*0.42);
+  ctx.lineTo(x + h*0.115, gy);
+  ctx.lineTo(x - h*0.115, gy);
+  ctx.lineTo(x - h*0.16,  gy - h*0.42);
+  ctx.closePath(); ctx.fill();
+  ctx.fillRect(x - h*0.085, gy - h*0.44, h*0.062, h*0.44);
+  ctx.fillRect(x + h*0.023, gy - h*0.44, h*0.062, h*0.44);
+}
+
+// 纸纹（程序生成，一次性）
+const grain = (() => {
+  const c = document.createElement("canvas"); c.width = c.height = 256;
+  const g = c.getContext("2d");
+  const d = g.createImageData(256, 256);
+  const rnd = mulberry32(0x5eed);
+  for (let i = 0; i < d.data.length; i += 4){
+    const v = 96 + rnd() * 150;
+    d.data[i] = d.data[i+1] = d.data[i+2] = v; d.data[i+3] = 255;
+  }
+  g.putImageData(d, 0, 0);
+  return c;
+})();
+let grainPat = null;
+function paper(a){
+  if (!grainPat) grainPat = ctx.createPattern(grain, "repeat");
+  ctx.save();
+  ctx.globalCompositeOperation = "overlay";
+  ctx.globalAlpha = a;
+  ctx.fillStyle = grainPat;
+  ctx.fillRect(0, 0, W, H);
+  ctx.restore();
+}
+function vignette(strength){
+  const g = ctx.createRadialGradient(W*0.5, H*0.5, H*0.28, W*0.5, H*0.5, H*1.05);
+  g.addColorStop(0, "rgba(0,0,0,0)");
+  g.addColorStop(1, `rgba(0,0,0,${strength})`);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+}
+// 闭环曝光：画完后读回 320×180 明度，按差值叠一层黑/暖色，迭代收敛到目标 val。
+// 比固定分母稳，因为场景自身明度会随 open / take 变化（S5 的 106 与 62 就是两端）。
+function exposeTo(target, warm){
+  for (let it = 0; it < 3; it++){
+    mctx.drawImage(canvas, 0, 0, 320, 180);
+    const d = mctx.getImageData(0, 0, 320, 180).data;
+    let v = 0;
+    for (let i = 0; i < d.length; i += 4) v += Math.max(d[i], d[i+1], d[i+2]);
+    v /= d.length / 4;
+    const err = target - v;
+    if (Math.abs(err) <= 1.2) return;
+    if (err < 0){
+      ctx.fillStyle = `rgba(0,0,0,${clamp(-err / Math.max(v, 1), 0, 1) * 0.985})`;
+    } else {
+      const c = warm || [214, 150, 120];
+      // 加色上限按通道余量算，避免直接冲到白
+      const a = clamp(err / 220, 0, 0.95);
+      ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${a * 0.9})`;
+    }
+    ctx.fillRect(0, 0, W, H);
+  }
+}
+
+function flakes(t, n, seed, col, spd, rad){
+  const rnd = mulberry32(seed);
+  for (let i = 0; i < n; i++){
+    const x0 = rnd() * W, y0 = rnd() * H, s = rnd(), r = rad * (0.4 + s);
+    const x = (x0 + t * spd * (0.3 + s)) % (W + 200) - 100;
+    const y = (y0 + Math.sin(t * 0.7 + s * 9) * 26 + t * spd * 0.12) % (H + 200) - 100;
+    ctx.globalAlpha = 0.18 + s * 0.4;
+    circ(x, y, r, col);
+  }
+  ctx.globalAlpha = 1;
+}
+
+/* ============================================================
+   明度调度：压暗转场（4.400–4.533，4 帧，199.1→128.1）
+   ============================================================ */
+function targetVal(t){
+  if (t < 4.400) return null;
+  if (t <= 4.467) return lerp(199.1, 139.6, (t - 4.400) / 0.067);
+  if (t <= 4.533) return lerp(139.6, 130.1, (t - 4.467) / 0.066);
+  return 130.1;
+}
+
+/* ============================================================
+   场景 1 — 0.000–0.733  正立面对称（只给 0.97 s 的对称，这里先立 0.73 s）
+   冷青 61% + #296185 29% + 红 10%；val 85.0、sat 175.2
+   ============================================================ */
+function sTemple(t){
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0,   C("#0b1521"));
+  g.addColorStop(0.55,C("#0e1a29"));
+  g.addColorStop(1,   C("#080f18"));
+  bg(g);
+
+  const cx = W * 0.5, hz = H * 0.615;
+
+  // 拱门（占画面约 29%）
+  const cw = W * 0.365;
+  ctx.fillStyle = C("#296185");
+  ctx.beginPath();
+  ctx.moveTo(cx - cw/2, H);
+  ctx.lineTo(cx - cw/2, H*0.335);
+  ctx.quadraticCurveTo(cx, H*0.075, cx + cw/2, H*0.335);
+  ctx.lineTo(cx + cw/2, H);
+  ctx.closePath(); ctx.fill();
+
+  // 门内更深的负形
+  const iw = cw * 0.60;
+  ctx.fillStyle = C("#08131d");
+  ctx.beginPath();
+  ctx.moveTo(cx - iw/2, H);
+  ctx.lineTo(cx - iw/2, H*0.40);
+  ctx.quadraticCurveTo(cx, H*0.185, cx + iw/2, H*0.40);
+  ctx.lineTo(cx + iw/2, H);
+  ctx.closePath(); ctx.fill();
+
+  // 朱红地面三角（约 10%）
+  tri(cx, hz - H*0.055, cx + W*0.305, H, cx - W*0.305, H, C("#c94930"));
+  // 三角内的暗部，制造材料厚度
+  tri(cx, hz + H*0.02, cx + W*0.185, H, cx - W*0.185, H, C("#7d2b1c", 0.85));
+
+  // 对称柱列
+  for (let i = 0; i < 7; i++){
+    const d = (i - 3) * W * 0.105;
+    const wBar = W * 0.0115;
+    const hBar = H * (0.60 - Math.abs(i - 3) * 0.07);
+    ctx.fillStyle = C("#12314a");
+    ctx.fillRect(cx + d - wBar/2, H - hBar, wBar, hBar);
+    ctx.fillStyle = C("#1d4f70", 0.55);
+    ctx.fillRect(cx + d - wBar/2, H - hBar, wBar * 0.34, hBar);
+  }
+
+  // 地平线与轴线
+  rectf(0, hz, W, 2.5, C("#3f7796", 0.55));
+  rectf(cx - 1.2, 0, 2.4, H, C("#5d93ad", 0.35));
+
+  // 地面倒影
+  ctx.save();
+  ctx.globalAlpha = 0.16;
+  ctx.scale(1, -1); ctx.translate(0, -2 * H);
+  ctx.fillStyle = C("#296185");
+  ctx.fillRect(cx - cw/2, H*0.335, cw, H*0.10);
+  ctx.restore();
+
+  vignette(0.30);
+  paper(0.05);
+}
+
+/* ============================================================
+   场景 2 — 0.733–3.733  一次快速俯视重构，落到暖褐室内
+   val 53.7 → 74.6 → 83–107；sat 96.7 → 104 → 138
+   ============================================================ */
+function sDescent(t, lt){
+  const k = smooth(0.10, 0.72, lt);           // 俯视 → 室内
+  const push = 1 + 0.16 * smooth(0, 3.0, lt); // 缓慢推进
+
+  // —— 俯视层 ——
+  bg(C("#120d0b"));
+  ctx.save();
+  ctx.translate(W*0.5, H*0.5);
+  ctx.rotate(-0.22 + lt * 0.06);
+  ctx.scale(push, push);
+  circ(0, 0, H*0.62, C("#3a2a1f"));
+  for (let i = 0; i < 7; i++){
+    ringw(0, 0, H*(0.13 + i*0.072), H*0.005, C("#7a5842", 0.85 - i*0.09));
+  }
+  // 石板放射
+  for (let i = 0; i < 24; i++){
+    const a = i / 24 * Math.PI * 2;
+    ctx.strokeStyle = C("#2f231c", 0.5); ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(a)*H*0.16, Math.sin(a)*H*0.16);
+    ctx.lineTo(Math.cos(a)*H*0.60, Math.sin(a)*H*0.60);
+    ctx.stroke();
+  }
+  person(0, H*0.10, H*0.34, C("#946b4c"));
+  circ(0, H*0.10, H*0.055, C("#2a1d16"));
+  ctx.restore();
+
+  // —— 室内层 ——
+  ctx.save();
+  ctx.globalAlpha = k;
+  const g2 = ctx.createLinearGradient(0, 0, 0, H);
+  g2.addColorStop(0,   C("#6b4a35"));
+  g2.addColorStop(0.52,C("#4a3125"));
+  g2.addColorStop(1,   C("#241811"));
+  bg(g2);
+
+  ctx.translate(W*0.5, H*0.52);
+  ctx.scale(push, push);
+  ctx.translate(-W*0.5, -H*0.52);
+
+  // 后墙格栅
+  for (let i = 0; i < 9; i++){
+    const x = W*0.10 + i * W*0.10;
+    rectf(x, H*0.10, W*0.052, H*0.44, C("#8a5c40", 0.62));
+    rectf(x + W*0.052, H*0.10, W*0.006, H*0.44, C("#c79a70", 0.40));
+  }
+  rectf(0, H*0.535, W, H*0.012, C("#a3765a", 0.75));
+
+  // 桌面
+  rectf(W*0.16, H*0.60, W*0.68, H*0.020, C("#c39a76", 0.96));
+  rectf(W*0.16, H*0.620, W*0.68, H*0.055, C("#4a3427", 0.96));
+
+  // 桌上的纸牌（斜置，尺度参照）
+  const rnd = mulberry32(77);
+  for (let i = 0; i < 7; i++){
+    const x = W*(0.30 + i*0.055), y = H*(0.565 + Math.sin(i*1.7)*0.012);
+    const a = -0.30 + i*0.09;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(a);
+    ctx.fillStyle = C("#d8bb93", 0.92);
+    ctx.fillRect(-W*0.017, -H*0.042, W*0.034, H*0.084);
+    ctx.fillStyle = C("#b5231e", 0.75);
+    ctx.fillRect(-W*0.010, -H*0.024, W*0.020, H*0.048);
+    ctx.restore();
+  }
+
+  // 烛光
+  const gl = ctx.createRadialGradient(W*0.30, H*0.42, 0, W*0.30, H*0.42, H*0.80);
+  gl.addColorStop(0, C("#f3cf9c", 0.80));
+  gl.addColorStop(0.35, C("#c9955f", 0.42));
+  gl.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = gl; ctx.fillRect(0, 0, W, H);
+
+  // 人物（拉弓前的准备姿势，只用轮廓）
+  person(W*0.615, H*0.72, H*0.40, C("#3a2519"));
+  ctx.strokeStyle = C("#2a1a12"); ctx.lineWidth = H*0.011; ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.moveTo(W*0.615 + H*0.055, H*0.40);
+  ctx.quadraticCurveTo(W*0.615 + H*0.20, H*0.36, W*0.615 + H*0.235, H*0.30);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(W*0.615 + H*0.235, H*0.30);
+  ctx.quadraticCurveTo(W*0.615 + H*0.16, H*0.35, W*0.615 + H*0.235, H*0.42);
+  ctx.stroke();
+  ctx.restore();
+
+  // 现场微尘
+  flakes(t, 26, 9, C("#c9a072"), 26, 2.4);
+  vignette(0.28);
+  paper(0.055);
+}
+
+/* ============================================================
+   场景 3 — 3.733–4.467  饱和爬升 → 纯色满画幅卡 0.40 s → 纸白闪 → 压暗
+   3.83–4.23 纯红占 97–98%；4.400 val 199.1
+   ============================================================ */
+function sSaturate(t, lt){
+  const k = clamp(lt / 0.097, 0, 1);       // 3.733–3.830 饱和爬升
+  const card = clamp((lt - 0.097) / 0.030, 0, 1);  // 进入纯色卡
+  const flash = smooth(0.497, 0.560, lt);  // 4.230 起纸白闪
+
+  // 底层：红从中心推出
+  bg(C("#1a1210"));
+  const r = lerp(H*0.10, H*1.5, easeIn(clamp((lt)/0.16,0,1)));
+  const gr = ctx.createRadialGradient(W*0.5, H*0.5, 0, W*0.5, H*0.5, r);
+  gr.addColorStop(0, C("#e0463a"));
+  gr.addColorStop(0.5, C("#c2352a"));
+  gr.addColorStop(1, C("#5c1a14"));
+  ctx.fillStyle = gr; ctx.fillRect(0, 0, W, H);
+
+  // 饱和爬升时保留冷青残影
+  if (k < 1){
+    ctx.save();
+    ctx.globalAlpha = (1 - k) * 0.55;
+    const g2 = ctx.createRadialGradient(W*0.5, H*0.42, 0, W*0.5, H*0.42, H*0.9);
+    g2.addColorStop(0, C("#2a6a92"));
+    g2.addColorStop(1, "rgba(6,14,20,0)");
+    ctx.fillStyle = g2; ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+  }
+
+  // 纯色卡（97–98% 满画幅）
+  if (card > 0){
+    ctx.globalAlpha = card;
+    rectf(0, 0, W, H, C("#ac211b"));
+    // 2–3% 的暗角与一道纸白细线，避免完全平涂
+    tri(0, 0, W*0.14, 0, 0, H*0.10, C("#191618", 0.9));
+    tri(W, H, W - W*0.10, H, W, H - H*0.085, C("#6a1e19", 0.8));
+    rectf(0, H*0.494, W, 2, C("#d9b58c", 0.20));
+    ctx.globalAlpha = 1;
+  }
+
+  // 纸白闪（4.230–4.400，val 约 199）
+  if (flash > 0){
+    ctx.globalAlpha = flash;
+    rectf(0, 0, W, H, C("#e8dccb"));
+    // 纸上压着的红形，给下次切点留钩子
+    tri(W*0.5, H*0.14, W*0.88, H*0.92, W*0.12, H*0.92, C("#b5231e", 0.90));
+    rectf(0, H*0.90, W, H*0.10, C("#8f1c17", 0.85));
+    ctx.globalAlpha = 1;
+  }
+
+  vignette(0.20);
+  paper(0.07);
+}
+
+/* ============================================================
+   场景 4 — 4.467–9.967  红 / 黑 / 纸白主三元组
+   val 约 130、sat 约 155；红 48–67% + 近黑 24–38% + 纸白 9–14%
+   ============================================================ */
+function sRedField(t, lt){
+  const drift = lt * 26;
+  bg(C("#b0251f"));
+
+  // 大块近黑负形（约 31%）：右侧的拱
+  ctx.save();
+  ctx.translate(-drift * 0.3, 0);
+  const ax = W * 0.60, aw = W * 0.42, ah = H * 0.80;
+  ctx.fillStyle = C("#151415");
+  ctx.beginPath();
+  ctx.moveTo(ax - aw/2, H);
+  ctx.lineTo(ax - aw/2, H*0.34);
+  ctx.quadraticCurveTo(ax, H*0.04, ax + aw/2, H*0.34);
+  ctx.lineTo(ax + aw/2, H);
+  ctx.closePath(); ctx.fill();
+
+  // 拱内的纸白阶梯（尺度参照）
+  for (let i = 0; i < 6; i++){
+    const w = aw * (0.62 - i * 0.075), h = H * 0.055;
+    rectf(ax - w/2, H*0.90 - i*h, w, h*0.92, C("#e1bd8f", 0.92 - i*0.06));
+  }
+  // 阶梯上的小人
+  person(ax, H*0.90 - 6*H*0.055, H*0.14, C("#100c0b"));
+  ctx.restore();
+
+  // 左侧竖向黑条
+  ctx.save();
+  ctx.translate(drift * 0.12, 0);
+  for (let i = 0; i < 3; i++){
+    rectf(W*0.03 + i*W*0.052, H*0.10, W*0.020, H*0.62, C("#151415", 0.92));
+  }
+  ctx.restore();
+
+  // 纸白切面斜楔
+  tri(W*0.02, H*0.24, W*0.30, H*0.05, W*0.235, H*0.33, C("#e1bd8f", 0.90));
+  tri(W*0.02, H*0.24, W*0.235, H*0.33, W*0.055, H*0.36, C("#c9a077", 0.85));
+
+  // 缓慢旋转的圆徽（镜内运动，不是切点）
+  ctx.save();
+  ctx.translate(W*0.335, H*0.615);
+  ctx.rotate(lt * 0.16);
+  ringw(0, 0, H*0.185, H*0.012, C("#151415", 0.9));
+  ringw(0, 0, H*0.150, H*0.004, C("#e1bd8f", 0.55));
+  for (let i = 0; i < 12; i++){
+    const a = i / 12 * Math.PI * 2;
+    ctx.strokeStyle = C("#e1bd8f", 0.42); ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(a)*H*0.150, Math.sin(a)*H*0.150);
+    ctx.lineTo(Math.cos(a)*H*0.185, Math.sin(a)*H*0.185);
+    ctx.stroke();
+  }
+  circ(0, 0, H*0.055, C("#b0251f"));
+  circ(0, 0, H*0.030, C("#e1bd8f", 0.35));
+  ctx.restore();
+
+  // 飘落的纸屑
+  flakes(t, 34, 31, C("#e1bd8f"), 40, 3.0);
+  vignette(0.22);
+  paper(0.06);
+}
+
+/* ============================================================
+   场景 5 — 9.967–14.133  门缝段
+   起点 9.85–10.05 是 6 帧叠化；val 111.7 → 50.4；黑占比升到 76%
+   ============================================================ */
+// S5 实测锚点（绝对时间 → val）：10.1–10.5 是 144 的红场，然后黑条扫入压到 12.2–12.6 的 50，
+// 再从 12.8 起反向打开到 13.6 的 105。原来的 open 是 1→0（缝在收），正好反了。
+const DOOR_VAL = [
+  [9.967, 97.0], [10.100, 144.5], [10.300, 143.3], [10.500, 138.7],
+  [10.800, 118.9], [11.000, 97.3], [11.200, 78.0], [11.400, 60.0],
+  [11.600, 51.4], [11.800, 50.1], [12.000, 50.4], [12.600, 53.1],
+  [13.000, 66.7], [13.200, 79.3], [13.400, 96.5], [13.600, 104.8],
+  [13.800, 99.3], [14.000, 91.1], [14.100, 86.4],
+];
+function doorVal(t){
+  if (t <= DOOR_VAL[0][0]) return DOOR_VAL[0][1];
+  for (let i = 1; i < DOOR_VAL.length; i++){
+    if (t <= DOOR_VAL[i][0]){
+      const [ta, va] = DOOR_VAL[i-1], [tb, vb] = DOOR_VAL[i];
+      return lerp(va, vb, (t - ta) / (tb - ta));
+    }
+  }
+  return DOOR_VAL[DOOR_VAL.length - 1][1];
+}
+function sDoorSlit(t, lt){
+  // 缝宽：10.1–12.2 收黑，12.2–13.7 反向打开（14.1 前再收一点）——与实测 val 同向
+  const close = smooth(0.10, 2.25, t);
+  const reopen = smooth(2.25, 3.70, t);
+  const open = clamp(close * (1 - reopen) + reopen * 0.92, 0, 1);
+  const dark = smooth(0.0, 2.2, t);
+  // 9.967 主色 #681612 占 83% → 12.0 主色 #0c0b0b 占 76%
+  const panelHex = mixHex("#681612", "#241d1a", smooth(0.05, 2.2, lt));
+
+  bg(C(panelHex));
+
+  // 缝后的暖光场
+  const slitW = W * (0.020 + 0.235 * open * open + 0.006);
+  const cx = W * 0.5;
+  const g = ctx.createLinearGradient(cx - slitW, 0, cx + slitW, 0);
+  g.addColorStop(0,   C("#8a362a", 0.0));
+  g.addColorStop(0.30,C("#a8493a", 0.75));
+  g.addColorStop(0.50,C("#e1c7a6", 0.70 * (0.30 + 0.70*open)));
+  g.addColorStop(0.70,C("#a8493a", 0.75));
+  g.addColorStop(1,   C("#8a362a", 0.0));
+  ctx.fillStyle = g;
+  ctx.fillRect(cx - slitW, H*0.04, slitW * 2, H*0.92);
+
+  // 两扇黑门板（占画面 43% → 76%）
+  const panelW = W * 0.5 - slitW * 0.55;
+  rectf(0, 0, Math.max(0, panelW), H, C(panelHex));
+  rectf(cx + slitW * 0.55, 0, Math.max(0, panelW), H, C(panelHex));
+
+  // 光从缝隙溢出，染红门板内侧（open 大时红晕范围宽）
+  const bleedW = W * 0.30 * Math.pow(open, 1.5);
+  if (bleedW > 2){
+    const gl = ctx.createLinearGradient(cx - slitW - bleedW, 0, cx - slitW, 0);
+    gl.addColorStop(0, "rgba(0,0,0,0)");
+    gl.addColorStop(1, C("#9a5741", 0.40 * Math.pow(open, 1.2)));
+    ctx.fillStyle = gl; ctx.fillRect(Math.max(0, cx - slitW - bleedW), 0, bleedW, H);
+    const gr2 = ctx.createLinearGradient(cx + slitW, 0, cx + slitW + bleedW, 0);
+    gr2.addColorStop(0, C("#9a5741", 0.40 * Math.pow(open, 1.2)));
+    gr2.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = gr2; ctx.fillRect(cx + slitW, 0, bleedW, H);
+  }
+
+  // 门板上的木纹/竖棱
+  for (let i = 0; i < 10; i++){
+    const x = i < 5 ? W*0.6 + i*W*0.075 : W*0.06 - (9-i)*W*0.075;
+    rectf(x, H*0.06, W*0.004, H*0.88, C("#3a302b", 0.80));
+  }
+
+  // 缝中的浮尘
+  ctx.save();
+  ctx.globalAlpha = 0.55 * open;
+  flakes(t, 30, 55, C("#e1c7a6"), 12, 3.2);
+  ctx.restore();
+
+  // 缝底的人形剪影（负形中被光切出的边缘）
+  if (open > 0.18){
+    ctx.save();
+    ctx.globalAlpha = smooth(0.18, 0.62, open) * 0.86;
+    // 远处小人物：只占画面两成高，压在缝底
+    person(cx + W*0.004, H*0.985, H*0.185, C("#090707"));
+    ctx.restore();
+  }
+
+  // 整体压暗：原先 0.14*dark 把 12–14 s 又额外压掉一档，已降到 0.04
+  ctx.fillStyle = `rgba(0,0,0,${0.04 * dark})`;
+  ctx.fillRect(0, 0, W, H);
+
+  vignette(0.20);
+  paper(0.05);
+
+  // 上下分层：参考 12.0 的上部 41 / 中部 44 / 下部 20，13.6 的上部 93 / 中部 82 / 下部 31，
+  // 是一片有天空的开口，不是一条均匀亮带。原来三段几乎相等（36/40/35、72/76/71）。
+  const vg = ctx.createLinearGradient(0, 0, 0, H);
+  vg.addColorStop(0,    "rgba(198,128,104,0.14)");
+  vg.addColorStop(0.45, "rgba(150,90,74,0.10)");
+  vg.addColorStop(0.72, "rgba(0,0,0,0.20)");
+  vg.addColorStop(1,    `rgba(0,0,0,${0.42 + 0.30 * (1 - open)})`);
+
+  ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+
+  // 明度锚点放在最后：vignette/纸纹会再压一档，必须在最终像素上闭环收敛
+  exposeTo(doorVal(t), [226, 138, 108]);
+}
+
+/* ============================================================
+   场景 6 — 14.133–14.567  极近景，切前冻结 2 帧（14.500–14.567）
+   val 36.5、sat 50.2；#090706 81% + #853327 17%
+   ============================================================ */
+function sCloseUp(t, lt){
+  bg(C("#191211"));
+
+  // 巨大的暗形占满画面
+  const cx = W*0.47, cy = H*0.56, R = H*0.86;
+  const g = ctx.createRadialGradient(cx - R*0.20, cy - R*0.24, R*0.04, cx, cy, R);
+  g.addColorStop(0,   C("#6b4630"));
+  g.addColorStop(0.45,C("#3d2a1e"));
+  g.addColorStop(1,   C("#140d0a"));
+  circ(cx, cy, R, g);
+
+  // 边缘红（17%）——只在轮廓上一线
+  ctx.strokeStyle = C("#853327", 0.85); ctx.lineWidth = H*0.010;
+  ctx.beginPath(); ctx.arc(cx, cy, R*0.985, 1.88, 3.72); ctx.stroke();
+  ctx.strokeStyle = C("#a24a37", 0.42); ctx.lineWidth = H*0.003;
+  ctx.beginPath(); ctx.arc(cx, cy, R*0.945, 1.92, 3.66); ctx.stroke();
+
+  // 纸白高光（3%）
+  ctx.save();
+  ctx.globalAlpha = 0.55;
+  ctx.strokeStyle = C("#cf9473"); ctx.lineWidth = H*0.004;
+  ctx.beginPath(); ctx.arc(cx - R*0.06, cy - R*0.06, R*0.80, 1.95, 2.34); ctx.stroke();
+  ctx.restore();
+
+  // 极浅的横向拉丝
+  ctx.globalAlpha = 0.10;
+  for (let i = 0; i < 40; i++){
+    const y = H * (i / 40) + (i % 3) * 2;
+    rectf(0, y, W, 1.6, C("#b9a08a"));
+  }
+  ctx.globalAlpha = 1;
+
+  vignette(0.38);
+  paper(0.055);
+}
+
+/* ============================================================
+   场景 7 — 14.567–19.900  去饱和压暗 → 近黑呼吸 0.27 s
+   sat 59→20、val 45→19；19.630–19.900 压在 11–19
+   ============================================================ */
+// 实测锚点：绝对时间 → 明度（取自分析数据的同一时刻帧）
+const AP_VAL = [
+  [14.567, 36.5], [14.800, 45.1], [15.200, 45.0], [15.800, 61.7],
+  [16.500, 99.0], [18.000, 83.8], [18.500, 74.2], [19.000, 55.1],
+  [19.500, 18.0], [19.733, 11.3], [19.860, 13.5], [19.900, 56.9],
+];
+function apVal(t){
+  if (t <= AP_VAL[0][0]) return AP_VAL[0][1];
+  for (let i = 1; i < AP_VAL.length; i++){
+    if (t <= AP_VAL[i][0]){
+      const [ta, va] = AP_VAL[i-1], [tb, vb] = AP_VAL[i];
+      return lerp(va, vb, (t - ta) / (tb - ta));
+    }
+  }
+  return AP_VAL[AP_VAL.length - 1][1];
+}
+
+function sAperture(t, lt){
+  // 参考片的"去饱和"只是整体暗下去，色相并没有丢：17.0 仍是 #251c19 51% + #953b30 41%。
+  // 原来 ds 掉到 0.40 再加 0.92 的黑，把 41% 的红褐洗成了中性灰，sat 只剩 41.8 对 75.0。
+  // 15.0 参考 sat 59.7 → 17.0 到 109.8，先哑后艳
+  const ds = lerp(0.98, 0.64, smooth(0.10, 5.10, lt));
+  const dim = lerp(1.0, 0.62, smooth(0.10, 4.60, lt));  // 压暗
+  const breath = smooth(4.95, 5.25, lt);                // 19.517 起压到近黑
+  // 该场景原始明度基准约 150；按锚点算出目标混合率，最后统一压一次
+  const targetV = apVal(t);
+
+  bg(D("#5a4738", ds * 0.55));
+
+  const cx = W*0.50, cy = H*0.50;
+  // 收缩的光环
+  const R = H * lerp(0.52, 0.155, easeOut(clamp(lt / 4.4, 0, 1)));
+  const g = ctx.createRadialGradient(cx, cy, R*0.10, cx, cy, R*1.9);
+  g.addColorStop(0,    D("#b09074", ds * 0.55));
+  g.addColorStop(0.42, D("#6d5645", ds * 0.55));
+  g.addColorStop(1,    D("#3a2c22", ds * 0.55));
+  circ(cx, cy, R*1.9, g);
+
+  ringw(cx, cy, R, H*0.013, D("#7a3c2e", ds * 0.7, 0.72));
+  ringw(cx, cy, R*0.80, H*0.004, D("#cf9473", ds, 0.42 * (1 - breath*0.7)));
+
+  // 环内缓慢旋转的灰形
+  ctx.save();
+  ctx.translate(cx, cy); ctx.rotate(lt * 0.22);
+  for (let i = 0; i < 5; i++){
+    const a = i / 5 * Math.PI * 2;
+    ctx.strokeStyle = D("#9b7a5e", ds, 0.30);
+    ctx.lineWidth = H*0.006;
+    ctx.beginPath();
+    ctx.arc(Math.cos(a)*R*0.34, Math.sin(a)*R*0.34, R*0.20, 0, Math.PI*1.4);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // 呼吸黑：最后 0.27 s 压到 11–19，保留颗粒，不归零
+  if (breath > 0){
+    // 近黑段的微弱纹理；明度由下面的锚点层负责，纯 0 会读成断片
+    const rnd = mulberry32(1400);
+    ctx.globalAlpha = 0.16 * breath;
+    for (let i = 0; i < 60; i++){
+      const x = rnd()*W, y = rnd()*H, r = 8 + rnd()*30;
+      circ(x, y, r, D("#3a2a20", ds));
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // 按实测锚点收束到目标明度：场景自绘约 100，锚点想要的更暗/更亮都靠这层
+  // 加色抬升与压暗分开处理，避免近黑段被压成 0
+  const own = 100;
+  if (targetV > own){
+    ctx.fillStyle = `rgba(${Math.round(146*0.55)},${Math.round(112*0.55)},${Math.round(86*0.55)},${clamp((targetV - own) / 120, 0, 1) * 0.55})`;
+    ctx.fillRect(0, 0, W, H);
+  } else {
+    const k = clamp(targetV / own, 0, 1);
+    ctx.fillStyle = `rgba(0,0,0,${(1 - k) * 0.92})`;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // 红色配重：参考在大面积暖黑上压着 17–42% 的 #8d372b，这一段画面上没有大块红，
+  // 靠这层把它补回来（在锚点层之前，随整体一起压暗，不会跳出来）
+  const redShare = lerp(0.10, 0.42, smooth(0.4, 2.4, lt)) * (1 - smooth(4.2, 5.0, lt));
+  if (redShare > 0.001){
+    ctx.save();
+    ctx.globalCompositeOperation = "multiply";
+    ctx.fillStyle = `rgba(255,146,104,${redShare * 0.72})`;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+  }
+
+  vignette(0.30);
+  paper(0.06);
+}
+
+/* ============================================================
+   场景 8 — 19.900–24.500  睁眼 → 红黑白世界 → 深青；23.70 划像
+   val 56.9（切点）→ 85.5；红 34–42% + 黑 48–54% + 纸白 10–15%
+   21.9–24.6 红归零，深青 53–86%
+   ============================================================ */
+// S8 开场 4 帧的实测值（19.9–20.1），参考在这里是 56.9→74.6→74.5→85.8 的阶梯，
+// 不是一条平滑曲线，所以在最终像素上闭环对齐。
+const EYE_VAL = [[19.900, 56.9], [19.933, 74.6], [19.967, 74.5], [20.000, 85.8], [20.400, 86.0]];
+function eyeVal(t){
+  if (t < EYE_VAL[0][0] || t > EYE_VAL[EYE_VAL.length-1][0]) return null;
+  for (let i = 1; i < EYE_VAL.length; i++){
+    if (t <= EYE_VAL[i][0]){
+      const [ta, va] = EYE_VAL[i-1], [tb, vb] = EYE_VAL[i];
+      return lerp(va, vb, (t - ta) / (tb - ta));
+    }
+  }
+  return null;
+}
+
+function sEye(t, lt){
+  // 睁眼：参考的切点帧 19.9 已经开到 56.9（不是 0），19.933 就到位 74.6。
+  // 原来从 0 起开，切点帧只有 5.5，第一个可见动作直接落在黑底上。
+  const open = lerp(0.16, 1.0, easeOut(clamp(lt / 0.26, 0, 1)));
+  const cyan  = smooth(1.95, 2.25, lt);                   // 21.85 起转青
+  const redK  = 1 - cyan;
+
+  bg(C("#060505"));
+
+  // 虹膜开口（横向椭圆）
+  const ex = W*0.5, ey = H*0.50;
+  const rx = lerp(W*0.02, W*0.80, open);
+  const ry = lerp(H*0.004, H*0.78, open);
+
+  ctx.save();
+  ctx.beginPath(); ctx.ellipse(ex, ey, Math.max(1,rx), Math.max(1,ry), 0, 0, 6.2832); ctx.clip();
+
+  // —— 红黑白世界 ——
+  if (redK > 0.001){
+    ctx.save(); ctx.globalAlpha = redK;
+    bg(C("#170c0b"));
+    // 黑带
+    rectf(0, H*0.06, W, H*0.20, C("#0d0808"));
+    rectf(0, H*0.735, W, H*0.265, C("#0d0808"));
+    // 红场
+    rectf(0, H*0.26, W, H*0.475, C("#833224"));
+    // 纸白切面
+    tri(W*0.10, H*0.735, W*0.34, H*0.26, W*0.52, H*0.735, C("#debfa2", 0.88));
+    tri(W*0.52, H*0.735, W*0.34, H*0.26, W*0.62, H*0.26, C("#c69d7c", 0.92));
+    // 环形结构
+    ctx.save();
+    ctx.translate(W*0.5, H*0.50); ctx.rotate(lt * 0.10);
+    ringw(0, 0, H*0.235, H*0.014, C("#0d0808", 0.95));
+    ringw(0, 0, H*0.205, H*0.004, C("#debfa2", 0.45));
+    ctx.restore();
+    person(W*0.30, H*0.735, H*0.20, C("#0d0808"));
+    person(W*0.72, H*0.735, H*0.16, C("#0d0808"));
+    ctx.restore();
+  }
+
+  // —— 深青段 ——
+  if (cyan > 0.001){
+    ctx.save(); ctx.globalAlpha = cyan;
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0,   C("#2a4650"));
+    g.addColorStop(0.55,C("#1d3b4a"));
+    g.addColorStop(1,   C("#122833"));
+    bg(g);
+    // 竖向桅杆
+    for (let i = 0; i < 6; i++){
+      const x = W*(0.12 + i*0.152) + Math.sin(lt*0.3 + i)*10;
+      const hgt = H*(0.42 + (i % 3) * 0.14);
+      rectf(x, H*0.18, W*0.0105, hgt, C("#4b8489", 0.42));
+      rectf(x, H*0.18, W*0.0035, hgt, C("#9fc2c2", 0.28));
+    }
+    // 海面
+    rectf(0, H*0.72, W, H*0.28, C("#1d4a5c"));
+    for (let i = 0; i < 22; i++){
+      const y = H*(0.735 + i*0.0125);
+      rectf(0, y, W, 2, C("#4b8489", 0.20 + (i%4)*0.05));
+    }
+    // 红色彻底缺席：只留纸白的小舟
+    tri(W*0.40, H*0.775, W*0.50, H*0.775, W*0.45, H*0.815, C("#c8c2b2", 0.80));
+    person(W*0.45, H*0.775, H*0.075, C("#0a1218"));
+    ctx.restore();
+  }
+  ctx.restore();
+
+  // 眼睑边缘
+  ctx.strokeStyle = C("#0a0808"); ctx.lineWidth = H*0.05;
+  ctx.beginPath(); ctx.ellipse(ex, ey, Math.max(1,rx), Math.max(1,ry), 0, 0, 6.2832); ctx.stroke();
+  ctx.strokeStyle = C("#3c2a22", 0.55); ctx.lineWidth = H*0.004;
+  ctx.beginPath(); ctx.ellipse(ex, ey, Math.max(1,rx), Math.max(1,ry), 0, 0, 6.2832); ctx.stroke();
+
+  // —— 23.700–23.930 划像：sat 81→153、val 108→74，末帧硬停 ——
+  if (t >= 23.700 && t < 23.935){
+    const k = smooth(0, 1, (t - 23.700) / 0.230);
+    const bx = lerp(-W*0.25, W*1.25, k);
+    ctx.save();
+    ctx.translate(bx, 0); ctx.rotate(0.11);
+    const gb = ctx.createLinearGradient(-W*0.16, 0, W*0.16, 0);
+    gb.addColorStop(0,   "rgba(120,140,138,0)");
+    gb.addColorStop(0.42,"rgba(226,236,232,0.80)");
+    gb.addColorStop(0.52,"rgba(240,246,242,0.92)");
+    gb.addColorStop(0.62,"rgba(226,236,232,0.80)");
+    gb.addColorStop(1,   "rgba(120,140,138,0)");
+    ctx.fillStyle = gb;
+    ctx.fillRect(-W*0.16, -H*0.5, W*0.32, H*2);
+    ctx.restore();
+    // 划像后的底色推向更高饱和、更低明度
+    ctx.fillStyle = `rgba(4,10,12,${0.16 * k})`;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  vignette(0.26);
+  paper(0.055);
+
+  // 切点这一段参考是 #0f0a0a 66% + #861f16 32%：暗底偏暖、红占三成。
+  // 场景自绘 19.9 只有 57% 纯黑 + 30% 冷蓝（#2a4650 的底透出来），所以先补暖再对齐明度。
+  const ev = eyeVal(t);
+  if (ev !== null){
+    ctx.save();
+    ctx.globalCompositeOperation = "multiply";
+    ctx.fillStyle = `rgba(255,196,168,${clamp((20.1 - t) / 0.4, 0, 1) * 0.18})`;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+    exposeTo(ev, [226, 120, 96]);
+  }
+}
+
+/* 紫段明度锚点（绝对时间 → 目标 val，取自参考同刻实测帧） */
+const PURPLE_VAL = [
+  [24.800, 137.0], [25.000, 127.6], [25.500, 113.0], [26.000, 109.2],
+  [26.500, 104.7], [27.000, 137.8], [27.500, 111.2], [28.000, 102.9],
+  [28.500, 76.9], [28.600, 53.1],
+];
+function purpleVal(t){
+  if (t <= PURPLE_VAL[0][0]) return PURPLE_VAL[0][1];
+  for (let i = 1; i < PURPLE_VAL.length; i++){
+    if (t <= PURPLE_VAL[i][0]){
+      const [ta, va] = PURPLE_VAL[i-1], [tb, vb] = PURPLE_VAL[i];
+      return lerp(va, vb, (t - ta) / (tb - ta));
+    }
+  }
+  return PURPLE_VAL[PURPLE_VAL.length - 1][1];
+}
+// 曝光层实测基座：底 wash 画完在 26.5 约 115.3（未压暗前）
+const PURPLE_BASE = 115.3;
+function sPurpleExpose(t){
+  exposeTo(purpleVal(t), [196, 168, 206]);
+}
+
+/* ============================================================
+   场景 9 — 24.500–28.667  全片唯一紫段，恰 4.0 s（24.6–28.6）
+   24.5 还是深蓝 #2a4b73，24.8 起被紫接管
+   val 104.7、sat 93.7；#14111c 48% + #b493b7 33% + #594b75 19%
+   ============================================================ */
+function sPurple(t, lt){
+  const takeover = smooth(0.10, 0.30, lt);   // 24.60–24.80
+  const exit = smooth(3.95, 4.17, lt);
+
+  // 深蓝底
+  bg(C("#2a4b73"));
+
+  ctx.save();
+  // 不是整层半透明叠在做旧的画面上，而是逐层绘制再统一透明：
+  // takeover=1 时画面必须完全是本场景，否则会留下上一场的底盘（23.8–28.4 曾整体偏暗 47）
+  ctx.globalAlpha = 1;
+  ctx.save();
+  ctx.globalAlpha = takeover;
+
+  // 底色：参考 26.5 的 4×9 网格顶部四格是 151/155/152/114，是均匀紫灰，
+  // 不是中心亮斑。原来的 radial(0→#110e18 于 1.1H) 把四角压到 18–25，故换成分段横向渐变。
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0,    C("#7d6a8c"));
+  g.addColorStop(0.16, C("#8a76a0"));
+  g.addColorStop(0.34, C("#7a6790"));
+  g.addColorStop(0.52, C("#5b4f72"));
+  g.addColorStop(0.74, C("#2e2740"));
+  g.addColorStop(1,    C("#15111e"));
+  bg(g);
+
+  // 天空的太阳盘（参考 26.5 右侧高亮 162 + 太阳边）——原来完全没有，是画面读起来偏空的直接原因
+  const sunX = W*0.68, sunY = H*0.36, sunR = H*0.155;
+  const gs = ctx.createRadialGradient(sunX, sunY, sunR*0.2, sunX, sunY, sunR*1.9);
+  gs.addColorStop(0,   C("#f0dce6", 0.95));
+  gs.addColorStop(0.46,C("#e2c3d6", 0.80));
+  gs.addColorStop(1,   "rgba(30,24,40,0)");
+  ctx.fillStyle = gs; ctx.fillRect(sunX - sunR*2, sunY - sunR*2, sunR*4, sunR*4);
+  circ(sunX, sunY, sunR, C("#f2e0e8", 0.92));
+
+  // 紫色光场：原先半径 H*0.62、圆心 0.20H，只覆盖上半场，桌面与前景掉到 40 以下。
+  // 现在改成覆盖全画幅的低对比 wash（半径 H*1.05，强度削到 0.34），明度交给下面的锚点层。
+  const gp = ctx.createRadialGradient(W*0.50, H*0.34, 0, W*0.50, H*0.45, H*1.05);
+  gp.addColorStop(0,  C("#c9a8c6", 0.34));
+  gp.addColorStop(0.55,C("#8f7aa3", 0.22));
+  gp.addColorStop(1,  "rgba(20,17,28,0)");
+  ctx.fillStyle = gp; ctx.fillRect(0, 0, W, H);
+  ctx.restore();
+
+  // 以下前景随 takeover 淡入；原先在 takeover 的 save 之外，24.6–24.8 会抢先出现
+  ctx.save();
+  ctx.globalAlpha = takeover;
+
+  // 圆桌
+  const cy = H*0.735;
+  ctx.save();
+  ctx.beginPath(); ctx.ellipse(W*0.5, cy, W*0.345, H*0.105, 0, 0, 6.2832);
+  ctx.fillStyle = C("#594b75"); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(W*0.5, cy, W*0.345, H*0.105, 0, 0, 6.2832);
+  ctx.strokeStyle = C("#c095b8", 0.55); ctx.lineWidth = 5; ctx.stroke();
+  ctx.restore();
+
+  // 桌上摊开的牌
+  const rnd = mulberry32(4242);
+  for (let i = 0; i < 9; i++){
+    const a = -1.2 + i * 0.30;
+    const rx2 = W*0.5 + Math.cos(a) * W*0.20;
+    const ry2 = cy + Math.sin(a) * H*0.035 - H*0.015;
+    ctx.save(); ctx.translate(rx2, ry2); ctx.rotate(a*0.4);
+    ctx.fillStyle = C("#d7c3cf", 0.94);
+    ctx.fillRect(-W*0.014, -H*0.030, W*0.028, H*0.060);
+    ctx.fillStyle = C("#594b75", 0.75);
+    ctx.fillRect(-W*0.008, -H*0.017, W*0.016, H*0.034);
+    ctx.restore();
+  }
+
+  // 三个剪影围着桌子
+  person(W*0.24, cy + H*0.04, H*0.40, C("#15111c"));
+  person(W*0.50, cy - H*0.02, H*0.46, C("#0d0a12"));
+  person(W*0.775, cy + H*0.04, H*0.39, C("#15111c"));
+
+  ctx.restore();
+
+  // 补饱和：底 wash 在 26.5 只有 74.8，参考 93.7。用 source-over 叠一层低 alpha 的
+  // 同色系饱和色不行（会把明度也带下去），所以用 overlay 混合只推 (mx-mn)/mx。
+  ctx.save();
+  ctx.globalCompositeOperation = "overlay";
+  ctx.globalAlpha = 0.24 + 0.30 * (1 - smooth(0.2, 0.9, lt));   // 接管瞬间更需要拉起来
+  ctx.fillStyle = C("#8a5fa0");
+  ctx.fillRect(0, 0, W, H);
+  ctx.restore();
+
+  // 明度锚点：参考在该段是 120→131→98 的起伏，不是一条平线。
+  // 底 wash 只负责结构和配色，亮度对齐交给这一层（gamma 空间乘法，色相不漂）。
+  sPurpleExpose(t);
+
+  // 出段：压回深色，为 28.667 的转场做准备
+  if (exit > 0){
+    ctx.fillStyle = `rgba(8,10,18,${0.55 * exit})`;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  vignette(0.06);
+  paper(0.05);
+}
+
+/* ============================================================
+   场景 10 — 28.667–31.100  旋涡 → 碗 → 红海；30.97 饱和峰值 225.3
+   ============================================================ */
+function sVortex(t, lt){
+  bg(C("#210d0c"));
+
+  const grow = smooth(0, 1.95, lt);
+  const cx = W*0.5, cy = H*0.50;
+
+  // 旋涡：半径收进碗口再反向撑开
+  const R = H * (grow < 0.62
+      ? lerp(0.95, 0.26, easeIn(grow / 0.62))
+      : lerp(0.26, 1.15, (grow - 0.62) / 0.38));
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(lt * 1.6);
+  for (let i = 0; i < 26; i++){
+    const k = i / 26;
+    const a = k * Math.PI * 4.2;
+    const r = R * (0.16 + k * 0.84);
+    ctx.strokeStyle = C(i % 3 === 0 ? "#ae1517" : "#5e0a0b", 0.75 - k * 0.30);
+    ctx.lineWidth = H * (0.014 - k * 0.009);
+    ctx.beginPath();
+    ctx.arc(0, 0, r, a, a + 2.35);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // 碗口（圆形从环境缩成容器）
+  ringw(cx, cy, R * 0.99, H*0.010, C("#e5b19e", 0.55));
+  ringw(cx, cy, R * 0.90, H*0.003, C("#ae1517", 0.65));
+
+  // 溢出的液体扩展成红海
+  const spill = smooth(0.55, 1.0, grow);
+  if (spill > 0){
+    ctx.globalAlpha = spill * 0.95;
+    rectf(0, H*(0.50 + (1 - spill) * 0.40), W, H, C("#ae1517"));
+    for (let i = 0; i < 18; i++){
+      const y = H*(0.52 + i*0.027);
+      rectf(0, y, W, 3, C("#5e0a0b", 0.30));
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // 30.80 起红接管 40%→51%，饱和推满
+  const push = smooth(1.95, 2.35, lt);
+  if (push > 0){
+    ctx.globalAlpha = push * 0.72;
+    rectf(0, 0, W, H, C("#ab1416"));
+    ctx.globalAlpha = 1;
+  }
+
+  // 31.000–31.067 单帧横向跳（参考片此处为单帧跳切，来源未定，这里只做最小复现）
+  if (t >= 31.000 && t < 31.067){
+    ctx.fillStyle = "rgba(0,0,0,0.06)";
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  vignette(0.20);
+  paper(0.06);
+}
+
+/* ============================================================
+   场景 11 — 31.100–32.300  红海；32.000–32.300 淡出到黑
+   #971818 76% + #253042 16% + #cf8873 7%
+   ============================================================ */
+function sRedSea(t, lt){
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0,   C("#a81d1d"));
+  g.addColorStop(0.42,C("#c32222"));
+  g.addColorStop(1,   C("#7d1414"));
+  bg(g);
+
+  // 冷补色天际
+  rectf(0, 0, W, H*0.30, C("#3c4d66", 0.92));
+  rectf(0, H*0.295, W, H*0.012, C("#cf8873", 0.45));
+
+  // 海面横纹
+  for (let i = 0; i < 26; i++){
+    const y = H*(0.32 + i*0.026);
+    rectf(0, y, W, 2.5 + (i%5), C("#971818", 0.35));
+    rectf(0, y, W*0.55, 1.5, C("#cf8873", 0.10));
+  }
+
+  // 小舟与两个人
+  const bob = Math.sin(lt * 2.1) * H*0.006;
+  tri(W*0.36, H*0.700 + bob, W*0.50, H*0.700 + bob, W*0.43, H*0.755 + bob, C("#253042"));
+  person(W*0.415, H*0.700 + bob, H*0.085, C("#1a1113"));
+  person(W*0.448, H*0.700 + bob, H*0.072, C("#1a1113"));
+
+  // 远处第二只
+  tri(W*0.70, H*0.640, W*0.775, H*0.640, W*0.7375, H*0.672, C("#253042", 0.9));
+
+  // 32.000–32.300 淡出到黑：val 134 → 17.1，每 0.1 s 约 −39
+  if (t >= 32.000){
+    const k = smooth(0, 1, (t - 32.000) / 0.300);
+    ctx.fillStyle = `rgba(0,0,0,${1 - lerp(1, 0.119, k)})`;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  vignette(0.18);
+  paper(0.06);
+}
+
+/* ============================================================
+   场景 12 — 32.300–34.300  片名段
+   背景 #000001 占 98%；红字 1.63%；可读窗 1.8 s
+   ============================================================ */
+function sTitle(t, lt){
+  bg(C("#000001"));
+  // 极淡的底纹，避免纯平涂读成断片
+  const rnd = mulberry32(31337);
+  ctx.globalAlpha = 0.035;
+  for (let i = 0; i < 90; i++){
+    const x = rnd()*W, y = rnd()*H;
+    circ(x, y, 3 + rnd()*16, C("#241014"));
+  }
+  ctx.globalAlpha = 1;
+}
+
+/* ============================================================
+   场景 13/14 — 34.300–34.630 亮带横扫；34.700–37.770 绝对静止
+   ============================================================ */
+function sEnd(t, lt){
+  const still = t >= STILL_IN;
+
+  bg(C("#080706"));
+
+  // 顶光
+  const gx = W*0.5;
+  const gl = ctx.createLinearGradient(gx, H*0.02, gx, H*0.95);
+  gl.addColorStop(0,   C("#b8956b", 0.20));
+  gl.addColorStop(0.45,C("#7d5f42", 0.07));
+  gl.addColorStop(1,   "rgba(0,0,0,0)");
+  ctx.fillStyle = gl;
+  ctx.beginPath();
+  ctx.moveTo(gx - W*0.055, H*0.02);
+  ctx.lineTo(gx + W*0.055, H*0.02);
+  ctx.lineTo(gx + W*0.24, H);
+  ctx.lineTo(gx - W*0.24, H);
+  ctx.closePath(); ctx.fill();
+
+  // 小人
+  person(gx, H*0.905, H*0.235, C("#0a0807"));
+
+  // 两行文字
+  ctx.save();
+  ctx.fillStyle = C("#b9a086", 0.78);
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = '34px ui-monospace,Menlo,Consolas,monospace';
+  ctx.letterSpacing = "0.34em";
+  ctx.fillText("他数完了最后一张", gx, H*0.885);
+  ctx.font = '34px ui-monospace,Menlo,Consolas,monospace';
+  ctx.fillStyle = C("#7d6b5a", 0.66);
+  ctx.fillText("牌 又 回 到 同 一 种 顺 序", gx, H*0.930);
+  ctx.restore();
+
+  // 地面反光
+  rectf(0, H*0.905, W, 2, C("#3a2c22", 0.55));
+
+  // 34.300–34.630：0.33 s 亮带横扫，val 5.8→39.9→7.3，字形被横向拉丝
+  if (t < BAND_OUT){
+    const k = clamp((t - BAND_IN) / (BAND_OUT - BAND_IN), 0, 1);
+    const amp = Math.sin(Math.PI * Math.pow(k, 0.85));   // 0 → 1 → 0
+    const bx = lerp(-W*0.15, W*1.15, k);
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    const gb = ctx.createLinearGradient(bx - W*0.10, 0, bx + W*0.10, 0);
+    gb.addColorStop(0,   "rgba(0,0,0,0)");
+    gb.addColorStop(0.45,`rgba(150,158,150,${0.30 * amp})`);
+    gb.addColorStop(0.50,`rgba(226,226,214,${0.85 * amp})`);
+    gb.addColorStop(0.55,`rgba(150,158,150,${0.30 * amp})`);
+    gb.addColorStop(1,   "rgba(0,0,0,0)");
+    ctx.fillStyle = gb;
+    ctx.fillRect(bx - W*0.10, H*0.30, W*0.20, H*0.52);
+    ctx.restore();
+
+    // 字形横向拉丝
+    if (amp > 0.25){
+      ctx.save();
+      ctx.translate(gx, H*0.885);
+      ctx.scale(1 + amp * 2.6, 1);
+      ctx.globalAlpha = 0.30 * amp;
+      rectf(-W*0.30, -16, W*0.60, 32, C("#c9c6b8"));
+      ctx.restore();
+    }
+  }
+
+  // 绝对静止：不加任何含 t 的项
+  if (still){
+    // 什么都不动
+  }
+
+  vignette(0.62);
+  paper(still ? 0.05 : 0.05);
+}
+
+/* ============================================================
+   总调度
+   ============================================================ */
+function sceneAt(t){
+  if (t < 0.733)  return ["S1 正立面对称",  sTemple];
+  if (t < 3.733)  return ["S2 俯视重构→暖褐室内", sDescent];
+  if (t < 4.467)  return ["S3 饱和爬升→纯色卡", sSaturate];
+  if (t < 9.967)  return ["S4 红/黑/纸白", sRedField];
+  if (t < 14.133) return ["S5 门缝", sDoorSlit];
+  if (t < 14.567) return ["S6 极近景（冻结后切）", sCloseUp];
+  if (t < 19.900) return ["S7 去饱和→近黑呼吸", sAperture];
+  if (t < 24.500) return ["S8 睁眼→深青", sEye];
+  if (t < 28.667) return ["S9 紫段", sPurple];
+  if (t < 31.100) return ["S10 旋涡→红海", sVortex];
+  if (t < 32.300) return ["S11 红海→淡出", sRedSea];
+  if (t < 34.300) return ["S12 片名", sTitle];
+  return ["S13/14 亮带→静止", sEnd];
+}
+
+// 切前冻结 2 帧：14.500–14.567
+function freezeTime(t){
+  if (t >= 14.500 && t < 14.567) return 14.500;
+  return t;
+}
+
+function drawTitleOverlay(t){
+  if (t < TITLE_IN) return;
+  const a = clamp((t - TITLE_IN) / 0.15, 0, 1);
+  const out = smooth(TITLE_OUT - 0.10, TITLE_OUT + 0.12, t);
+  const alpha = a * (1 - out);
+  if (alpha <= 0.001) return;
+
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  // 主标题：宽字距，手动排字，4 字
+  const chars = ["第", "七", "张", "牌"];
+  const fs = 300;                 // 目标：字面占画面 1.63%（约 6 万像素 @2560×1440）
+  const track = fs * 0.46;
+  const total = chars.length * fs + (chars.length - 1) * track;
+  let x = W * 0.5 - total / 2 + fs / 2;
+  ctx.font = `${fs}px "Songti SC","STSong","SimSun","Source Han Serif SC",serif`;
+  ctx.fillStyle = C("#cd1228");
+  for (const ch of chars){
+    ctx.fillText(ch, x, H * 0.465);
+    x += fs + track;
+  }
+
+  // 细分割线
+  ctx.strokeStyle = C("#cd1228", 0.55);
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(W*0.5 - W*0.155, H*0.585);
+  ctx.lineTo(W*0.5 + W*0.155, H*0.585);
+  ctx.stroke();
+
+  // 副题
+  ctx.font = '40px ui-monospace,Menlo,Consolas,monospace';
+  ctx.letterSpacing = "0.62em";
+  ctx.fillStyle = C("#8f1b22", 0.88);
+  ctx.fillText("THE  SEVENTH  CARD", W*0.5, H*0.635);
+  ctx.restore();
+}
+
+function render(tRaw){
+  tRaw = clamp(tRaw, 0, DUR);
+  const t = freezeTime(tRaw);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = "source-over";
+
+  GV = 1;
+
+  // 9.850–10.050：hd 连续 6 帧偏高且 pd 不归零 → 叠化，不是硬切
+  if (t >= 9.850 && t < 10.050){
+    const k = smooth(0, 1, (t - 9.850) / 0.200);
+    sRedField(t, t - 4.467);
+    ctx.save();
+    ctx.globalAlpha = k;
+    sDoorSlit(t, 0);
+    ctx.restore();
+  } else {
+    const [, fn] = sceneAt(t);
+    // 4.400–4.533 压暗转场：4 帧，199.1→128.1，色相不动
+    // 该段场景本身画成纸白（约 199），所以倍率 = 目标 / 199.1
+    if (t >= 4.400 && t <= 4.533){
+      GV = clamp(targetVal(t) / 199.1, 0.05, 1.0);
+    }
+    fn(t, tOffset(t));
+    GV = 1;
+  }
+
+  drawTitleOverlay(t);
+}
+
+function tOffset(t){
+  const [name] = sceneAt(t);
+  const map = {
+    "S1 正立面对称": 0,
+    "S2 俯视重构→暖褐室内": 0.733,
+    "S3 饱和爬升→纯色卡": 3.733,
+    "S4 红/黑/纸白": 4.467,
+    "S5 门缝": 9.967,
+    "S6 极近景（冻结后切）": 14.133,
+    "S7 去饱和→近黑呼吸": 14.567,
+    "S8 睁眼→深青": 19.900,
+    "S9 紫段": 24.500,
+    "S10 旋涡→红海": 28.667,
+    "S11 红海→淡出": 31.100,
+    "S12 片名": 32.300,
+    "S13/14 亮带→静止": 34.300,
+  };
+  return t - (map[name] || 0);
+}
+
+/* ============================================================
+   测量：val / sat / 红字占比（分辨率无关）
+   ============================================================ */
+const mcan = document.createElement("canvas");
+mcan.width = 320; mcan.height = 180;
+const mctx = mcan.getContext("2d", { willReadFrequently: true });
+function measure(){
+  mctx.drawImage(canvas, 0, 0, 320, 180);
+  const d = mctx.getImageData(0, 0, 320, 180).data;
+  let vs = 0, ss = 0, red = 0, n = 0;
+  for (let i = 0; i < d.length; i += 4){
+    const r = d[i], g = d[i+1], b = d[i+2];
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+    vs += mx; ss += mx ? (mx - mn) / mx * 255 : 0; n++;
+    if (r > 90 && r > g * 2.05 && r > b * 2.05 && mx > 120) red++;
+  }
+  return { val: vs / n, sat: ss / n, red: red / n * 100 };
+}
+
+/* ============================================================
+   程序化音床（WebAudio）
+   ============================================================ */
+let audioCtx = null, audioBuf = null, srcNode = null, gainNode = null;
+let audioOn = false, audioStartAt = 0, audioStartT = 0;
+
+function buildOnsets(){
+  const rnd = mulberry32(0xA11CE);
+  const list = [];
+  for (let tt = 0.04; tt < DUR; tt += PULSE){
+    let inGap = false;
+    for (const g of GAPS){
+      if (tt >= g && tt < g + 0.67){ inGap = true; break; }
+    }
+    if (inGap) continue;
+    const noiseType = rnd() < 0.558;   // 87 : 69
+    list.push({
+      t: tt + (rnd() - 0.5) * 0.012,
+      type: noiseType ? "noise" : "tonal",
+      amp: 0.55 + rnd() * 0.55,
+      freq: 196 * Math.pow(2, Math.floor(rnd() * 13) / 12),
+      pan: rnd() * 2 - 1,
+    });
+  }
+  return list;
+}
+window.__magpieOnsets = buildOnsets();
+
+async function buildAudio(){
+  const sr = 44100;
+  const len = Math.ceil(DUR * sr);
+  const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  if (!OAC) return null;
+  const oc = new OAC(2, len, sr);
+
+  // 母线上按逐秒 RMS 调度：均值 −10.6 dB，35 s −5.5 dB，36 s −16.5 dB
+  const master = oc.createGain();
+  const db = x => Math.pow(10, x / 20);
+  master.gain.setValueAtTime(db(-10.6), 0);
+  master.gain.setValueAtTime(db(-10.6), 34.300);
+  master.gain.linearRampToValueAtTime(db(-5.5), 35.000);
+  master.gain.linearRampToValueAtTime(db(-16.5), 36.000);
+  master.gain.linearRampToValueAtTime(db(-19.0), 36.800);
+  master.gain.linearRampToValueAtTime(db(-22.0), 37.800);
+  master.connect(oc.destination);
+
+  // 共用噪声源
+  const nb = oc.createBuffer(1, Math.floor(sr * 0.12), sr);
+  const nd = nb.getChannelData(0);
+  const rnd = mulberry32(0xBEEF);
+  for (let i = 0; i < nd.length; i++) nd[i] = rnd() * 2 - 1;
+
+  for (const o of window.__magpieOnsets){
+    const g = oc.createGain();
+    g.gain.setValueAtTime(0.0001, o.t);
+    g.gain.exponentialRampToValueAtTime(o.amp * 0.34, o.t + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, o.t + 0.13);
+
+    const p = oc.createStereoPanner();
+    p.pan.value = o.pan * 0.55;
+
+    if (o.type === "noise"){
+      const s = oc.createBufferSource();
+      s.buffer = nb;
+      const bp = oc.createBiquadFilter();
+      bp.type = "bandpass";
+      bp.frequency.value = 2717;       // 频谱重心中位
+      bp.Q.value = 0.85;
+      s.connect(bp); bp.connect(g);
+      s.start(o.t); s.stop(o.t + 0.14);
+    } else {
+      const osc = oc.createOscillator();
+      osc.type = "triangle";
+      osc.frequency.value = o.freq;
+      const lp = oc.createBiquadFilter();
+      lp.type = "lowpass";
+      lp.frequency.value = 1800;
+      osc.connect(lp); lp.connect(g);
+      osc.start(o.t); osc.stop(o.t + 0.16);
+    }
+    g.connect(p); p.connect(master);
+  }
+
+  return await oc.startRendering();
+}
+
+function playAudioFrom(t){
+  if (!audioOn || !audioBuf) return;
+  stopAudio();
+  srcNode = audioCtx.createBufferSource();
+  srcNode.buffer = audioBuf;
+  srcNode.connect(audioCtx.destination);
+  srcNode.start(0, clamp(t, 0, DUR - 0.001));
+  audioStartAt = audioCtx.currentTime;
+  audioStartT = t;
+}
+function stopAudio(){
+  if (srcNode){ try { srcNode.stop(); } catch(e){} srcNode.disconnect(); srcNode = null; }
+}
+
+/* ============================================================
+   UI
+   ============================================================ */
+const seekEl = document.getElementById("seek");
+const tcEl = document.getElementById("tc");
+const playEl = document.getElementById("play");
+const mVal = document.getElementById("m-val");
+const mSat = document.getElementById("m-sat");
+const mRed = document.getElementById("m-red");
+const mFrame = document.getElementById("m-frame");
+const mScene = document.getElementById("m-scene");
+
+let tNow = 0, playing = false, lastTs = 0, userPaused = false;
+
+const KF = [
+  { t: 4.100,  val: 171.4, sat: 209.7, label: "纯色卡" },
+  { t: 14.567, val: 36.5,  sat: 50.2,  label: "冻结后切点" },
+  { t: 26.500, val: 104.7, sat: 93.7,  label: "紫段" },
+  { t: 33.600, val: 5.5,   sat: 45.6,  label: "片名" },
+];
+
+function buildMarks(){
+  const m = document.getElementById("marks");
+  m.innerHTML = "";
+  for (const c of CUTS){
+    const i = document.createElement("i");
+    i.style.left = (c / DUR * 100) + "%";
+    i.className = "major";
+    m.appendChild(i);
+    const s = document.createElement("span");
+    s.style.left = (c / DUR * 100) + "%";
+    s.textContent = c.toFixed(1);
+    m.appendChild(s);
+  }
+}
+function buildSceneTable(){
+  const tb = document.querySelector("#stable tbody");
+  tb.innerHTML = "";
+  const rows = [
+    [0.000, 0.733, "S1 正立面对称"],
+    [0.733, 3.733, "S2 俯视→室内"],
+    [3.733, 4.467, "S3 饱和→纯色卡→压暗"],
+    [4.467, 9.967, "S4 红/黑/纸白"],
+    [9.967, 14.133, "S5 门缝（叠化入）"],
+    [14.133, 14.567, "S6 极近景（冻结后切）"],
+    [14.567, 19.900, "S7 去饱和→近黑呼吸"],
+    [19.900, 24.500, "S8 睁眼→深青（23.70 划像）"],
+    [24.500, 28.667, "S9 紫段 4.0 s"],
+    [28.667, 31.100, "S10 旋涡→红海"],
+    [31.100, 32.300, "S11 红海→淡出黑"],
+    [32.300, 34.300, "S12 片名"],
+    [34.300, 34.630, "S13 亮带 0.33 s"],
+    [34.700, 37.770, "S14 绝对静止 3.07 s"],
+  ];
+  for (const [a, b, name] of rows){
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${a.toFixed(3)}</td><td>${b.toFixed(3)}</td><td>${name}</td>`;
+    tr.onclick = () => { setTime(a + 0.001); };
+    tb.appendChild(tr);
+  }
+}
+function buildKFTable(){
+  const tb = document.querySelector("#ktable tbody");
+  tb.innerHTML = "";
+  for (const k of KF){
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${k.t.toFixed(3)}</td><td>${k.val.toFixed(1)} / ${k.sat.toFixed(1)}</td><td>–</td>`;
+    tr.onclick = () => { setTime(k.t); };
+    tb.appendChild(tr);
+  }
+}
+
+function setTime(t){
+  tNow = clamp(t, 0, DUR);
+  userPaused = true;
+  playing = false;
+  playEl.textContent = "▶";
+  playEl.dataset.on = "0";
+  render(tNow);
+  if (audioOn) playAudioFrom(tNow);
+  updateUI(true);
+}
+
+let measureAcc = 0;
+function updateUI(force){
+  seekEl.value = Math.round(tNow / DUR * 1000);
+  tcEl.textContent = tNow.toFixed(3);
+  const [name] = sceneAt(freezeTime(tNow));
+  mScene.textContent = name;
+  mFrame.textContent = String(Math.round(tNow * FPS)) + " / 1134";
+
+  const now = performance.now();
+  if (force || now - measureAcc > 120){
+    measureAcc = now;
+    const m = measure();
+    mVal.textContent = m.val.toFixed(1);
+    mSat.textContent = m.sat.toFixed(1);
+    mRed.textContent = m.red.toFixed(2) + "%";
+    const rows = document.querySelectorAll("#ktable tbody tr");
+    rows.forEach((tr, i) => {
+      const k = KF[i];
+      const near = Math.abs(tNow - k.t) < 1.0 / FPS;
+      tr.classList.toggle("on", near);
+      tr.children[2].textContent = near
+        ? `${m.val.toFixed(1)} / ${m.sat.toFixed(1)}`
+        : "–";
+    });
+  }
+}
+
+function loop(ts){
+  if (!lastTs) lastTs = ts;
+  const dt = Math.min((ts - lastTs) / 1000, 0.1);
+  lastTs = ts;
+
+  if (playing){
+    tNow += dt;
+    if (tNow >= DUR){ tNow = DUR; playing = false; playEl.textContent = "▶"; playEl.dataset.on = "0"; stopAudio(); }
+  }
+  render(tNow);
+  updateUI(false);
+  requestAnimationFrame(loop);
+}
+
+playEl.onclick = () => {
+  playing = !playing;
+  if (playing){
+    if (tNow >= DUR - 0.001) tNow = 0;
+    playEl.textContent = "❚❚"; playEl.dataset.on = "1";
+    if (audioOn) { ensureAudio().then(() => playAudioFrom(tNow)); }
+  } else {
+    playEl.textContent = "▶"; playEl.dataset.on = "0";
+    stopAudio();
+  }
+};
+document.getElementById("prev").onclick = () => {
+  setTime((Math.round(tNow * FPS) - 1) / FPS);
+};
+document.getElementById("next").onclick = () => {
+  setTime((Math.round(tNow * FPS) + 1) / FPS);
+};
+seekEl.oninput = () => {
+  setTime(seekEl.value / 1000 * DUR);
+};
+window.addEventListener("keydown", e => {
+  if (e.code === "Space"){ e.preventDefault(); playEl.click(); }
+  if (e.code === "ArrowLeft"){ e.preventDefault(); setTime((Math.round(tNow*FPS) - 1)/FPS); }
+  if (e.code === "ArrowRight"){ e.preventDefault(); setTime((Math.round(tNow*FPS) + 1)/FPS); }
+});
+for (const b of document.querySelectorAll(".row button[data-t]")){
+  b.onclick = () => setTime(parseFloat(b.dataset.t));
+}
+
+let audioPromise = null;
+async function ensureAudio(){
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === "suspended") await audioCtx.resume();
+  if (!audioPromise){
+    audioPromise = buildAudio().then(buf => {
+      audioBuf = buf;
+      return buf;
+    }).catch(() => null);
+  }
+  return audioPromise;
+}
+document.getElementById("mute").onclick = async (e) => {
+  audioOn = !audioOn;
+  e.target.textContent = audioOn ? "声音：开" : "声音：关";
+  e.target.dataset.on = audioOn ? "1" : "0";
+  if (audioOn){
+    await ensureAudio();
+    if (playing) playAudioFrom(tNow);
+  } else stopAudio();
+};
+document.getElementById("rebuild").onclick = async () => {
+  audioPromise = null; audioBuf = null;
+  await ensureAudio();
+  if (audioOn && playing) playAudioFrom(tNow);
+};
+
+/* ============================================================
+   启动
+   ============================================================ */
+buildMarks();
+buildSceneTable();
+buildKFTable();
+
+const qs = new URLSearchParams(location.search);
+if (qs.has("t")){
+  tNow = clamp(parseFloat(qs.get("t")) || 0, 0, DUR);
+  playing = false;
+  playEl.textContent = "▶";
+} else {
+  tNow = 0;
+}
+render(tNow);
+updateUI(true);
+requestAnimationFrame(loop);
+
+// 供外部核对
+window.__magpie = {
+  render: (t) => { tNow = t; render(t); updateUI(true); return measure(); },
+  measure,
+  DUR, FPS, W, H,
+  get t(){ return tNow; },
+};
+</script>
+</body>
+</html>

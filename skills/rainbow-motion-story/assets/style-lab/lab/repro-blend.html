@@ -1,0 +1,1776 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>复现 · 流水 8.333 s ／ 四镜</title>
+<style>
+  :root{
+    --bg:#0d1114; --panel:#141a1f; --line:#243038; --ink:#dfe7ec; --dim:#8a9aa5;
+    --cyan:#7dbdda; --cyan2:#a1b8c3; --warm:#cbad5d; --ok:#6fbf8b; --bad:#d9786a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.65 "Inter","Helvetica Neue","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+  a{color:var(--cyan)}
+  code{font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#b7cdd8;
+    background:#0a0e11;border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  header{padding:22px 26px 12px;border-bottom:1px solid var(--line)}
+  header h1{margin:0 0 4px;font-size:19px;font-weight:600;letter-spacing:.01em}
+  header p{margin:0;color:var(--dim);font-size:12.5px;max-width:98ch}
+  main{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:0;align-items:start}
+  @media (max-width:1100px){main{grid-template-columns:1fr}}
+  .stage{padding:16px 18px 20px;min-width:0}
+  canvas#scene{width:100%;height:auto;display:block;border-radius:8px;background:#000;
+    border:1px solid var(--line)}
+  .transport{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .transport button{background:#1a2229;color:var(--ink);border:1px solid var(--line);
+    border-radius:6px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer;min-width:38px}
+  .transport button:hover{background:#222c34}
+  .transport button[data-on="1"]{background:#25404d;border-color:#356b80;color:#cfeef9}
+  #seek{flex:1;min-width:180px;accent-color:#7dbdda}
+  #tc{font:12.5px ui-monospace,Menlo,Consolas,monospace;color:var(--dim);white-space:nowrap}
+  .marks{position:relative;height:22px;margin:2px 0 0;pointer-events:none;flex-basis:100%}
+  .marks span{position:absolute;top:6px;transform:translateX(-50%);
+    font:10.5px ui-monospace,Menlo,Consolas,monospace;color:var(--dim);white-space:nowrap}
+  .marks span::before{content:"";position:absolute;left:50%;top:-3px;width:1px;height:5px;
+    background:#3a4a55;transform:translateX(-50%)}
+  aside.panel{border-left:1px solid var(--line);padding:18px 18px 40px;background:var(--panel);
+    min-height:100%}
+  @media (max-width:1100px){aside.panel{border-left:0;border-top:1px solid var(--line)}}
+  .panel h2{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);
+    margin:18px 0 8px;font-weight:600}
+  .panel h2:first-child{margin-top:0}
+  .kv{display:grid;grid-template-columns:88px 1fr;gap:2px 10px;
+    font:12.5px ui-monospace,Menlo,Consolas,monospace}
+  .kv dt{color:var(--dim)}
+  .kv dd{margin:0;color:var(--ink)}
+  .ok{color:var(--ok)} .bad{color:var(--bad)} .dim{color:var(--dim)}
+  .row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .row button{flex:1;background:#1a2229;border:1px solid var(--line);border-radius:6px;
+    color:var(--ink);padding:6px 8px;font:inherit;font-size:12px;cursor:pointer}
+  .row button:hover{background:#222c34}
+  .shots{width:100%;border-collapse:collapse;font-size:11.5px;
+    font:11.5px ui-monospace,Menlo,Consolas,monospace}
+  .shots th{text-align:left;color:var(--dim);font-weight:500;padding:3px 4px;
+    border-bottom:1px solid var(--line)}
+  .shots td{padding:3px 4px;border-bottom:1px solid #1b2329}
+  .shots tr.on td{background:#1b2a33}
+  pre#log{margin:6px 0 0;padding:8px;background:#0a0e11;border:1px solid var(--line);
+    border-radius:6px;font:11px/1.5 ui-monospace,Menlo,Consolas,monospace;color:#9fb4c0;
+    max-height:190px;overflow:auto;white-space:pre-wrap}
+  footer{padding:14px 26px 40px;color:var(--dim);font-size:12px;border-top:1px solid var(--line);
+    max-width:150ch}
+  footer b{color:#b7c8d2;font-weight:600}
+  .swatch{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:-1px;
+    margin-right:4px;border:1px solid rgba(255,255,255,.14)}
+</style>
+</head>
+<body>
+<header>
+  <h1>复现 ／ 流水 8.333 s 的四个镜头</h1>
+  <p>按 <code>studies/blender-flow.md</code> 的量化切分重建运动组织：一条 50% 时长的注水长镜、一次三维同时跳变的切、一次横竖双曲线交接的甩镜、两帧洗白加 0.5 秒定帧落款。
+     画面与声音全部由本页程序生成，不含原片素材、音轨、水印或商标。加 <code>?t=6.9</code> 定格到指定秒数，便于逐帧比对。</p>
+</header>
+
+<main>
+  <section class="stage">
+    <canvas id="scene" width="1920" height="1080" aria-label="流水四镜复现画布"></canvas>
+    <div class="transport">
+      <button id="play" aria-pressed="false">播放</button>
+      <button id="prev" title="上一帧">‹</button>
+      <button id="next" title="下一帧">›</button>
+      <input id="seek" type="range" min="0" max="200" step="1" value="0" aria-label="进度（帧）">
+      <output id="tc">f000 ／ 0.000 s</output>
+      <button id="sound" aria-pressed="false" title="程序化合成的水体声">声音</button>
+    </div>
+    <div class="marks" id="marks"></div>
+  </section>
+
+  <aside class="panel">
+    <h2>当前帧</h2>
+    <dl class="kv">
+      <dt>镜头</dt><dd id="vShot">S1 注水长镜</dd>
+      <dt>帧 / 时间</dt><dd id="vTime">1 / 0.000 s</dd>
+      <dt>均值 V</dt><dd id="vVal">—</dd>
+      <dt>均值 S</dt><dd id="vSat">—</dd>
+      <dt>edges</dt><dd id="vEdges">—</dd>
+      <dt>gx / gy</dt><dd id="vAniso">—</dd>
+      <dt>pix_diff</dt><dd id="vPix">—</dd>
+    </dl>
+
+    <h2>四镜结构</h2>
+    <table class="shots" id="shotTable">
+      <thead><tr><th>镜</th><th>帧</th><th>时长</th><th>占比</th><th>目标 V</th><th>目标 S</th></tr></thead>
+      <tbody>
+        <tr data-i="0"><td>S1</td><td>0–100</td><td>4.17 s</td><td>50.0%</td><td>155→191</td><td>92→114</td></tr>
+        <tr data-i="1"><td>S2</td><td>100–146</td><td>1.92 s</td><td>23.0%</td><td>217–223</td><td>51–55</td></tr>
+        <tr data-i="2"><td>S3</td><td>146–181</td><td>1.46 s</td><td>17.5%</td><td>172–193</td><td>53–90</td></tr>
+        <tr data-i="3"><td>S4</td><td>181–200</td><td>0.79 s</td><td>9.5%</td><td>156–188</td><td>31–82</td></tr>
+      </tbody>
+    </table>
+
+    <h2>测量</h2>
+    <div class="row">
+      <button id="mAll">量全片 200 帧</button>
+      <button id="mCuts">量切点</button>
+    </div>
+    <pre id="log">点「量全片」按 640×360 逐帧渲染，输出分镜中位数与切点 pix_diff，与笔记目标并列比较。</pre>
+
+    <h2>导出</h2>
+    <div class="row">
+      <button id="png">保存当前帧 PNG</button>
+    </div>
+    <p class="dim" style="font-size:11.5px;margin:8px 0 0">
+      定格地址可写成 <code>?t=</code> 加秒数；键盘 <code>空格</code> 播放/暂停、<code>←/→</code> 逐帧。</p>
+  </aside>
+</main>
+
+<footer>
+  <p><b>参数出处。</b>
+  切点 4.167 / 6.083 / 7.542 秒（帧 100 / 146 / 181，总 200 帧 24 fps，取 <code>cuts</code> 阈值 0.35 的三个峰）。
+  四镜占比 50 / 23 / 17.5 / 9.5%。S1 为一镜到底，镜内 hist_diff 最大 0.026。
+  S3 甩镜逐帧位移：6.083 s 起 dx −78.9、dy +0.6 px/帧；7.000 s dx −9.1、dy −25.0；7.333 s dx +0.2、dy −46.8；7.458 s dy −55.3（全片最大）；横竖两量在第 164 帧（6.833 s）以 16.6 / 16.6 等速交叉，合成速度谷 23.5 px/帧。
+  白闪落在第 182–183 帧，edges 0.128→0.030→0.011，meanS 31.6 / 56.5，meanV 181.1 / 156.3。
+  S4 拉出在第 184–187 帧完成（饱和像素包围盒高 455→695→911→935 px），第 188 帧起 pix_diff 锁在 0.38–0.49、帧间灰度差 0.53–0.67（0–255），持续 0.54 秒。
+  色板：S1 水 <code>#85bcd6</code>、槽暗面 <code>#407ab0</code>、环境 <code>#56707f</code>；S2 天光 <code>#e8f0f2</code> 0.41、水面 <code>#97c0d1</code> 0.50、暖灌木 <code>#cbad5d</code> 0.08–0.13；S3 <code>#a1b8c3</code>/<code>#74adcb</code>/<code>#62798c</code>。
+  声画对齐按水体事件：4.156 s onset 距切点 −0.011 s、6.130 s onset +0.047 s，均 ≤2 帧；0–120 Hz 只在开场给一次撞击（1.5 s 后 −41.6 dB），主能量锁 1200–3000 Hz；分镜 RMS −16.8 / −21.7 / −21.4 / −20.7 dB。</p>
+  <p><b>未复现、也无法复现的部分。</b>
+  原片没有工程文件，渲染器、采样数、是否 Mantaflow 均不可知，本页只复现「镜头与事件的组织」，不复现 Blender 求解。tempo 117.5 BPM 与 onset 间隔分布矛盾，本页不做卡点。文中「相机速度」实为画面主导层速度（全局相位相关的估计值），含背景视差，S3 的白桦层按 0.3／0.65／1.0 三档视差分层，比例是编排选择而非测量结论。</p>
+</footer>
+
+<script>
+window.__err = [];
+window.addEventListener('error', e => window.__err.push(e.message + ' @' + e.lineno + ':' + e.colno));
+(() => {
+'use strict';
+
+/* ───────────────────────── 常量（全部来自研究笔记） ───────────────────────── */
+const W = 1920, H = 1080, FPS = 24, FRAMES = 200;
+const DUR = FRAMES / FPS;                 // 8.3333
+const CUT_F = [100, 146, 181];
+const CUT_T = CUT_F.map(f => f / FPS);    // 4.1667 / 6.0833 / 7.5417
+const SHOT_END_F = [100, 146, 181, 200];
+
+// S3 逐帧位移（1920 基准的 px/帧），取自 phaseCorrelate
+const K3 = 6.4;   // 甩镜速度校准：参考片 19.28 vs 复现 2.92 px/帧（960 宽）
+const S3 = {
+  f0: 146, f1: 181, N: 35,
+  dx: s => K3 * (-78.9 * Math.pow(Math.max(0, 1 - s), 2.15) + 1.6 * s * s * s),
+  dy: s => K3 * (0.6 - 62 * s * s)
+};
+
+const TARGET = [
+  { k:'S1', name:'注水长镜', val:[154.8,190.9], sat:[92.2,114.2], pd:4.12 },
+  { k:'S2', name:'逆光水帘', val:[217,223],     sat:[51,55],      pd:5.14 },
+  { k:'S3', name:'甩镜',     val:[172,193],     sat:[53,90],      pd:13.76 },
+  { k:'S4', name:'拉出落款', val:[156,188],     sat:[31,82],      pd:0.47 }
+];
+
+/* ───────────────────────── 小工具 ───────────────────────── */
+const clamp = (v,a,b) => v < a ? a : v > b ? b : v;
+const lerp  = (a,b,u) => a + (b - a) * u;
+const inv   = (a,b,v) => clamp((v - a) / (b - a || 1), 0, 1);
+const smooth = u => u * u * (3 - 2 * u);
+const easeOut = u => 1 - Math.pow(1 - u, 3);
+const easeIn  = u => u * u * u;
+const easeOutQuint = u => 1 - Math.pow(1 - u, 5);
+
+function hash(n){ const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); }
+function hexRGB(h){ const n = parseInt(h.slice(1), 16); return [(n>>16)&255, (n>>8)&255, n&255]; }
+function tone(h, k, a){
+  const [r,g,b] = hexRGB(h);
+  const R = clamp(r*k,0,255)|0, G = clamp(g*k,0,255)|0, B = clamp(b*k,0,255)|0;
+  return a === undefined ? `rgb(${R},${G},${B})` : `rgba(${R},${G},${B},${a})`;
+}
+function rgba(h, a){ const [r,g,b] = hexRGB(h); return `rgba(${r},${g},${b},${a})`; }
+
+/* 相机：把世界坐标映射到当前画布。parallax 用于分层视差。 */
+function setCam(ctx, cam, parallax){
+  const S = ctx.canvas.width / W;
+  const z = cam.z * S, p = parallax === undefined ? 1 : parallax;
+  ctx.setTransform(z, 0, 0, z,
+    ctx.canvas.width / 2 - cam.x * p * z,
+    ctx.canvas.height / 2 - cam.y * p * z);
+}
+function screen(ctx){ ctx.setTransform(1,0,0,1,0,0); }
+
+/* 确定性随机序列（同一 t 必得同一帧） */
+function rnd(i, salt){ return hash(i * 1.618 + (salt || 0) * 37.7); }
+
+/* ───────────────────────── S3 相机积分 ───────────────────────── */
+const S3CAM = (() => {
+  const sub = 12, steps = S3.N * sub, arr = [{x:0, y:0}];
+  let x = 0, y = 0;
+  for (let i = 1; i <= steps; i++){
+    const s = i / steps;
+    x += -S3.dx(s) / sub;   // 画面内容左移 ⇒ 相机右移
+    y += -S3.dy(s) / sub;   // 画面内容上移 ⇒ 相机下移
+    arr.push({ x, y });
+  }
+  return arr;
+})();
+
+function s3camAt(t){
+  const u = clamp((t - S3.f0/FPS) / ((S3.f1 - S3.f0)/FPS), 0, 1);
+  const p = u * (S3.N * 12);
+  const i = Math.min(Math.floor(p), S3CAM.length - 1);
+  const f = p - i;
+  const a = S3CAM[i], b = S3CAM[Math.min(i + 1, S3CAM.length - 1)];
+  return { x: lerp(a.x, b.x, f), y: lerp(a.y, b.y, f) };
+}
+
+/* 交叉点与合成速度谷（用于 HUD 自检，运行时解，不写死） */
+const S3XING = (() => {
+  let best = null;
+  for (let i = 0; i <= 2000; i++){
+    const s = i / 2000;
+    const d = Math.abs(-S3.dx(s) + S3.dy(s));
+    if (!best || d < best.d) best = { s, d, dx: -S3.dx(s), dy: -S3.dy(s) };
+  }
+  return { s: best.s, dx: best.dx, dy: best.dy, speed: Math.hypot(best.dx, best.dy) };
+})();
+
+/* ───────────────────────── 画布 ───────────────────────── */
+const canvas = document.getElementById('scene');
+const ctx = canvas.getContext('2d', { alpha:false });
+const WASH = document.createElement('canvas');
+const SCRATCH3 = document.createElement('canvas');
+SCRATCH3.width = W; SCRATCH3.height = H;
+const sctx = SCRATCH3.getContext('2d', { alpha:true });
+
+/* ───────────────────────── 场景 A：注水长镜 / 落款 ───────────────────────── */
+/* 世界坐标（1920×1080 基准），整套装置横跨 X −567…1240、Y 136…1000。
+   斜槽：枢轴 (0,330) 旋转 9°，局部 x −560…520、y −95…95（沿、壁厚）。
+   槽口出水唇：局部 (520…576, −60…80)，口心约 (582, 427)。
+   落水舌：(582,427) → (860,798)。下盆：x 640…1240，后沿 700，水面 800，前沿 940，底 1000。 */
+const TH = 9 * Math.PI / 180;
+const TA = { x0:-560, x1:520, yTop:-95, yMid:-46, yBot:95 };
+const BA = { x0:640, x1:1240, back:700, water:800, front:940, floor:1000 };
+const LIP = { x:582, y:427 };
+const IMP = { x:860, y:798 };
+
+/* 一次性缓存：颗粒（去相机漂移时的脏感）与软阴影 */
+const GRAIN = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const g = c.getContext('2d');
+  const d = g.createImageData(256, 256);
+  for (let i = 0; i < 256 * 256; i++){
+    const v = hash(i * 0.731) * 255;
+    d.data[i*4] = d.data[i*4+1] = d.data[i*4+2] = v;
+    d.data[i*4+3] = 14 + hash(i * 1.37) * 20;
+  }
+  g.putImageData(d, 0, 0);
+  return c;
+})();
+
+const SOFT = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const g = c.getContext('2d');
+  const rg = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+  rg.addColorStop(0, 'rgba(24,38,50,0.52)');
+  rg.addColorStop(0.55, 'rgba(24,38,50,0.26)');
+  rg.addColorStop(1, 'rgba(24,38,50,0)');
+  g.fillStyle = rg; g.fillRect(0, 0, 256, 256);
+  return c;
+})();
+
+function softShadow(ctx, x, y, rx, ry){
+  ctx.save();
+  ctx.globalAlpha = 0.85;
+  ctx.drawImage(SOFT, x - rx, y - ry, rx * 2, ry * 2);
+  ctx.restore();
+}
+
+function drawBackdropA(ctx, cam){
+  const CW = ctx.canvas.width, CH = ctx.canvas.height;
+  screen(ctx);
+
+  // 冷灰环境：#56707f 作底
+  const g = ctx.createLinearGradient(0, 0, CW * 0.25, CH);
+  g.addColorStop(0,    tone('#6b8494', cam.light));
+  g.addColorStop(0.46, tone('#56707f', cam.light));
+  g.addColorStop(1,    tone('#41586a', cam.light * 0.99));
+  ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+
+  // 两团柔光，机位抬升时自然进入画面（曝光爬升的来源，不加调色层）
+  const lift = clamp((596 - cam.y) / 56, 0, 1);
+  const g1 = ctx.createRadialGradient(CW * 0.70, CH * (0.20 + 0.10 * lift), 0,
+                                      CW * 0.70, CH * (0.20 + 0.10 * lift), CH * 1.0);
+  g1.addColorStop(0, rgba('#fff3d8', 0.12 + 0.22 * lift));
+  g1.addColorStop(0.5, rgba('#cfdee6', 0.07 + 0.07 * lift));
+  g1.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g1; ctx.fillRect(0, 0, CW, CH);
+
+  const g2 = ctx.createRadialGradient(CW * 0.12, CH * 0.86, 0,
+                                      CW * 0.12, CH * 0.86, CH * 0.85);
+  g2.addColorStop(0, rgba('#93bacb', 0.18));
+  g2.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g2; ctx.fillRect(0, 0, CW, CH);
+
+  // 颗粒：随相机缓慢漂移，但只画一次
+  ctx.save();
+  ctx.globalCompositeOperation = 'overlay';
+  ctx.globalAlpha = 0.18;
+  const ox = (-cam.x * 0.25) % 512, oy = (-cam.y * 0.25) % 512;
+  for (let y = oy - 512; y < CH + 512; y += 512)
+    for (let x = ox - 512; x < CW + 512; x += 512)
+      ctx.drawImage(GRAIN, x, y, 512, 512);
+  ctx.restore();
+}
+
+function drawTroughA(ctx, t, cam){
+  const k = cam.light;
+  setCam(ctx, cam);
+  ctx.save();
+  ctx.translate(0, 330);
+  ctx.rotate(TH);
+
+  // 软阴影：贴地的一条椭圆，不再是硬切四边形
+  softShadow(ctx, -20, 235, 720, 105);
+
+  // 槽体外壁（暗面 #407ab0）
+  const bg = ctx.createLinearGradient(0, TA.yMid, 0, TA.yBot);
+  bg.addColorStop(0, tone('#407ab0', k));
+  bg.addColorStop(0.55, tone('#35699a', k));
+  bg.addColorStop(1, tone('#2a5480', k));
+  ctx.fillStyle = bg;
+  ctx.fillRect(TA.x0, TA.yMid + 8, TA.x1 - TA.x0, TA.yBot - TA.yMid - 8);
+
+  // 槽口内腔
+  const cg = ctx.createLinearGradient(0, TA.yTop, 0, TA.yMid);
+  cg.addColorStop(0, tone('#2f5a78', k));
+  cg.addColorStop(1, tone('#35688c', k));
+  ctx.fillStyle = cg;
+  ctx.fillRect(TA.x0, TA.yTop, TA.x1 - TA.x0, TA.yMid - TA.yTop);
+
+  // 水的推进前沿：0.04 → 1.36 s 从顶端走到槽口
+  const p = clamp((t - 0.04) / 1.32, 0, 1);
+  const front = TA.x0 + (TA.x1 - TA.x0) * Math.pow(p, 0.82);
+  const wTop = TA.yTop + 12, wBot = TA.yMid - 4;
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(TA.x0, wTop, Math.max(0.1, front - TA.x0), wBot - wTop);
+  ctx.clip();
+  const wg = ctx.createLinearGradient(0, wTop, 0, wBot);
+  wg.addColorStop(0, tone('#b7e2ef', k));
+  wg.addColorStop(0.38, tone('#85bcd6', k));
+  wg.addColorStop(1, tone('#5b98be', k));
+  ctx.fillStyle = wg;
+  ctx.fillRect(TA.x0, wTop, TA.x1 - TA.x0, wBot - wTop);
+
+  // 表面镜面线与流丝
+  ctx.fillStyle = rgba('#f2fdff', 0.40);
+  ctx.fillRect(TA.x0, wTop + 1, TA.x1 - TA.x0, 5);
+  for (let i = 0; i < 30; i++){
+    const speed = 640 + rnd(i, 5) * 240;
+    const span = TA.x1 - TA.x0;
+    const x = TA.x0 + ((rnd(i, 1) * span + t * speed) % span);
+    const y = wTop + 16 + rnd(i, 2) * (wBot - wTop - 26) + Math.sin(t * 3.4 + i) * 3;
+    ctx.fillStyle = rgba('#eefafd', 0.10 + 0.22 * rnd(i, 9));
+    ctx.fillRect(x, y, 70 + rnd(i, 4) * 170, 2 + rnd(i, 6) * 3);
+  }
+  // 前沿浪花
+  if (p > 0.02 && p < 0.995){
+    for (let i = 0; i < 14; i++){
+      const a = rnd(i, 21);
+      ctx.fillStyle = rgba('#f4fcff', 0.14 + 0.38 * a);
+      ctx.beginPath();
+      ctx.ellipse(front - 4 - a * 30, lerp(wTop + 10, wBot - 6, rnd(i, 22)),
+        10 + a * 18, 5 + a * 7, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+
+  // 近侧壁倒角
+  const eg = ctx.createLinearGradient(0, TA.yBot - 46, 0, TA.yBot);
+  eg.addColorStop(0, tone('#7fb0cc', k, 0.0));
+  eg.addColorStop(1, tone('#a3cde1', k, 0.55));
+  ctx.fillStyle = eg;
+  ctx.fillRect(TA.x0, TA.yBot - 46, TA.x1 - TA.x0, 46);
+
+  // 槽沿（顶面亮边）
+  ctx.fillStyle = tone('#d3eff8', k);
+  ctx.fillRect(TA.x0, TA.yTop, TA.x1 - TA.x0, 15);
+  ctx.fillStyle = tone('#83b5cc', k, 0.7);
+  ctx.fillRect(TA.x0, TA.yTop + 15, TA.x1 - TA.x0, 6);
+
+  // 左端封头
+  ctx.fillStyle = tone('#3c6d97', k);
+  ctx.fillRect(TA.x0 - 26, TA.yTop + 4, 26, TA.yBot - TA.yTop - 4);
+  ctx.fillStyle = tone('#bfe4f0', k, 0.85);
+  ctx.fillRect(TA.x0 - 26, TA.yTop, 26, 16);
+
+  // 出水唇：短管 + 唇沿，明确指向落点
+  ctx.fillStyle = tone('#8ec3da', k);
+  ctx.beginPath();
+  ctx.moveTo(TA.x1, TA.yTop + 10);
+  ctx.lineTo(TA.x1 + 56, TA.yTop + 32);
+  ctx.lineTo(TA.x1 + 56, TA.yMid + 30);
+  ctx.lineTo(TA.x1, TA.yBot - 10);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = tone('#cdeaf5', k, 0.9);
+  ctx.fillRect(TA.x1 + 44, TA.yTop + 28, 14, TA.yMid - TA.yTop + 8);
+  // 唇口内已溢到边沿的水
+  if (p > 0.97){
+    ctx.fillStyle = rgba('#d7f1fa', 0.72);
+    ctx.fillRect(TA.x1 + 2, wTop + 2, 52, wBot - wTop - 2);
+  }
+  ctx.restore();
+}
+
+function drawBasinA(ctx, t, cam){
+  const k = cam.light;
+  setCam(ctx, cam);
+  const B = BA;
+
+  softShadow(ctx, (B.x0 + B.x1) / 2, B.floor + 56, 400, 74);
+
+  // 背面内壁
+  const bg = ctx.createLinearGradient(0, B.back, 0, B.front);
+  bg.addColorStop(0, tone('#274b66', k));
+  bg.addColorStop(1, tone('#35678c', k));
+  ctx.fillStyle = bg;
+  ctx.beginPath();
+  ctx.moveTo(B.x0, B.back - 34); ctx.lineTo(B.x1, B.back - 34);
+  ctx.lineTo(B.x1, B.front); ctx.lineTo(B.x0, B.front);
+  ctx.closePath(); ctx.fill();
+
+  // 水位：800 抬到 786，与注水同步
+  const level = lerp(806, 786, clamp((t - 1.4) / 2.4, 0, 1));
+  const inset = 44;
+  const wg = ctx.createLinearGradient(0, B.back, 0, B.front - 40);
+  wg.addColorStop(0, tone('#9fd2e6', k));
+  wg.addColorStop(0.5, tone('#85bcd6', k));
+  wg.addColorStop(1, tone('#6ba6c6', k));
+  ctx.beginPath();
+  ctx.moveTo(B.x0 + inset, B.back + 18);
+  ctx.lineTo(B.x1 - inset, B.back + 18);
+  ctx.lineTo(B.x1 - inset - 14, level + 40);
+  ctx.lineTo(B.x0 + inset + 14, level + 40);
+  ctx.closePath();
+  ctx.fillStyle = wg; ctx.fill();
+
+  // 水面纹理与撞击涟漪
+  ctx.save(); ctx.clip();
+  const top = B.back + 18, bot = level + 40;
+  for (let i = 0; i < 24; i++){
+    const ph = (t * 0.5 + rnd(i, 3)) % 1;
+    const y = top + 10 + ph * (bot - top - 12);
+    const x = B.x0 + inset + rnd(i, 7) * (B.x1 - B.x0 - inset * 2) + Math.sin(t * 2 + i) * 16;
+    ctx.fillStyle = rgba('#eaf7fb', 0.10 + 0.16 * (1 - ph));
+    ctx.fillRect(x, y, 80 + rnd(i, 11) * 150, 3);
+  }
+  if (t > 1.55){
+    for (let i = 0; i < 5; i++){
+      const ph = ((t - 1.55) * 0.55 + i * 0.2) % 1;
+      ctx.beginPath();
+      ctx.ellipse(IMP.x, level + 6, 26 + ph * 250, 9 + ph * 42, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = rgba('#f0fbff', 0.30 * (1 - ph));
+      ctx.lineWidth = 3; ctx.stroke();
+    }
+  }
+  ctx.restore();
+
+  // 前壁
+  const fg = ctx.createLinearGradient(0, B.front - 40, 0, B.floor);
+  fg.addColorStop(0, tone('#4c80a8', k));
+  fg.addColorStop(0.5, tone('#41749c', k));
+  fg.addColorStop(1, tone('#2c5273', k));
+  ctx.fillStyle = fg;
+  ctx.beginPath();
+  ctx.moveTo(B.x0, B.front - 40); ctx.lineTo(B.x1, B.front - 40);
+  ctx.lineTo(B.x1, B.floor); ctx.lineTo(B.x0, B.floor);
+  ctx.closePath(); ctx.fill();
+
+  // 盆沿亮边
+  ctx.fillStyle = tone('#d9f1fa', k);
+  ctx.fillRect(B.x0 - 6, B.front - 46, B.x1 - B.x0 + 12, 8);
+  ctx.fillStyle = tone('#8fc3d9', k, 0.8);
+  ctx.fillRect(B.x0 - 6, B.front - 38, B.x1 - B.x0 + 12, 6);
+
+  // 侧壁与底
+  ctx.fillStyle = tone('#234760', k);
+  ctx.fillRect(B.x0 - 6, B.back - 40, 12, B.floor - B.back + 40);
+  ctx.fillRect(B.x1 - 6, B.back - 40, 12, B.floor - B.back + 40);
+  ctx.fillStyle = tone('#1e3f56', k);
+  ctx.fillRect(B.x0 - 6, B.floor - 4, B.x1 - B.x0 + 12, 18);
+  ctx.fillStyle = rgba('#a9d3e4', 0.16);
+  ctx.fillRect(B.x0, B.floor - 30, B.x1 - B.x0, 5);
+  ctx.fillStyle = rgba('#e8f7fc', 0.28);
+  ctx.fillRect(B.x0, B.floor - 12, B.x1 - B.x0, 3);
+}
+
+function drawFallingA(ctx, t, cam){
+  const p = clamp((t - 1.22) / 0.62, 0, 1);   // 1.22 s 起出流，1.84 s 触水
+  if (p <= 0.002) return;
+  const k = cam.light;
+  setCam(ctx, cam);
+
+  const x0 = LIP.x, y0 = LIP.y, x1 = IMP.x, y1 = IMP.y;
+  const reach = easeOut(p);
+  const N = 40;
+  const pt = u => ({
+    x: x0 + (x1 - x0) * (0.45 * u + 0.55 * u * u),
+    y: y0 + (y1 - y0) * u * u
+  });
+
+  // 水舌主体：上窄下宽
+  ctx.beginPath();
+  for (let i = 0; i <= N; i++){
+    const u = (i / N) * reach, q = pt(u), w = 11 + 40 * Math.pow(u, 1.4);
+    if (i === 0) ctx.moveTo(q.x - w, q.y); else ctx.lineTo(q.x - w, q.y);
+  }
+  for (let i = N; i >= 0; i--){
+    const u = (i / N) * reach, q = pt(u), w = 11 + 40 * Math.pow(u, 1.4);
+    ctx.lineTo(q.x + w, q.y);
+  }
+  ctx.closePath();
+  const g = ctx.createLinearGradient(x0, y0, x1, y1);
+  g.addColorStop(0, tone('#a3d4e6', k));
+  g.addColorStop(0.55, tone('#8ac8df', k));
+  g.addColorStop(1, tone('#c6e9f4', k));
+  ctx.fillStyle = g; ctx.fill();
+
+  // 亮芯与气泡
+  ctx.save(); ctx.clip();
+  ctx.beginPath();
+  for (let i = 30; i >= 0; i--) { const q = pt((i / 30) * reach); ctx.lineTo(q.x, q.y); }
+  ctx.strokeStyle = rgba('#ffffff', 0.72);
+  ctx.lineWidth = 4.5; ctx.lineJoin = 'round'; ctx.stroke();
+  for (let i = 0; i < 18; i++){
+    const u = ((t * 1.5 + rnd(i, 31)) % 1) * reach;
+    const q = pt(u);
+    ctx.fillStyle = rgba('#ffffff', 0.08 + 0.14 * rnd(i, 33));
+    ctx.beginPath();
+    ctx.ellipse(q.x + (rnd(i, 35) - 0.5) * 38, q.y,
+      2 + rnd(i, 34) * 4, 12 + rnd(i, 36) * 14, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+
+  // 触水：白沫、外扩环、飞溅
+  if (reach > 0.97 && t > 1.80){
+    const age = t - 1.80;
+    for (let i = 0; i < 16; i++){
+      const a = rnd(i, 41), ph = (t * 1.1 + a) % 1;
+      const rx = (24 + a * 62) * (1 - 0.35 * ph);
+      ctx.fillStyle = rgba('#ffffff', 0.32 + 0.45 * (1 - ph));
+      ctx.beginPath();
+      ctx.ellipse(x1 + (rnd(i, 42) - 0.5) * 2 * rx, y1 + 8 - ph * 24 + (rnd(i, 43) - 0.5) * 12,
+        rx * 0.5, rx * 0.28, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    for (let i = 0; i < 3; i++){
+      const ph = ((age * 0.55 + i * 0.33) % 1);
+      ctx.beginPath();
+      ctx.ellipse(x1, y1 + 14, 34 + ph * 180, 10 + ph * 38, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = rgba('#f4fcff', 0.40 * (1 - ph));
+      ctx.lineWidth = 4; ctx.stroke();
+    }
+    for (let i = 0; i < 34; i++){
+      const life = 0.9;
+      const ph = ((t * 1.1 + rnd(i, 51) * life) % life) / life;
+      const vx = (rnd(i, 52) - 0.5) * 320;
+      const vy = -130 - rnd(i, 53) * 220;
+      const x = x1 + vx * ph;
+      const y = y1 + vy * ph + 620 * ph * ph;
+      if (y > BA.front + 26) continue;
+      ctx.fillStyle = rgba('#eefaff', 0.9 * (1 - ph) * (1 - ph));
+      ctx.beginPath();
+      ctx.ellipse(x, y, 3 + 5 * (1 - ph), 6 + 9 * (1 - ph), 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+}
+
+/* S1 机位：不再手调，直接复现从原片链式 ORB 反解出的相机轨迹
+   （scripts 里的 s1path 输出；世界单位，含累计平移与内容缩放）。
+   原片这一镜是「从槽首端起手 → 一路横移到下盆 → 同时拉远」，
+   横向 1403、纵向 1150 世界单位，内容缩放 1.00→0.681；复现此前只走了 70 单位。 */
+const S1PATH = [
+  [0.000,    0.0,   0.0],
+  [0.375,    4.7,   2.6],
+  [0.750,   28.1,  15.3],
+  [1.125,   65.6,  36.1],
+  [1.500,  142.2,  78.0],
+  [1.875,  268.1, 147.4],
+  [2.250,  459.0, 252.4],
+  [2.625,  651.4, 358.1],
+  [3.000,  852.1, 468.7],
+  [3.375, 1083.0, 595.7],
+  [3.750, 1258.1, 692.0],
+  [4.125, 1399.2, 769.5]
+];
+function s1pathAt(t){
+  const a = S1PATH;
+  if (t <= a[0][0]) return { x: a[0][1], y: a[0][2] };
+  for (let i = 1; i < a.length; i++){
+    if (t <= a[i][0]){
+      const u = (t - a[i-1][0]) / (a[i][0] - a[i-1][0]);
+      const w = u * u * (3 - 2 * u);
+      return { x: lerp(a[i-1][1], a[i][1], w), y: lerp(a[i-1][2], a[i][2], w) };
+    }
+  }
+  const z = a[a.length-1];
+  return { x: z[1], y: z[2] };
+}
+function camS1(t){
+  const p = s1pathAt(t);
+  const u = clamp(t / CUT_T[0], 0, 1);
+  return {
+    // 起手对准槽首端，随后按原片帧差包络积分出的速率横移到下盆
+    x: 360 + p.x,
+    y: 430 + p.y,
+    z: 0.90,
+    light: 1.235 + 0.215 * (0.16 * u + 0.84 * Math.pow(u, 3.2)) + 0.007 * Math.sin(u * 14)
+  };
+}
+
+function sceneA(ctx, t, cam){
+  drawBackdropA(ctx, cam);
+  drawBasinA(ctx, t, cam);
+  drawTroughA(ctx, t, cam);
+  drawFallingA(ctx, t, cam);
+  screen(ctx);
+}
+
+function drawS1(ctx, t){
+  sceneA(ctx, t, camS1(t));
+}
+
+/* ───────────────────────── S2：逆光水帘 ───────────────────────── */
+function drawS2(ctx, t){
+  const CW = ctx.canvas.width, CH = ctx.canvas.height;
+  const u = clamp((t - CUT_T[0]) / (CUT_T[1] - CUT_T[0]), 0, 1);
+  screen(ctx);
+
+  // 天光 #e8f0f2（目标占比 0.41）
+  const skyH = CH * 0.475;
+  const sg = ctx.createLinearGradient(0, 0, 0, skyH);
+  sg.addColorStop(0, '#dfe9ed');
+  sg.addColorStop(0.5, '#dbe7eb');
+  sg.addColorStop(1, '#d2e0e6');
+  ctx.fillStyle = sg; ctx.fillRect(0, 0, CW, skyH);
+
+  // 逆光：一条贴近水面的亮带（不做整片天空的径向泛光，否则顶部会洗成白）
+  const hb = ctx.createLinearGradient(0, skyH - CH * 0.16, 0, skyH);
+  hb.addColorStop(0, 'rgba(255,255,255,0)');
+  hb.addColorStop(0.7, 'rgba(255,254,250,0.30)');
+  hb.addColorStop(1, 'rgba(255,255,255,0.62)');
+  ctx.fillStyle = hb; ctx.fillRect(0, skyH - CH * 0.16, CW, CH * 0.16);
+
+  // 水面 #97c0d1（目标占比 0.50）
+  const wg = ctx.createLinearGradient(0, skyH, 0, CH);
+  wg.addColorStop(0, '#9cc3d5');
+  wg.addColorStop(0.30, '#97c0d1');
+  wg.addColorStop(1, '#7ea8bc');
+  ctx.fillStyle = wg; ctx.fillRect(0, skyH, CW, CH - skyH);
+
+  // 天际镜面线 + 水面横纹
+  ctx.fillStyle = 'rgba(252,254,255,0.80)';
+  ctx.fillRect(0, skyH - 2, CW, 4);
+  for (let i = 0; i < 46; i++){
+    const y = skyH + 10 + Math.pow(rnd(i, 51), 1.5) * (CH - skyH - 10);
+    const w = 70 + rnd(i, 52) * 300;
+    const x = ((rnd(i, 53) * CW + t * 10 * (1 - i / 46)) % (CW + w)) - w;
+    ctx.fillStyle = `rgba(255,255,255,${0.05 + 0.09 * rnd(i, 54)})`;
+    ctx.fillRect(x, y, w, 2 + rnd(i, 55) * 2.5);
+  }
+
+  // 暖黄灌木 #cbad5d（目标占比 0.08–0.13）：一丛剪影 + 细叶，靠小面积暖色撑住冷调。
+  const bx = CW * 0.855, by = CH * 0.545;
+  const R = { x: CW * 0.088, y: CH * 0.122 };
+  const outline = i => {
+    const a = (i / 240) * Math.PI * 2;
+    const n = 0.90 + 0.10 * Math.sin(a * 2.1 + 1.2) + 0.05 * Math.sin(a * 5.3 + 2.4)
+                   + 0.03 * Math.sin(a * 11.7 + 0.6);
+    return { x: bx + Math.cos(a) * R.x * n, y: by + Math.sin(a) * R.y * n };
+  };
+  // 暗底剪影
+  ctx.beginPath();
+  for (let i = 0; i <= 240; i++){ const q = outline(i); i ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y); }
+  ctx.closePath();
+  const bg2 = ctx.createLinearGradient(bx - R.x, by - R.y, bx + R.x, by + R.y);
+  bg2.addColorStop(0, 'rgba(176,148,76,0.96)');
+  bg2.addColorStop(0.55, 'rgba(150,124,62,0.98)');
+  bg2.addColorStop(1, 'rgba(118,98,50,0.98)');
+  ctx.fillStyle = bg2; ctx.fill();
+
+  // 叶片：从丛心向外的短弧，越靠外越长
+  ctx.save();
+  ctx.clip();
+  for (let i = 0; i < 1500; i++){
+    const a = rnd(i, 61) * Math.PI * 2;
+    const r = Math.pow(rnd(i, 62), 0.45);
+    const x = bx + Math.cos(a) * r * R.x, y = by + Math.sin(a) * r * R.y;
+    const len = (3 + rnd(i, 63) * 9) * (0.6 + r * 0.8);
+    const ang = a + (rnd(i, 67) - 0.5) * 1.5;
+    const L = 0.55 + 0.62 * rnd(i, 64);
+    ctx.strokeStyle = `rgba(${Math.min(255, 222 * L) | 0},${Math.min(255, 190 * L) | 0},${Math.min(255, 104 * L) | 0},${0.5 + 0.45 * rnd(i, 68)})`;
+    ctx.lineWidth = 1 + rnd(i, 69) * 1.4;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.quadraticCurveTo(x + Math.cos(ang) * len * 0.6, y + Math.sin(ang) * len * 0.6 - len * 0.25,
+                         x + Math.cos(ang) * len, y + Math.sin(ang) * len);
+    ctx.stroke();
+  }
+  // 逆光边缘：只在丛体的左上缘
+  ctx.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 70; i++){
+    const t2 = rnd(i, 74);
+    const a = Math.PI * (1.02 + 0.78 * t2);
+    const q = outline(Math.floor((a / (Math.PI * 2)) * 240) % 240);
+    const g = ctx.createRadialGradient(q.x, q.y, 0, q.x, q.y, 22);
+    g.addColorStop(0, 'rgba(255,238,190,0.34)');
+    g.addColorStop(1, 'rgba(255,238,190,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(q.x + (rnd(i,75)-0.5)*40, q.y + (rnd(i,76)-0.5)*30, 22, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+
+  // 水面涌动的镜面横纹：参考片 S2 的帧差集中在中下部（中 6.7 / 下 10.5），
+  // 复现原来只有 0.17 / 0.10。用沿水面向下滚动的高光带补上这段运动。
+  ctx.save();
+  ctx.beginPath(); ctx.rect(0, skyH, CW, CH - skyH); ctx.clip();
+  const NB = 260;
+  for (let i = 0; i < NB; i++){
+    const sp = 90 + rnd(i, 201) * 180;                  // px/s 向下滚动
+    const len = 120 + rnd(i, 202) * 520;
+    const y = skyH + ((rnd(i, 203) * (CH - skyH) + t * sp) % (CH - skyH + len)) - len * 0.5;
+    const x = ((rnd(i, 204) * CW * 1.2 + Math.sin(t * 0.9 + i) * 26) % (CW * 1.2)) - CW * 0.1;
+    ctx.fillStyle = `rgba(246,252,255,${0.22 + 0.30 * rnd(i, 205)})`;
+    ctx.fillRect(x, y, len, 3 + rnd(i, 206) * 5);
+    // 每条高光下面压一道暗线，位移时产生真正的明暗擦除（只画亮线时帧差很小）
+    ctx.fillStyle = `rgba(96,150,180,${0.10 + 0.14 * rnd(i, 207)})`;
+    ctx.fillRect(x, y + 5 + rnd(i, 206) * 5, len * 0.8, 2);
+  }
+  // 撞击点附近的涌起：参考片这里每帧都在变形
+  for (let i = 0; i < 26; i++){
+    const ph = (t * 0.55 + rnd(i, 211)) % 1;
+    ctx.strokeStyle = `rgba(250,254,255,${0.10 * (1 - ph)})`;
+    ctx.lineWidth = 2 + 3 * ph;
+    ctx.beginPath();
+    ctx.ellipse(CW * 0.455 + Math.sin(t + i) * 8, CH * 0.86, 40 + ph * 320, 12 + ph * 70, 0, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // 薄水帘：竖向连续水幕
+  const x0 = CW * 0.115, x1 = CW * 0.755, yTop = CH * 0.035, yBot = CH * 0.80;
+  ctx.save();
+  const cg = ctx.createLinearGradient(0, yTop, 0, yBot);
+  cg.addColorStop(0, 'rgba(244,250,252,0.22)');
+  cg.addColorStop(0.35, 'rgba(214,235,243,0.34)');
+  cg.addColorStop(1, 'rgba(171,212,229,0.52)');
+  ctx.fillStyle = cg;
+  ctx.beginPath();
+  ctx.moveTo(x0 + 30, yTop); ctx.lineTo(x1 - 30, yTop);
+  ctx.bezierCurveTo(x1 + 10, yTop + CH * 0.3, x1 + 6, yBot - CH * 0.1, x1 + 14, yBot);
+  ctx.lineTo(x0 - 6, yBot);
+  ctx.bezierCurveTo(x0 - 2, yBot - CH * 0.3, x0 + 6, yTop + CH * 0.2, x0 + 30, yTop);
+  ctx.closePath(); ctx.fill();
+  for (let i = 0; i < 130; i++){
+    const fx = i / 129;
+    const sx = lerp(x0, x1, fx) + 4 * Math.sin(t * 1.7 + i * 0.61) + 9 * Math.sin(t * 0.8 + i * 0.23);
+    const w = 1.2 + rnd(i, 81) * 5.0;
+    const sy = yTop + ((rnd(i, 82) * CH * 0.12 + t * (60 + rnd(i, 85) * 140)) % (CH * 0.12));
+    const st = ctx.createLinearGradient(0, sy, 0, yBot);
+    st.addColorStop(0, 'rgba(255,255,255,0)');
+    st.addColorStop(0.3, `rgba(252,254,255,${0.12 + 0.20 * rnd(i, 83)})`);
+    st.addColorStop(1, `rgba(226,244,250,${0.08 + 0.14 * rnd(i, 84)})`);
+    ctx.fillStyle = st;
+    ctx.fillRect(sx, sy, w, yBot - sy);
+  }
+  const eb = ctx.createLinearGradient(x0, 0, x1, 0);
+  eb.addColorStop(0, 'rgba(255,255,255,0)');
+  eb.addColorStop(0.5, 'rgba(255,255,255,0.65)');
+  eb.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = eb;
+  ctx.fillRect(x0 - 4, yBot - 5, x1 - x0 + 14, 4);
+  ctx.restore();
+
+  // 冲出的玻璃质水舌：水帘底边下方挂下的一条水带，末端收成水滴
+  const tx = CW * 0.455, ty = CH * 0.790, tw = CW * 0.030;
+  const tipY = ty + CH * 0.115;
+  const tg = ctx.createLinearGradient(tx, ty, tx, tipY);
+  tg.addColorStop(0, 'rgba(240,250,253,0.55)');
+  tg.addColorStop(0.55, 'rgba(198,231,242,0.62)');
+  tg.addColorStop(1, 'rgba(160,210,228,0.30)');
+  ctx.fillStyle = tg;
+  ctx.beginPath();
+  ctx.moveTo(tx - tw, ty);
+  ctx.bezierCurveTo(tx - tw * 1.05, ty + CH * 0.045, tx - tw * 0.95, tipY - CH * 0.03, tx - tw * 0.24, tipY - CH * 0.012);
+  ctx.quadraticCurveTo(tx + tw * 0.02, tipY + CH * 0.008, tx + tw * 0.26, tipY - CH * 0.014);
+  ctx.bezierCurveTo(tx + tw * 0.97, tipY - CH * 0.032, tx + tw * 1.08, ty + CH * 0.045, tx + tw, ty);
+  ctx.closePath(); ctx.fill();
+
+  // 内部的透射亮芯与两条折射丝
+  const core = ctx.createRadialGradient(tx, ty + CH * 0.062, 0, tx, ty + CH * 0.062, tw * 1.5);
+  core.addColorStop(0, 'rgba(255,255,255,0.50)');
+  core.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = core;
+  ctx.beginPath(); ctx.arc(tx, ty + CH * 0.062, tw * 1.5, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.50)';
+  ctx.lineWidth = 2;
+  for (let k = -1; k <= 1; k += 2){
+    ctx.beginPath();
+    ctx.moveTo(tx + k * tw * 0.52, ty + CH * 0.006);
+    ctx.bezierCurveTo(tx + k * tw * 0.46, ty + CH * 0.04, tx + k * tw * 0.22, tipY - CH * 0.025, tx + k * tw * 0.05, tipY - CH * 0.006);
+    ctx.stroke();
+  }
+  // 端部断续滴落
+  for (let i = 0; i < 14; i++){
+    const ph = ((t * 1.2 + rnd(i, 91) * 0.8) % 0.8) / 0.8;
+    const px = tx + (rnd(i, 92) - 0.5) * 40 * ph;
+    const py = tipY + ph * 46 + 120 * ph * ph;
+    ctx.fillStyle = `rgba(252,255,255,${0.55 * (1 - ph)})`;
+    ctx.beginPath(); ctx.arc(px, py, 1.6 + 1.8 * (1 - ph), 0, Math.PI * 2); ctx.fill();
+  }
+}
+
+/* ───────────────────────── S3：甩镜（横竖双曲线交接 + 运动模糊） ───────────────────────── */
+/* 12 块竖向浅蓝实体板（间距 420 世界单位）；相机在 S3 内由 S3CAM 积分，
+   横向累计约 877 px、竖向约 723 px，因此板缝会成组横着扫过画面。 */
+function drawS3Once(c, t){
+  const cam0 = s3camAt(t);
+  const cam = { x: cam0.x, y: cam0.y + 60, z: 0.50, light: 1.00 };
+  const cvMid = -690;
+  const edgeY = x => cvMid + 54 * Math.sin(x * 0.0019) + 26 * Math.sin(x * 0.0051 + 1.3)
+                             + 12 * Math.sin(x * 0.014 + 0.4);
+
+  /* 背景层（视差 0.30）：白桦林 —— 高频、竖向 */
+  setCam(c, cam, 0.30);
+  const sky = c.createLinearGradient(0, -1400, 0, 1500);
+  sky.addColorStop(0, tone('#96a4ae', cam.light * 0.86));
+  sky.addColorStop(0.55, tone('#a2b0b8', cam.light * 0.90));
+  sky.addColorStop(1, tone('#b0bcc2', cam.light));
+  c.fillStyle = sky;
+  c.fillRect(-3000, -2000, 9000, 5000);
+  const lg2 = c.createLinearGradient(0, -700, 0, 1500);
+  lg2.addColorStop(0, rgba('#e4edf1', 0.62));
+  lg2.addColorStop(0.55, rgba('#c3d5de', 0.22));
+  lg2.addColorStop(1, 'rgba(120,150,168,0)');
+  c.fillStyle = lg2; c.fillRect(-3000, -2000, 9000, 5000);
+
+  for (let i = 0; i < 20; i++){
+    const x = -2600 + i * 400 + rnd(i, 101) * 160;
+    const w = 22 + rnd(i, 102) * 38;
+    const g = c.createLinearGradient(x, 0, x + w, 0);
+    g.addColorStop(0, tone('#7d8f9c', cam.light));
+    g.addColorStop(0.32, tone('#e3ebef', cam.light));
+    g.addColorStop(0.62, tone('#8a9aa4', cam.light));
+    g.addColorStop(1, tone('#66747e', cam.light));
+    c.fillStyle = g;
+    c.fillRect(x, edgeY(x) - 120, w, 2600);
+    for (let j = 0; j < 10; j++){
+      const y = -1400 + j * 290 + rnd(i * 11 + j, 103) * 200;
+      c.fillStyle = tone('#3d4f5a', cam.light, 0.45 + 0.35 * rnd(i * 11 + j, 104));
+      c.fillRect(x + w * 0.18, y, w * 0.64, 5 + rnd(i * 11 + j, 105) * 24);
+    }
+  }
+  // 树冠：树线上缘的一条叶带（柔边 + 细叶），不是一整块绿色
+  const cg2 = c.createLinearGradient(0, cvMid - 520, 0, cvMid + 120);
+  cg2.addColorStop(0, tone('#93a4ad', cam.light, 0.98));
+  cg2.addColorStop(0.55, tone('#a6b6bd', cam.light, 0.97));
+  cg2.addColorStop(1, tone('#b9c7cd', cam.light, 0.96));
+  c.fillStyle = cg2;
+  c.beginPath();
+  c.moveTo(-3000, cvMid - 620);
+  c.lineTo(6000, cvMid - 1600);
+  for (let i = 160; i >= 0; i--){
+    const x = -3000 + (i / 160) * 9000;
+    c.lineTo(x, edgeY(x));
+  }
+  c.closePath(); c.fill();
+
+  // 叶缘：沿上缘密密麻麻的小叶簇，打散硬边
+  // 下缘的叶团：只挂在边界附近，尺寸大、彼此重叠，读成树冠的毛边
+  for (let i = 0; i < 520; i++){
+    const x = -2800 + rnd(i, 161) * 9000;
+    const y = edgeY(x) + 10 - rnd(i, 162) * 170;
+    const r = 14 + rnd(i, 163) * 40;
+    const k = 0.62 + 0.55 * rnd(i, 164);
+    c.fillStyle = `rgba(${Math.min(255, 118 * k) | 0},${Math.min(255, 132 * k) | 0},${Math.min(255, 140 * k) | 0},${0.55 + 0.4 * rnd(i, 165)})`;
+    c.beginPath();
+    c.ellipse(x, y, r, r * (0.55 + rnd(i, 166) * 0.45), rnd(i, 167) * 3, 0, Math.PI * 2);
+    c.fill();
+  }
+  // 叶缘高光：朝上一侧
+  for (let i = 0; i < 260; i++){
+    const x = -2800 + rnd(i, 171) * 9000;
+    const y = edgeY(x) - 6 - rnd(i, 172) * 90;
+    const r = 8 + rnd(i, 173) * 18;
+    c.fillStyle = `rgba(196,210,214,${0.10 + 0.18 * rnd(i, 174)})`;
+    c.beginPath();
+    c.ellipse(x, y - r * 0.3, r, r * 0.5, 0, Math.PI, Math.PI * 2);
+    c.fill();
+  }
+  c.strokeStyle = tone('#566a74', cam.light, 0.42);
+  c.lineWidth = 2.5;
+  for (let i = 0; i < 70; i++){
+    const x = -2600 + rnd(i, 111) * 6800;
+    const y = -1100 + rnd(i, 112) * 2600;
+    c.beginPath(); c.moveTo(x, y);
+    c.quadraticCurveTo(x + 40, y - 70, x + 100 + rnd(i, 113) * 110, y - 140 - rnd(i, 114) * 90);
+    c.stroke();
+  }
+
+  /* 中层（视差 0.65）：水面 #74adcb 与盆沿 */
+  setCam(c, cam, 0.65);
+  const wg = c.createLinearGradient(0, 420, 0, 980);
+  wg.addColorStop(0, tone('#a8d3e4', cam.light));
+  wg.addColorStop(0.45, tone('#8abbd4', cam.light));
+  wg.addColorStop(1, tone('#6f9cb8', cam.light));
+  c.fillStyle = wg;
+  c.beginPath();
+  c.moveTo(-2600, 900); c.lineTo(3200, 840);
+  c.lineTo(3300, 2200); c.lineTo(-2700, 2300);
+  c.closePath(); c.fill();
+  for (let i = 0; i < 34; i++){
+    const y = 930 + rnd(i, 141) * 520;
+    const x = -2200 + rnd(i, 142) * 4600 + Math.sin(t * 1.8 + i) * 20;
+    c.fillStyle = rgba('#dff2f8', 0.10 + 0.12 * rnd(i, 143));
+    c.fillRect(x, y, 150 + rnd(i, 144) * 280, 3);
+  }
+
+  /* 水舌：从画面中上落入板间（片尾水舌入盆的落点） */
+  const tg = c.createLinearGradient(700, 40, 940, 1010);
+  tg.addColorStop(0, tone('#b6e0ee', cam.light, 0.30));
+  tg.addColorStop(0.5, tone('#9ed3e6', cam.light, 0.55));
+  tg.addColorStop(1, tone('#d8f1f8', cam.light, 0.85));
+  c.fillStyle = tg;
+  c.beginPath();
+  c.moveTo(690, 20); c.lineTo(792, 20);
+  c.bezierCurveTo(834, 400, 940, 690, 962, 1010);
+  c.lineTo(884, 1010);
+  c.bezierCurveTo(858, 690, 776, 410, 690, 20);
+  c.closePath(); c.fill();
+  for (let i = 0; i < 24; i++){
+    const u = (t * 2.2 + rnd(i, 121)) % 1;
+    const x = 706 + 240 * u * u + (rnd(i, 122) - 0.5) * 24;
+    const y = 70 + 920 * u * u;
+    c.fillStyle = rgba('#f0fbff', 0.12 + 0.18 * rnd(i, 123));
+    c.beginPath(); c.ellipse(x, y, 2 + rnd(i, 124) * 4, 16 + rnd(i, 125) * 18, 0, 0, Math.PI * 2); c.fill();
+  }
+  for (let i = 0; i < 14; i++){
+    const a = rnd(i, 126);
+    c.fillStyle = rgba('#ffffff', 0.28 + 0.34 * a);
+    c.beginPath();
+    c.ellipse(922 + (rnd(i, 127) - 0.5) * 150, 1014 - a * 28, 16 + a * 34, 7 + a * 14, 0, 0, Math.PI * 2);
+    c.fill();
+  }
+
+  /* 前景（视差 1.0）：浅蓝实体侧壁 #a1b8c3，竖向板缝 */
+  setCam(c, cam, 1.0);
+  for (let i = -10; i <= 12; i++){
+    const x = i * 690;
+    const w = 640, y = -300 + rnd(i + 40, 131) * 150, h = 2300;
+    const g = c.createLinearGradient(x, y, x + w, y + 420);
+    g.addColorStop(0, tone('#dfeaf1', cam.light));
+    g.addColorStop(0.26, tone('#a8c9df', cam.light));
+    g.addColorStop(0.68, tone('#98bed8', cam.light));
+    g.addColorStop(1, tone('#86b0cd', cam.light));
+    c.fillStyle = g;
+    c.beginPath();
+    if (c.roundRect) c.roundRect(x, y, w, h, 30); else c.rect(x, y, w, h);
+    c.fill();
+    // 倒角：上沿与竖边各给一条亮线
+    c.strokeStyle = tone('#f2f8fb', cam.light, 0.82);
+    c.lineWidth = 6;
+    c.beginPath();
+    c.moveTo(x + 10, y + h); c.lineTo(x + 10, y + 24);
+    if (c.roundRect) c.quadraticCurveTo(x + 10, y + 10, x + 28, y + 10);
+    c.lineTo(x + w - 28, y + 10);
+    if (c.roundRect) c.quadraticCurveTo(x + w - 10, y + 10, x + w - 10, y + 24);
+    c.lineTo(x + w - 10, y + h);
+    c.stroke();
+    c.strokeStyle = tone('#5d7f95', cam.light, 0.42);
+    c.lineWidth = 3;
+    c.beginPath(); c.moveTo(x + w - 6, y + 40); c.lineTo(x + w - 6, y + h - 20); c.stroke();
+
+    // 横向加强筋：横向高频，甩镜时作为速度参照
+    for (let j = 0; j < 9; j++){
+      const yy = y + 190 + j * 252;
+      c.fillStyle = tone('#7ba0b8', cam.light, 0.34);
+      c.fillRect(x + 24, yy, w - 48, 6);
+      c.fillStyle = tone('#d6e6ee', cam.light, 0.22);
+      c.fillRect(x + 24, yy + 6, w - 48, 2);
+    }
+    // 正面/侧面分面：右三分之一压暗，读成实体而不是薄片
+    const sg2 = c.createLinearGradient(x + w * 0.58, 0, x + w, 0);
+    sg2.addColorStop(0, tone('#4f6677', cam.light, 0.0));
+    sg2.addColorStop(1, tone('#4a6f88', cam.light, 0.22));
+    c.fillStyle = sg2;
+    c.fillRect(x + w * 0.58, y + 8, w * 0.42 - 8, h - 16);
+    // 斜向高光带：给甩镜一条读得出方向的结构线
+    c.save();
+    c.beginPath();
+    if (c.roundRect) c.roundRect(x, y, w, h, 30); else c.rect(x, y, w, h);
+    c.clip();
+    const sh = c.createLinearGradient(x, y + 200, x + w, y + 900);
+    sh.addColorStop(0, 'rgba(255,255,255,0)');
+    sh.addColorStop(0.48, 'rgba(255,255,255,0.10)');
+    sh.addColorStop(0.52, 'rgba(255,255,255,0.26)');
+    sh.addColorStop(0.56, 'rgba(255,255,255,0.08)');
+    sh.addColorStop(1, 'rgba(255,255,255,0)');
+    c.fillStyle = sh;
+    c.fillRect(x, y, w, h);
+    c.restore();
+    // 板缝暗边
+    c.fillStyle = tone('#2c4050', cam.light, 0.75);
+    c.fillRect(x + w - 4, y, 4, h);
+  }
+}
+
+let S3_SUB = null, S3_ACC = null;
+function drawS3(ctx, t){
+  // 180° 快门；仅此镜开运动模糊（gx/gy 1.42 的摇镜）
+  const SUB = 4, shutter = 0.4 / FPS;
+  const CW = ctx.canvas.width, CH = ctx.canvas.height;
+  if (!S3_SUB){ S3_SUB = document.createElement('canvas'); S3_ACC = document.createElement('canvas'); }
+  if (S3_SUB.width !== CW || S3_SUB.height !== CH){
+    S3_SUB.width = CW; S3_SUB.height = CH; S3_ACC.width = CW; S3_ACC.height = CH;
+  }
+  const sub = S3_SUB.getContext('2d', { alpha:false });
+  const acc = S3_ACC.getContext('2d', { alpha:false });
+
+  // 每张子帧先以 alpha:1 画满，再整张以 1/SUB 叠到累积层。
+  // 否则半透明绘制会让后一子帧的板面透出前一子帧的天空，面板看起来像玻璃。
+  acc.setTransform(1,0,0,1,0,0);
+  acc.globalCompositeOperation = 'source-over';
+  acc.globalAlpha = 1;
+  acc.fillStyle = '#000';
+  acc.fillRect(0, 0, CW, CH);
+
+  for (let k = 0; k < SUB; k++){
+    const tt = clamp(t + ((k / (SUB - 1)) - 0.5) * shutter, S3.f0/FPS, S3.f1/FPS);
+    sub.setTransform(1,0,0,1,0,0);
+    sub.globalAlpha = 1;
+    sub.globalCompositeOperation = 'source-over';
+    sub.filter = 'none';
+    drawS3Once(sub, tt);
+    // 1/(k+1) 归一：四个子帧的权重和恰为 1，画面亮度不随子帧数变化。
+    // 用 1/SUB 会得到 0.68 的残影（实测 175/255），且逐帧漂移成偶数帧模糊尖峰。
+    acc.globalAlpha = 1 / (k + 1);
+    acc.drawImage(S3_SUB, 0, 0);
+  }
+  acc.globalAlpha = 1;
+  screen(ctx);
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.drawImage(S3_ACC, 0, 0);
+}
+
+/* ───────────────────────── S4：洗白 + 拉出 + 定帧 ───────────────────────── */
+function camS4(f){
+  // 7.667（f184）→7.833（f187）完成拉出，4 帧；此前 f181–183 是特写 + 洗白
+  if (f <= 182) return { x: 700, y: 640, z: 1.30, light: 1.68 };
+  if (f <= 184) return { x: 660, y: 630, z: 1.20, light: 1.22 };
+  if (f <= 187){
+    const q = clamp((f - 184) / 3, 0, 1);
+    return {
+      x: lerp(660, 330, q),
+      y: lerp(630, 580, q),
+      z: lerp(1.20, 0.93, easeOutQuint(q)),
+      light: 1.26
+    };
+  }
+  return { x: 330, y: 580, z: 0.93, light: 1.26 };
+}
+
+function drawS4(ctx, t){
+  const f = Math.round(t * FPS);
+  // 落款段参考片仍有 0.59/帧的持续漂移（不是死帧）。冻结动画后单独叠一条极慢横移：
+  // 12 帧内约 3.4 px（960 宽），即 1 世界单位 ≈ 0.9 px。
+  const drift = f >= 188 ? (f - 188) * 2.6 : 0;
+  const tl = f >= 188 ? (188 / FPS) + (t - 188 / FPS) / 2.4 : t;  // 188 帧后近乎定帧：只留 1/2.4 速度的水面微动
+  const cm = camS4(f);
+  sceneA(ctx, tl, { x: cm.x + drift, y: cm.y, z: cm.z, light: cm.light });
+}
+
+function drawWash(ctx, t, f){
+  const CW = ctx.canvas.width, CH = ctx.canvas.height;
+  if (WASH.width !== CW){ WASH.width = CW; WASH.height = CH; }
+  const w = WASH.getContext('2d');
+  w.setTransform(1,0,0,1,0,0);
+  w.clearRect(0, 0, CW, CH);
+  w.drawImage(ctx.canvas, 0, 0);
+  screen(ctx);
+  ctx.save();
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.filter = f === 182 ? 'blur(14px)' : 'blur(11px)';
+  // 洗白两帧同时推近 4%/2%：参考片这两帧的帧差主要来自机位推进，不是色调
+  const zs = f === 182 ? 1.04 : 1.02;
+  ctx.translate(CW / 2, CH / 2); ctx.scale(zs, zs); ctx.translate(-CW / 2, -CH / 2);
+  ctx.drawImage(WASH, 0, 0);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.filter = 'none';
+
+  // 先按目标饱和度反推去饱和强度：S 目标/当前 ≈ (1-α)，f182 走 12%、f183 走 45%
+  const desat = f === 182 ? 0.50 : 0.18;
+  ctx.globalCompositeOperation = 'saturation';
+  ctx.fillStyle = `rgba(128,128,128,${desat})`;
+  ctx.fillRect(0, 0, CW, CH);
+
+  // 再压亮度：#d6dee4 灰蓝（V 目标 181 / 156），保留蓝灰底
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = f === 182 ? 'rgba(168,178,186,0.30)' : 'rgba(200,210,218,0.16)';
+  ctx.fillRect(0, 0, CW, CH);
+  ctx.restore();
+}
+
+/* ───────────────────────── 调度 ───────────────────────── */
+function shotOf(t){
+  const f = Math.round(t * FPS);
+  return f < CUT_F[0] ? 0 : f < CUT_F[1] ? 1 : f < CUT_F[2] ? 2 : 3;
+}
+
+/* 饱和度校准：分镜目标 S 见 TARGET，绘制完再整体乘一个 saturate()，
+   比逐层调每个色值更容易对上笔记里的数值。S1 的目标是随镜头抬升而上升的，
+   所以这里给一条 0 → 1 的曲线而不是常数。 */
+const SATBUF = document.createElement('canvas');
+/* 曝光/饱和校准：逐镜 (bright, sat)。数值由 solve 脚本按目标 V/S 反解，
+   避免在多层视差场景里靠单一乘子硬拉导致高光裁切。 */
+function gradeK(si, t){
+  if (si === 0){
+    const u = clamp(t / CUT_T[0], 0, 1);
+    return { b: 1.00, s: lerp(1.10, 1.52, 0.30 * u + 0.70 * smooth(u)) };
+  }
+  if (si === 1) return { b: 0.972, s: 1.28 };
+  if (si === 2){
+    // 参考片这一镜的饱和度是随甩镜推进变化的（起 57 → 中 84 → 末 81），
+    // 所以饱和度按镜内进度给曲线，而不是一个常数。
+    const u = clamp((t - CUT_T[1]) / (CUT_T[2] - CUT_T[1]), 0, 1);
+    const s3s = u < 0.5 ? lerp(1.01, 1.14, smooth(u * 2)) : lerp(1.14, 3.05, smooth((u - 0.5) * 2));
+    const b3 = u < 0.5 ? lerp(0.98, 0.93, smooth(u * 2)) : lerp(0.93, 0.90, smooth((u - 0.5) * 2));
+    return { b: b3, s: s3s };
+  }
+  const f = Math.round(t * FPS);
+  if (f <= 181) return { b: 1.00, s: 0.52 };
+  return { b: 1.00, s: 0.92 };
+}
+function satK(si, t){
+  if (si === 0){
+    const u = clamp(t / CUT_T[0], 0, 1);
+    return lerp(1.10, 1.52, 0.30 * u + 0.70 * smooth(u));
+  }
+  if (si === 1) return 1.38;
+  if (si === 2) return 0.96;
+  return 0.92;
+}
+function applyGrade(target, bright, sat){
+  if (Math.abs(bright - 1) < 0.005 && Math.abs(sat - 1) < 0.02) return;
+  const cw = target.canvas.width, ch = target.canvas.height;
+  if (SATBUF.width !== cw || SATBUF.height !== ch){ SATBUF.width = cw; SATBUF.height = ch; }
+  const b = SATBUF.getContext('2d');
+  b.setTransform(1,0,0,1,0,0);
+  b.globalAlpha = 1; b.globalCompositeOperation = 'copy'; b.filter = 'none';
+  b.drawImage(target.canvas, 0, 0);
+  target.setTransform(1,0,0,1,0,0);
+  target.globalAlpha = 1;
+  target.globalCompositeOperation = 'copy';
+  target.filter = 'brightness(' + bright.toFixed(3) + ') saturate(' + sat.toFixed(3) + ')';
+  target.drawImage(SATBUF, 0, 0);
+  target.filter = 'none';
+  target.globalCompositeOperation = 'source-over';
+}
+
+function drawScene(target, t){
+  const f = Math.round(t * FPS);
+  const si = shotOf(t);
+  target.setTransform(1,0,0,1,0,0);
+  target.globalAlpha = 1;
+  target.globalCompositeOperation = 'source-over';
+  target.filter = 'none';
+  if (si === 0) drawS1(target, t);
+  else if (si === 1) drawS2(target, t);
+  else if (si === 2) drawS3(target, t);
+  else drawS4(target, t);
+  target.setTransform(1,0,0,1,0,0);
+  const gk = gradeK(si, t);
+  applyGrade(target, gk.b, gk.s);
+  if (f === 182 || f === 183) drawWash(target, t, f);
+  target.globalAlpha = 1;
+  target.globalCompositeOperation = 'source-over';
+  target.filter = 'none';
+}
+/* ───────────────────────── 状态与循环 ───────────────────────── */
+const state = { t: 0, playing: false, last: 0, dirty: true, soundOn: false };
+
+function draw(){
+  drawScene(ctx, state.t);
+  state.dirty = false;
+  const f = Math.round(state.t * FPS);
+  document.getElementById('tc').textContent =
+    'f' + String(f).padStart(3, '0') + ' ／ ' + state.t.toFixed(3) + ' s';
+  const seek = document.getElementById('seek');
+  if (seek.value !== String(f)) seek.value = String(f);
+  document.querySelectorAll('#shotTable tr[data-i]').forEach(tr => {
+    tr.classList.toggle('on', Number(tr.dataset.i) === shotOf(state.t));
+  });
+  document.getElementById('vShot').textContent =
+    TARGET[shotOf(state.t)].k + ' ' + TARGET[shotOf(state.t)].name;
+  document.getElementById('vTime').textContent = f + ' / ' + state.t.toFixed(3) + ' s';
+  updateStatsDebounced();
+}
+
+/* 播放时钟：用 rAF 驱动，但若一帧内 rAF 被合成器限流（部分无头/省电环境会把
+   可见画布的 rAF 压到 1–5 fps），就退回 24 Hz 定时器。两种情况下 state.t 都按
+   真实经过时间推进，所以时间码与声音保持一致，只是丢帧而不是变慢。 */
+let rafId = null, timerId = null;
+const FRAME_MS = 1000 / FPS;
+
+function tickByClock(){
+  const now = performance.now();
+  if (!state.last) state.last = now;
+  let dt = (now - state.last) / 1000;
+  state.last = now;
+  // 标签页在后台时不推进：回来时不会跳帧，也不把切走的时长算成播放。
+  // 其余情况一律按真实经过时间推进——时钟对得上声音，慢的只是丢帧。
+  if (document.hidden) dt = 0;
+  state.t += dt;
+  if (state.t >= DUR){
+    state.t = DUR;
+    setPlaying(false);
+    draw();
+    return false;
+  }
+  draw();
+  return true;
+}
+
+let lastDrawAt = 0;
+function loop(ts){
+  if (!state.playing) return;
+  if (!cleanupPlayback()) return;
+  lastDrawAt = performance.now();
+  rafId = requestAnimationFrame(loop);
+}
+
+// 记录 rAF 的实际节拍，用来判断是否被限流
+const rafBeat = { last: 0, slow: 0 };
+document.addEventListener('visibilitychange', () => { if (!document.hidden) rafBeat.slow = 0; });
+
+function cleanupPlayback(){
+  if (!state.playing) return false;
+  const now = performance.now();
+  if (rafBeat.last){
+    const gap = now - rafBeat.last;
+    if (gap > 120) rafBeat.slow++; else rafBeat.slow = Math.max(0, rafBeat.slow - 1);
+    // 连续两帧间隔都超过 120 ms：改用定时器，保证时间码仍按真实时间走
+    if (rafBeat.slow >= 2 && !timerId){
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = null;
+      timerId = setInterval(() => { if (!tickByClock()) stopTimer(); }, FRAME_MS);
+    }
+  }
+  rafBeat.last = now;
+  return true;
+}
+
+function stopTimer(){
+  if (timerId){ clearInterval(timerId); timerId = null; }
+  rafBeat.last = 0; rafBeat.slow = 0;
+}
+
+function setPlaying(on){
+  state.playing = on;
+  state.last = 0;
+  const b = document.getElementById('play');
+  b.textContent = on ? '暂停' : '播放';
+  b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  if (on){
+    if (state.t >= DUR) state.t = 0;
+    if (state.soundOn) Audio.start(state.t);
+    rafBeat.last = 0; rafBeat.slow = 0;
+    rafId = requestAnimationFrame(loop);
+    // 定时器兜底：即使 rAF 一帧都不给，时钟也不会停
+    stopTimer();
+    lastDrawAt = performance.now();
+    timerId = setInterval(() => {
+      if (!state.playing){ stopTimer(); return; }
+      // 定时器只在「rAF 最近一帧没画」时接手
+      if (performance.now() - lastDrawAt > FRAME_MS * 2.5){
+        if (!tickByClock()) stopTimer();
+        lastDrawAt = performance.now();
+      }
+    }, FRAME_MS);
+  } else {
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = null;
+    stopTimer();
+    Audio.stop();
+  }
+}
+
+/* ───────────────────────── 测量 ───────────────────────── */
+const MC = document.createElement('canvas');
+MC.width = 640; MC.height = 360;
+const mctx = MC.getContext('2d', { willReadFrequently: true });
+
+function renderSmall(t){
+  mctx.setTransform(1,0,0,1,0,0);
+  mctx.globalAlpha = 1; mctx.globalCompositeOperation = 'source-over'; mctx.filter = 'none';
+  mctx.fillStyle = '#000'; mctx.fillRect(0,0,MC.width,MC.height);
+  drawScene(mctx, t);
+  return mctx.getImageData(0, 0, MC.width, MC.height).data;
+}
+
+function analyze(d, w, h){
+  const n = w * h;
+  const gray = new Float32Array(n);
+  let sv = 0, ss = 0;
+  for (let i = 0; i < n; i++){
+    const r = d[i*4], g = d[i*4+1], b = d[i*4+2];
+    const mx = Math.max(r,g,b), mn = Math.min(r,g,b);
+    sv += mx;
+    ss += mx === 0 ? 0 : (mx - mn) / mx * 255;
+    gray[i] = 0.299*r + 0.587*g + 0.114*b;
+  }
+  // Sobel
+  let gx = 0, gy = 0, edges = 0;
+  for (let y = 1; y < h - 1; y++){
+    for (let x = 1; x < w - 1; x++){
+      const i = y*w + x;
+      const a = gray[i-w-1], b = gray[i-w], c = gray[i-w+1];
+      const dd = gray[i-1],              e = gray[i+1];
+      const f = gray[i+w-1], g = gray[i+w], hh = gray[i+w+1];
+      const gxv = (c + 2*e + hh) - (a + 2*dd + f);
+      const gyv = (f + 2*g + hh) - (a + 2*b + c);
+      gx += Math.abs(gxv); gy += Math.abs(gyv);
+      edges += Math.hypot(gxv, gyv) / 8;
+    }
+  }
+  const cnt = (w - 2) * (h - 2);
+  return { meanV: sv/n, meanS: ss/n, edges: edges/cnt, gx: gx/cnt, gy: gy/cnt, gray };
+}
+
+function pixDiff(a, b){
+  let s = 0;
+  for (let i = 0; i < a.length; i++) s += Math.abs(a[i] - b[i]);
+  return s / a.length;
+}
+
+let statsTimer = null;
+// 逐帧测量要读 640×360 的像素、跑 Sobel，一次约 200 ms。
+// 播放时它会把 24 fps 的循环拖成 3 fps，所以只在暂停/定格时刷新；
+// 播放期间只更新便宜的文本字段（时间码、镜头名）。
+function updateStatsDebounced(){
+  if (state.playing){
+    const tg = TARGET[shotOf(state.t)];
+    document.getElementById('vShot').textContent = tg.k + ' ' + tg.name;
+    return;
+  }
+  if (statsTimer) return;
+  statsTimer = setTimeout(() => {
+    statsTimer = null;
+    try { quickStats(); } catch (e) { /* 忽略测量异常，不阻塞渲染 */ }
+  }, 40);
+}
+
+function quickStats(){
+  const f = Math.round(state.t * FPS);
+  const cur = analyze(renderSmall(state.t), MC.width, MC.height);
+  let pd = null;
+  if (f > 0){
+    const prev = analyze(renderSmall((f - 1) / FPS), MC.width, MC.height);
+    pd = pixDiff(prev.gray, cur.gray);
+  }
+  const tg = TARGET[shotOf(state.t)];
+  const fmt = (v, a, b) => {
+    const inside = v >= a - 12 && v <= b + 12;
+    return `<span class="${inside ? 'ok' : 'bad'}">${v.toFixed(1)}</span> <span class="dim">／目标 ${a}–${b}</span>`;
+  };
+  document.getElementById('vVal').innerHTML = fmt(cur.meanV, tg.val[0], tg.val[1]);
+  document.getElementById('vSat').innerHTML = fmt(cur.meanS, tg.sat[0], tg.sat[1]);
+  document.getElementById('vEdges').textContent = cur.edges.toFixed(3) + ' ／目标 ' +
+    (shotOf(state.t) === 2 ? '0.156' : '0.08–0.13');
+  document.getElementById('vAniso').textContent =
+    (cur.gx / (cur.gy || 1)).toFixed(2) + ' ／目标 ' + (shotOf(state.t) === 2 ? '1.42' : '0.55–0.73');
+  document.getElementById('vPix').textContent = pd === null ? '—' : pd.toFixed(2);
+  return { ...cur, gray: undefined, pd };
+}
+
+function median(a){
+  if (!a.length) return NaN;
+  const s = a.slice().sort((x,y) => x - y);
+  return s[Math.floor(s.length / 2)];
+}
+
+function measureAll(){
+  const perShot = [[], [], [], []];
+  const vals = [];
+  let prev = null, prevT = null;
+  const cuts = {};
+  const M = MC.width, Nh = MC.height;
+  for (let f = 0; f < FRAMES; f++){
+    const t = f / FPS;
+    const cur = analyze(renderSmall(t), M, Nh);
+    if (prev) {
+      const pd = pixDiff(prev.gray, cur.gray);
+      perShot[shotOf(t)].push(pd);
+      if (f === CUT_F[0] || f === CUT_F[1] || f === CUT_F[2]) cuts[f] = pd;
+    }
+    vals.push({ f, v: cur.meanV, s: cur.meanS, e: cur.edges, a: cur.gx / (cur.gy || 1) });
+    prev = cur; prevT = t;
+  }
+  const shots = perShot.map((arr, i) => ({
+    k: TARGET[i].k,
+    pd: median(arr),
+    v: median(vals.filter(o => shotOf(o.f / FPS) === i).map(o => o.v)),
+    s: median(vals.filter(o => shotOf(o.f / FPS) === i).map(o => o.s)),
+    e: median(vals.filter(o => shotOf(o.f / FPS) === i).map(o => o.e)),
+    a: median(vals.filter(o => shotOf(o.f / FPS) === i).map(o => o.a))
+  }));
+  const at = f => vals[f];
+  return {
+    shots, cuts,
+    s1Start: at(1), s1End: at(99),
+    s4Lock: [188, 189, 190, 191].map(f => perShot[3][f - CUT_F[2]] || 0),
+    all: vals
+  };
+}
+
+/* ───────────────────────── 程序化声音 ───────────────────────── */
+const AUDIO_EVENTS = [
+  // [秒, 强度(以全片最强 onset 10.57 为 1), 类型]
+  [0.070, 1.00, 'impact'],   // 全片最强 onset（strength 10.57）＝水第一次入槽
+  [0.279, 0.62, 'impact'],   // RMS −1.8 dB
+  [0.464, 0.68, 'impact'],   // RMS 峰值 −1.6 dB
+  [1.300, 0.30, 'drip'],     // 前唇滴落
+  [2.100, 0.42, 'splash'],   // 水落到下盆（水面开始抬高）
+  [4.156, 0.28, 'impact'],   // 距切点 −0.011 s
+  [6.130, 0.66, 'impact'],   // 距切点 +0.047 s，全片第二强
+  [7.663, 0.39, 'splash']    // 新镜头落定处
+];
+
+const Audio = {
+  ctx: null, master: null, nodes: null, playing: false, src: null, timers: [],
+
+  init(){
+    if (this.ctx) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    this.ctx = new AC();
+    const c = this.ctx;
+    window.__audioLog = ['created:' + c.state];
+    // 先建图再尝试 resume：resume 被拒绝时图仍然完整，下一次手势可直接启动
+    const resume = () => {
+      if (!c) return;
+      try {
+        // 静音缓冲在用户手势里播一次，是引擎解锁 WebAudio 的通用做法
+        const b = c.createBuffer(1, 1, c.sampleRate);
+        const s = c.createBufferSource();
+        s.buffer = b; s.connect(c.destination); s.start(0);
+      } catch (e) { window.__audioErr = String(e); }
+      const p = c.resume();
+      if (p && p.catch) p.catch(e => { window.__audioErr = String(e); });
+    };
+    this.resume = resume;
+    resume();
+    this.master = c.createGain();
+    this.master.gain.value = 0.0;
+    this.master.connect(c.destination);
+
+    // 噪声床（2 秒循环白噪声 + 少量低频抖动）
+    const len = Math.floor(c.sampleRate * 2);
+    const buf = c.createBuffer(1, len, c.sampleRate);
+    const dd = buf.getChannelData(0);
+    let lp = 0;
+    for (let i = 0; i < len; i++){
+      const w = Math.random() * 2 - 1;
+      lp = lp * 0.985 + w * 0.015;
+      dd[i] = w * 0.75 + lp * 1.6;
+    }
+    const src = c.createBufferSource();
+    src.buffer = buf; src.loop = true;
+
+    const mk = (type, freq, q) => {
+      const f = c.createBiquadFilter();
+      f.type = type; f.frequency.value = freq; f.Q.value = q === undefined ? 0.7 : q;
+      return f;
+    };
+    const gLow  = c.createGain(); gLow.gain.value  = 0.0;
+    const gMid  = c.createGain(); gMid.gain.value  = 0.55;
+    const gMid2 = c.createGain(); gMid2.gain.value = 0.30;
+    const gHigh = c.createGain(); gHigh.gain.value = 0.12;
+
+    // 主能量锁 1200–3000 Hz
+    const lpLow = mk('lowpass', 120, 0.9);
+    const bpMid = mk('bandpass', 1900, 0.55);
+    const bpMid2 = mk('bandpass', 2700, 0.8);
+    const hp    = mk('highpass', 4200, 0.7);
+
+    src.connect(lpLow);  lpLow.connect(gLow);   gLow.connect(this.master);
+    src.connect(bpMid);  bpMid.connect(gMid);   gMid.connect(this.master);
+    src.connect(bpMid2); bpMid2.connect(gMid2); gMid2.connect(this.master);
+    src.connect(hp);     hp.connect(gHigh);     gHigh.connect(this.master);
+
+    this.nodes = { gLow, gMid, gMid2, gHigh, src };
+    src.start();
+    this.src = src;
+    window.__audioLog.push('graph:' + c.state);
+  },
+
+  // 分镜 RMS：S1 −16.8 / S2 −21.7 / S3 −21.4 / S4 −20.7 dB（相对满幅 0.5）
+  shotGain(t){
+    const db = [-16.8, -21.7, -21.4, -20.7][shotOf(t)];
+    return 0.5 * Math.pow(10, (db - (-16.8)) / 20);
+  },
+
+  impact(when, strength, kind){
+    const c = this.ctx;
+    const o = c.createOscillator();
+    o.type = 'sine';
+    const f0 = kind === 'drip' ? 320 : 96;
+    o.frequency.setValueAtTime(f0, when);
+    o.frequency.exponentialRampToValueAtTime(kind === 'drip' ? 180 : 42, when + 0.22);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.0001, when);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0002, strength * 0.9), when + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, when + (kind === 'drip' ? 0.16 : 0.36));
+    o.connect(g); g.connect(this.master);
+    o.start(when); o.stop(when + 0.42);
+
+    // 撞击的中频噪声碎片
+    const c2 = this.ctx;
+    const nb = c2.createBuffer(1, Math.floor(c2.sampleRate * 0.22), c2.sampleRate);
+    const nd = nb.getChannelData(0);
+    for (let i = 0; i < nd.length; i++) nd[i] = (Math.random() * 2 - 1) * (1 - i / nd.length);
+    const ns = c2.createBufferSource(); ns.buffer = nb;
+    const bp = c2.createBiquadFilter(); bp.type = 'bandpass';
+    bp.frequency.value = kind === 'drip' ? 2400 : 1500; bp.Q.value = 0.9;
+    const ng = c2.createGain();
+    ng.gain.setValueAtTime(Math.max(0.0002, strength * 0.55), when);
+    ng.gain.exponentialRampToValueAtTime(0.0001, when + 0.24);
+    ns.connect(bp); bp.connect(ng); ng.connect(this.master);
+    ns.start(when); ns.stop(when + 0.25);
+  },
+
+  start(fromTime){
+    try { this.init(); } catch (e) { window.__audioErr = 'init: ' + e.message; return; }
+    window.__audioLog.push('start:' + this.ctx.state);
+    const c = this.ctx;
+    if (c.state === 'suspended' && this.resume) this.resume();
+    try { this.schedule(fromTime); } catch (e) { window.__audioErr = String(e); }
+  },
+
+  schedule(fromTime){
+    const c = this.ctx;
+    this.stopScheduled();
+    const t0 = c.currentTime + 0.06;
+    const base = this.master.gain;
+    base.cancelScheduledValues(c.currentTime);
+    base.setValueAtTime(0.0001, c.currentTime);
+    base.linearRampToValueAtTime(this.shotGain(fromTime), t0 + 0.12);
+
+    // 低频只在开场 0.5 s 内出现，1.5 s 后压到 −41.6 dB
+    const n = this.nodes;
+    n.gLow.gain.cancelScheduledValues(t0);
+    n.gLow.gain.setValueAtTime(0, t0);
+    if (fromTime < 0.5){
+      n.gLow.gain.linearRampToValueAtTime(0.85, t0 + Math.max(0.01, 0.07 - fromTime));
+      n.gLow.gain.linearRampToValueAtTime(0.42, t0 + Math.max(0.02, 0.30 - fromTime));
+      n.gLow.gain.exponentialRampToValueAtTime(0.008, t0 + Math.max(0.05, 1.5 - fromTime));
+    }
+
+    // 分镜音量的台阶（切点处随画面一起换档）
+    for (let i = 1; i < 4; i++){
+      const ct = CUT_T[i];
+      if (ct > fromTime) base.linearRampToValueAtTime(this.shotGain(ct + 0.001), t0 + (ct - fromTime));
+    }
+
+    for (const [tt, st, kind] of AUDIO_EVENTS){
+      if (tt >= fromTime - 0.02){
+        this.impact(t0 + Math.max(0, tt - fromTime), st, kind);
+      }
+    }
+    // 播放超过片尾则停
+    const tail = t0 + (DUR - fromTime);
+    base.setValueAtTime(this.shotGain(DUR - 0.01), Math.max(t0 + 0.01, tail - 0.2));
+    base.linearRampToValueAtTime(0.0001, tail + 0.25);
+    this.playing = true;
+  },
+
+  stopScheduled(){
+    if (!this.ctx) return;
+    for (const tm of this.timers) clearTimeout(tm);
+    this.timers = [];
+  },
+
+  stop(){
+    if (!this.ctx || !this.playing) return;
+    const c = this.ctx, g = this.master.gain;
+    g.cancelScheduledValues(c.currentTime);
+    g.setValueAtTime(g.value || 0.001, c.currentTime);
+    g.linearRampToValueAtTime(0.0001, c.currentTime + 0.12);
+    this.playing = false;
+  }
+};
+
+/* ───────────────────────── UI 绑定 ───────────────────────── */
+const seek = document.getElementById('seek');
+seek.addEventListener('input', () => {
+  const f = Number(seek.value);
+  state.t = clamp(f / FPS, 0, DUR);
+  if (state.playing) Audio.stop(), setPlaying(false);
+  draw();
+});
+document.getElementById('play').addEventListener('click', () => setPlaying(!state.playing));
+document.getElementById('prev').addEventListener('click', () => {
+  if (state.playing) setPlaying(false);
+  state.t = clamp((Math.round(state.t * FPS) - 1) / FPS, 0, DUR); draw();
+});
+document.getElementById('next').addEventListener('click', () => {
+  if (state.playing) setPlaying(false);
+  state.t = clamp((Math.round(state.t * FPS) + 1) / FPS, 0, DUR); draw();
+});
+document.getElementById('sound').addEventListener('click', (e) => {
+  state.soundOn = !state.soundOn;
+  if (state.soundOn){ Audio.init(); if (Audio.resume) Audio.resume(); }
+  e.currentTarget.setAttribute('aria-pressed', state.soundOn ? 'true' : 'false');
+  e.currentTarget.textContent = state.soundOn ? '声音开' : '声音';
+  if (!state.soundOn) Audio.stop();
+  else if (state.playing) Audio.start(state.t);
+});
+document.getElementById('png').addEventListener('click', () => {
+  const a = document.createElement('a');
+  a.download = 'repro-blend-f' + String(Math.round(state.t * FPS)).padStart(3, '0') + '.png';
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+});
+document.getElementById('mAll').addEventListener('click', () => {
+  const log = document.getElementById('log');
+  log.textContent = '渲染 200 帧中…';
+  setTimeout(() => {
+    const r = measureAll();
+    const lines = [];
+    lines.push('镜  pix_diff中位  目标   |  V中位  目标      |  S中位  目标      |  edges  各向异性');
+    r.shots.forEach((s, i) => {
+      const tg = TARGET[i];
+      lines.push(
+        s.k + '  ' + s.pd.toFixed(2).padStart(9) + '  ' + String(tg.pd).padStart(6) +
+        '  | ' + s.v.toFixed(1).padStart(6) + '  ' + (tg.val[0] + '–' + tg.val[1]).padStart(9) +
+        '  | ' + s.s.toFixed(1).padStart(6) + '  ' + (tg.sat[0] + '–' + tg.sat[1]).padStart(9) +
+        '  | ' + s.e.toFixed(3).padStart(6) + '  ' + s.a.toFixed(2)
+      );
+    });
+    lines.push('');
+    lines.push('切点 pix_diff：');
+    for (const k of Object.keys(r.cuts)){
+      lines.push('  f' + k + ' (' + (k / FPS).toFixed(3) + ' s)  ' + r.cuts[k].toFixed(2) +
+        '   目标 ' + [60.07, 39.54, 41.10][CUT_F.indexOf(Number(k))]);
+    }
+    lines.push('');
+    lines.push('S1 曝光爬升：V ' + r.s1Start.v.toFixed(1) + ' → ' + r.s1End.v.toFixed(1) +
+      ' / S ' + r.s1Start.s.toFixed(1) + ' → ' + r.s1End.s.toFixed(1) +
+      '  （目标 154.8→190.9 / 92.2→114.2）');
+    lines.push('S4 定帧段 pix_diff：' + r.s4Lock.map(v => v.toFixed(2)).join(' / ') +
+      '  （目标 0.38–0.49）');
+    log.textContent = lines.join('\n');
+    window.__lastMeasure = r;
+  }, 30);
+});
+document.getElementById('mCuts').addEventListener('click', () => {
+  const log = document.getElementById('log');
+  const out = [];
+  for (const f of CUT_F){
+    const a = analyze(renderSmall((f - 1) / FPS), MC.width, MC.height);
+    const b = analyze(renderSmall(f / FPS), MC.width, MC.height);
+    out.push('f' + f + ' (' + (f / FPS).toFixed(3) + ' s)  pix_diff ' + pixDiff(a.gray, b.gray).toFixed(2));
+  }
+  const a = analyze(renderSmall(182 / FPS), MC.width, MC.height);
+  const b = analyze(renderSmall(183 / FPS), MC.width, MC.height);
+  out.push('白闪 f182  V ' + a.meanV.toFixed(1) + ' S ' + a.meanS.toFixed(1) + ' edges ' + a.edges.toFixed(3));
+  out.push('白闪 f183  V ' + b.meanV.toFixed(1) + ' S ' + b.meanS.toFixed(1) + ' edges ' + b.edges.toFixed(3));
+  out.push('目标       V 181.1/156.3  S 31.6/56.5  edges 0.030/0.011');
+  log.textContent = out.join('\n');
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' && e.target.type !== 'range') return;
+  if (e.code === 'Space'){ e.preventDefault(); setPlaying(!state.playing); }
+  else if (e.code === 'ArrowRight'){
+    e.preventDefault(); if (state.playing) setPlaying(false);
+    state.t = clamp((Math.round(state.t * FPS) + 1) / FPS, 0, DUR); draw();
+  } else if (e.code === 'ArrowLeft'){
+    e.preventDefault(); if (state.playing) setPlaying(false);
+    state.t = clamp((Math.round(state.t * FPS) - 1) / FPS, 0, DUR); draw();
+  }
+});
+
+/* 进度条上的切点标记 */
+(function marks(){
+  const box = document.getElementById('marks');
+  const labels = ['0', '4.167', '6.083', '7.542', '8.333'];
+  const fr = [0, 100, 146, 181, 200];
+  labels.forEach((lab, i) => {
+    const s = document.createElement('span');
+    s.textContent = lab;
+    s.style.left = (fr[i] / FRAMES * 100) + '%';
+    if (i === 0) s.style.transform = 'translateX(0)';
+    if (i === labels.length - 1) s.style.transform = 'translateX(-100%)';
+    box.appendChild(s);
+  });
+})();
+
+/* 第一次指针按下就把音频上下文解冻：部分环境里首个 click 的 resume 会被拒绝或延后 */
+document.addEventListener('pointerdown', () => {
+  if (state.soundOn) { Audio.init(); if (Audio.resume) Audio.resume(); }
+  if (Audio.ctx && Audio.ctx.state === 'suspended' && Audio.resume) Audio.resume();
+}, { passive: true });
+
+/* 定格参数 */
+(function boot(){
+  const p = new URLSearchParams(location.search);
+  if (p.has('t')){
+    const v = parseFloat(p.get('t'));
+    state.t = isFinite(v) ? clamp(v, 0, DUR) : 0;
+  }
+  if (p.get('sound') === '1') {
+    state.soundOn = true;
+    const sb = document.getElementById('sound');
+    sb.setAttribute('aria-pressed','true'); sb.textContent = '声音开';
+  }
+  draw();
+})();
+
+/* 供验证脚本调用 */
+window.__repro = {
+  get duration(){ return DUR; },
+  get cuts(){ return CUT_T.slice(); },
+  get s3cross(){ return S3XING; },
+  setTime(t){ state.t = clamp(t, 0, DUR); state.playing = false; draw(); return state.t; },
+  canvas,
+  toDataURL(){ return canvas.toDataURL('image/png'); },
+  statsNow(){ return quickStats(); },
+  measureAt(t){
+    const a = analyze(renderSmall(t), MC.width, MC.height);
+    const b = analyze(renderSmall(Math.max(0, t - 1/FPS)), MC.width, MC.height);
+    return { t, v: a.meanV, s: a.meanS, e: a.edges, aniso: a.gx/(a.gy||1), pd: pixDiff(b.gray, a.gray) };
+  },
+  measureAll,
+  audioDebug(){
+    const c = Audio.ctx; if (!c) return null;
+    return { state: c.state, sampleRate: c.sampleRate, baseLatency: c.baseLatency,
+      userActivation: navigator.userActivation ? {
+        hasBeenActive: navigator.userActivation.hasBeenActive,
+        isActive: navigator.userActivation.isActive } : null,
+      destinationMax: c.destination.maxChannelCount };
+  },
+  audioState(){
+    if (!Audio.ctx) return null;
+    return { state: Audio.ctx.state, sr: Audio.ctx.sampleRate,
+      time: +Audio.ctx.currentTime.toFixed(3),
+      gain: Audio.master ? +Audio.master.gain.value.toFixed(4) : null,
+      playing: Audio.playing };
+  },
+  ready: true
+};
+})();
+</script>
+</body>
+</html>

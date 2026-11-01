@@ -1,0 +1,68 @@
+{
+  "supersample": 2,
+  "fonts": {
+    "serif": "fonts/NotoSerifSC.ttf",
+    "sans": "fonts/NotoSansSC.ttf"
+  },
+  "name": "单期封面_3x4_1080x1440",
+  "size": [
+    1080,
+    1440
+  ],
+  "background": "artwork/episode-3x4.png",
+  "logo": {
+    "path": "brand/rainbow-vector.svg",
+    "color": "#dec298",
+    "x": 70,
+    "y": 58,
+    "height": 40
+  },
+  "rules": [],
+  "texts": [
+    {
+      "id": "author",
+      "text": "rainbow鱼",
+      "font": "serif",
+      "size": 28,
+      "weight": 700,
+      "x": 118,
+      "y": 66,
+      "color": "#dec298"
+    },
+    {
+      "id": "series",
+      "text": "AI 进化史 / 第二章 · 从识别到创造",
+      "font": "sans",
+      "size": 28,
+      "weight": 600,
+      "x": 70,
+      "y": 148,
+      "color": "#dec298"
+    },
+    {
+      "id": "title",
+      "text": "AI 怎么画出\n真实图像",
+      "font": "serif",
+      "size": 116,
+      "weight": 850,
+      "x": 70,
+      "y": 240,
+      "gradient": [
+        "#f8efdb",
+        "#d3b27a"
+      ],
+      "spacing": 14
+    },
+    {
+      "id": "tags",
+      "text": "GAN · 扩散模型",
+      "font": "sans",
+      "size": 30,
+      "weight": 600,
+      "x": 74,
+      "y": 535,
+      "color": "#f8efdb"
+    }
+  ],
+  "protected_regions": []
+}

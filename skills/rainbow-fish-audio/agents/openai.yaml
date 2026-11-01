@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rainbow Fish Audio"
+  short_description: "Own-voice narration and audio-led video timing with Fish Audio"
+  default_prompt: "Use $rainbow-fish-audio to generate my own-voice narration and retime this video from the resulting audio."

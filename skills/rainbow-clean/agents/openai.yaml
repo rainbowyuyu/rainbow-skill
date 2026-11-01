@@ -1,0 +1,4 @@
+interface:
+  display_name: "rainbow-clean"
+  short_description: "Clean safe Windows temp files and rebuildable caches"
+  default_prompt: "Use $rainbow-clean to scan C: and D: caches. For D:\\projects\\manim_extend_rainbow, use clean-manim-project.ps1: review the dry-run JSON, remove aged work/QA MP4 intermediates and only superseded versioned delivery MP4s, and preserve source, public assets, audio, models, and the current rainbow_arc_v16 files."

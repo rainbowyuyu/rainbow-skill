@@ -1,0 +1,1023 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="按量化研究结论复现《每发一包都等确认》368.900–372.200 秒的清晰度包络：斜坡管速度、单帧台阶管合焦、世界层全糊而 HUD 零糊。纯 HTML + Canvas + WebAudio 自包含。">
+<title>斜坡管速度，台阶管清晰 · pieces 368.9–372.2 复现</title>
+<style>
+  :root{
+    --bg:#070a10; --panel:#0d131c; --line:#1e2b3a; --ink:#dbe6f2; --dim:#7c8fa5;
+    --accent:#7c5cff; --teal:#3ad6c6; --amber:#f2b544; --warn:#ff8a5c;
+    --mono:ui-monospace,"Cascadia Mono","SF Mono",Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.55 -apple-system,"Segoe UI","Noto Sans SC","Microsoft YaHei",sans-serif}
+  a{color:var(--teal);text-decoration:none}
+  a:hover{text-decoration:underline}
+  header{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;
+    padding:14px 22px;border-bottom:1px solid var(--line);background:#080c12}
+  header h1{margin:0;font-size:15px;font-weight:600;letter-spacing:.02em}
+  header h1 span{color:var(--dim);font-weight:400}
+  header .src{margin-left:auto;font:11px/1.5 var(--mono);color:var(--dim)}
+  main{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;padding:18px 22px 40px;align-items:start}
+  @media (max-width:1080px){main{grid-template-columns:minmax(0,1fr)}}
+  .stage{min-width:0}
+  .frame{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#000}
+  canvas#stage{display:block;width:100%;height:auto}
+  .transport{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;
+    padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+  button{font:inherit;font-size:12.5px;color:var(--ink);background:#16202c;border:1px solid var(--line);
+    border-radius:7px;padding:5px 10px;cursor:pointer;transition:background .12s,border-color .12s}
+  button:hover{background:#1d2a39;border-color:#2c3f55}
+  button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  button.primary{background:#241a4d;border-color:#3d2f7a;color:#cfc2ff}
+  button.primary:hover{background:#2e2160}
+  input[type=range]{accent-color:var(--accent)}
+  #scrub{flex:1;min-width:220px}
+  .readout{font:12px/1.5 var(--mono);color:var(--dim);white-space:nowrap}
+  .readout b{color:var(--ink);font-weight:600}
+  canvas#envelope{display:block;width:100%;height:auto;margin-top:10px;
+    border:1px solid var(--line);border-radius:10px;background:#080c12}
+  aside{display:flex;flex-direction:column;gap:14px;min-width:0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 15px}
+  .card h2{margin:0 0 10px;font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--dim)}
+  .card p{margin:0 0 9px}
+  .card p:last-child{margin-bottom:0}
+  dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:7px 12px;font-size:12.5px}
+  dt{color:var(--dim);white-space:nowrap}
+  dd{margin:0;font-family:var(--mono);font-size:12px;color:var(--ink)}
+  .tag{display:inline-block;font:10.5px/1 var(--mono);padding:3px 6px;border-radius:4px;
+    border:1px solid var(--line);color:var(--dim);margin-left:6px;vertical-align:1px}
+  .tag.ok{color:var(--teal);border-color:#1f5b56}
+  .tag.warn{color:var(--amber);border-color:#5c4a1d}
+  .meter{height:6px;border-radius:3px;background:#131d28;overflow:hidden;margin:6px 0 3px}
+  .meter i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--teal));width:0}
+  .note{font-size:12px;color:var(--dim)}
+  .note strong{color:var(--ink);font-weight:600}
+  .warnbox{border-left:2px solid var(--warn);padding-left:10px;font-size:12px;color:#c9b4a8}
+  .toggles{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--dim)}
+  .toggles label{display:flex;align-items:center;gap:6px;cursor:pointer}
+  footer{padding:0 22px 34px;font:11.5px/1.6 var(--mono);color:#4e5f73}
+  code{font-family:var(--mono);font-size:12px;color:#a9bdd4}
+</style>
+</head>
+<body>
+<header>
+  <h1>斜坡管速度，台阶管清晰 <span>· pieces 368.900–372.200 秒复现</span></h1>
+  <div class="src">原创几何 / 程序化声音 / 未使用原片素材</div>
+</header>
+
+<main>
+  <section class="stage">
+    <div class="frame"><canvas id="stage" width="1280" height="720"></canvas></div>
+
+    <div class="transport">
+      <button id="play" class="primary" type="button">播放</button>
+      <button id="prev" type="button" aria-label="上一帧">‹ 帧</button>
+      <button id="next" type="button" aria-label="下一帧">帧 ›</button>
+      <input id="scrub" type="range" min="368.900" max="372.200" step="0.0333333333" value="368.900"
+             aria-label="源时间（秒）">
+      <span class="readout">源 <b id="tSrc">368.900</b>s · 窗内 <b id="tLocal">0.000</b>s ·
+        帧 <b id="tFrame">000</b>/099</span>
+    </div>
+
+    <canvas id="envelope" width="1280" height="190" aria-label="清晰度包络与单帧台阶"></canvas>
+
+    <div class="transport" style="margin-top:10px">
+      <div class="toggles">
+        <label><input type="checkbox" id="tgHud" checked> HUD 层</label>
+        <label><input type="checkbox" id="tgSub" checked> 字幕层</label>
+        <label><input type="checkbox" id="tgPkt" checked> 主体包</label>
+      </div>
+      <button id="audio" type="button">试听音效</button>
+      <button id="measure" type="button">测量当前帧</button>
+      <label class="readout" style="display:flex;align-items:center;gap:8px">
+        显示尺度 <input id="scale" type="range" min="0" max="60" step="1" value="8" style="width:110px">
+        <b id="scaleVal">8</b>px
+      </label>
+    </div>
+  </section>
+
+  <aside>
+    <div class="card">
+      <h2>当前帧</h2>
+      <div class="meter"><i id="barC"></i></div>
+      <dl>
+        <dt>相对清晰度 C</dt><dd id="cNow">0.670</dd>
+        <dt>拖影长度 L</dt><dd id="lNow">5.7 px</dd>
+        <dt>运动方向</dt><dd id="dirNow">90°（纵向）</dd>
+        <dt>世界层采样</dt><dd id="nNow">3 次</dd>
+        <dt>字幕层拖影</dt><dd id="subNow">3.7 px</dd>
+      </dl>
+    </div>
+
+    <div class="card">
+      <h2>实测包络（相对基线 224.7）</h2>
+      <p class="note">锚点来自 <code>transmission-deep.md</code> 2026-10-26 量化补充，1920×1080 副本。绝对值不可跨分辨率比较，故这里只用比值。</p>
+      <dl id="anchors"></dl>
+    </div>
+
+    <div class="card">
+      <h2>这一帧在证明什么</h2>
+      <p id="stateNow" class="note">—</p>
+    </div>
+
+    <div class="card">
+      <h2>测量（可选）</h2>
+      <p class="note">只测世界区（排除 HUD 与字幕），用与原文相同的 Tenengrad。对照组把同一帧的曝光积分关掉，因此“保留比”只反映拖影，不掺内容差异。</p>
+      <dl>
+        <dt>Tenengrad</dt><dd id="mT">—</dd>
+        <dt>同帧无拖影</dt><dd id="mRef">—</dd>
+        <dt>保留比</dt><dd id="mRatio">—</dd>
+        <dt>实测 C</dt><dd id="mExpect">—</dd>
+        <dt>gx/gy</dt><dd id="mAniso">—</dd>
+      </dl>
+    </div>
+
+    <div class="card">
+      <h2>与原结论不一致处</h2>
+      <p class="warnbox">笔记写“翻转点选在相机速度接近零、只做旋转的那一帧”，但同一节的实测把谷值 369.333 秒记为 <strong>最深处（20.0% 基线）</strong>；速度真归零就不会有最深的模糊。两句话不能同时成立。<br>本复现按实测的 gx/gy 走：方向在 369.300–369.333 之间从 90° 转到 0°，速度在这一帧仍是峰值。<br><br>
+      另有三处时长标注与时间戳互斥，本复现一律以时间戳为准：<br>
+      · <code>45.0→74.8 用 26 帧</code>：369.333→369.567 只有 7 帧（0.233 秒）。<br>
+      · <code>加速斜坡 0.400 秒</code>：369.133→369.333 是 0.200 秒（−66% 恰好对应 −330%/s，说明速率按 0.2 秒算）。<br>
+      · <code>减速斜坡 0.733 秒内 0.20→1.28</code>：0.733 秒后是 370.066 秒，该处实测已回落到 0.295；1.28 实际在 370.700 秒，距起点 1.367 秒。</p>
+    </div>
+  </aside>
+</main>
+
+<footer>
+  来源研究：<code>rainbow-motion-story/assets/style-lab/studies/transmission-deep.md</code> §6 与 2026-10-26 量化补充 ·
+  引用影片仅作研究，未复制任何画面、音轨、水印或商标。
+</footer>
+
+<script>
+'use strict';
+/* =========================================================================
+   pieces 368.900–372.200 秒 · 清晰度包络复现
+   -------------------------------------------------------------------------
+   参数全部取自 research/douyin-batch2 的量化补充：
+     · 清晰度 C(t) 相对基线 224.7 的 7 个实测点
+     · 4 处单帧台阶：+82% / +58% / +48% / −38%（各 1 帧 = 33.3 ms）
+     · 软窗 369.167–370.267（33 帧 / 1.100 秒），内部两段 0.400 + 0.500
+     · 谷值 369.333，20.0% 基线，仅停 1 帧
+     · 收尾平台 370.667–371.700（31 帧，极差 2.0%），均值 289.8
+     · 各向异性 gx/gy：纵向 1.42–1.56 → 横向 0.23–0.36，翻在 369.30–369.33
+     · HUD 零模糊；字幕约 72% 峰值损失
+     · 音效比谷值晚 0.49 s / 0.82 s，主能量 3–6 kHz，低频抑制到 ≤ −39 dB
+   未测出的量（像素拖影长度、快门角）在本文件里一律显式标注为显示选项。
+   ========================================================================= */
+
+const W = 1280, H = 720;
+const T0 = 368.900;            // 源时间起点
+const DUR = 3.300;             // 窗口长度（368.900–372.200）
+const FPS = 30;                // 源片帧率
+const FRAME = 1 / FPS;         // 33.333 ms
+const SHUTTER = 0.5 / FPS;     // 180° 快门 —— 显示选项，非原片测出
+const RETENTION_MIN = 0.20;    // 谷值保留率，实测
+const RETENTION_SUB = 0.28;    // 字幕谷值保留率，由“约 72% 峰值损失”推出
+const BASE_T = 224.7;          // 基线 Tenengrad（1920×1080 副本）
+const PLATEAU_T = 289.8;       // 收尾平台均值（同一副本）
+
+// 字幕拖影 / 世界拖影 的比值：由两条保留率同用 1/(1+L) 反推得到
+const SUB_RATIO = ((1 / RETENTION_SUB) - 1) / ((1 / RETENTION_MIN) - 1);
+
+/* ---------- 工具 ---------- */
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const smooth = u => { u = clamp(u, 0, 1); return u * u * (3 - 2 * u); };
+const lerp = (a, b, u) => a + (b - a) * u;
+
+// 三次贝塞尔求 y(x)，用于 ease-in 段 cubic-bezier(0.55,0,0.85,0.35)
+function bezierY(x, x1, y1, x2, y2) {
+  let lo = 0, hi = 1;
+  const bx = t => 3 * (1 - t) * (1 - t) * t * x1 + 3 * (1 - t) * t * t * x2 + t * t * t;
+  const by = t => 3 * (1 - t) * (1 - t) * t * y1 + 3 * (1 - t) * t * t * y2 + t * t * t;
+  for (let i = 0; i < 26; i++) { const m = (lo + hi) / 2; if (bx(m) < x) lo = m; else hi = m; }
+  return by((lo + hi) / 2);
+}
+
+/* ---------- 1. 清晰度包络 ---------- */
+/* seg 描述“从上一个点到这一点”的插值方式：
+   smooth = 连续斜坡；accel = ease-in 斜坡；hold = 保持前值直到本点再跳（单帧台阶）；
+   linear = 线性。时间戳一律取量化补充里的实测时刻。 */
+const CLARITY = [
+  { t: 0.000, c: 0.670, seg: 'smooth' }, // 368.900
+  { t: 0.233, c: 0.580, seg: 'accel'  }, // 369.133 → 谷值前的加速段
+  { t: 0.433, c: 0.200, seg: 'smooth' }, // 369.333 谷值，20.0% 基线
+  { t: 0.667, c: 0.333, seg: 'smooth' }, // 369.567 爬升终点
+  { t: 0.700, c: 0.604, seg: 'hold'   }, // 369.600 回弹到 0.60 基线，单帧台阶 +82%
+  { t: 0.833, c: 0.604, seg: 'smooth' }, // 369.733
+  { t: 1.133, c: 0.295, seg: 'hold'   }, // 370.033 → 台阶 +58%
+  { t: 1.167, c: 0.467, seg: 'smooth' }, // 370.067
+  { t: 1.500, c: 0.687, seg: 'hold'   }, // 370.400 → 台阶 +48%
+  { t: 1.533, c: 1.017, seg: 'smooth' }, // 370.433
+  { t: 1.800, c: 1.285, seg: 'linear' }, // 370.700 收尾平台起点
+  { t: 2.800, c: 1.272, seg: 'smooth' }, // 371.700 平台末（极差 2.0%）
+  { t: 3.200, c: 0.504, seg: 'hold'   }, // 372.100 → 台阶 −38%
+  { t: 3.233, c: 0.311, seg: 'linear' }, // 372.133
+  { t: 3.300, c: 0.281, seg: null     }  // 372.200
+];
+
+// 逐帧量化：实测本来就是 30 fps 的台阶数据，量化后 4 处台阶才落在帧边界上
+const qFrame = t => Math.round(t * FPS + 1e-7) / FPS;
+
+function clarityRaw(t) {
+  if (t <= CLARITY[0].t) return CLARITY[0].c;
+  for (let i = 1; i < CLARITY.length; i++) {
+    const a = CLARITY[i - 1], b = CLARITY[i];
+    if (t < b.t) {
+      if (b.seg === 'hold') return a.c;
+      const u = (t - a.t) / (b.t - a.t);
+      const e = b.seg === 'accel' ? bezierY(u, 0.55, 0, 0.85, 0.35)
+              : b.seg === 'linear' ? u : smooth(u);
+      return a.c + (b.c - a.c) * e;
+    }
+  }
+  return CLARITY[CLARITY.length - 1].c;
+}
+const clarity = t => clarityRaw(clamp(qFrame(t), 0, DUR));
+
+/* ---------- 2. 拖影长度与方向 ---------- */
+/* 1/(1+L) 是原文给出的单帧衰减比；这里只做反推，不引入额外常数。
+   q 把 0.20 的谷值映射到 1，C ≥ 1 时映射到 0（平台不是负拖影）。 */
+let LMAX = 8;                                   // 显示尺度，非测量值。按 4 个锚点的世界区保留比
+                                                // RMSE 重新扫过：8 px 最低（0.120），65 px 为 0.234。
+                                                // 上一版 65 是按竖井场景标的，换成平铺面板后过冲。
+const qOf = c => clamp(((1 / Math.max(c, RETENTION_MIN * 0.999)) - 1) /
+                       ((1 / RETENTION_MIN) - 1), 0, 1);
+const smearPx = c => LMAX * qOf(c);
+
+const TURN_FROM = 0.400, TURN_TO = 0.432;      // 369.300→369.333，实测翻转区间
+function dirDeg(t) {
+  if (t < TURN_FROM) return 90;                // 纵向：相机下潜
+  if (t >= TURN_TO) return 0;                  // 横向：沿通道疾行
+  return 90 * (1 - (t - TURN_FROM) / (TURN_TO - TURN_FROM));
+}
+
+/* ---------- 3. 相机路径（速度 = 拖影长度 / 快门） ---------- */
+const SUBSTEP = 1 / 600;
+/* 相机路径：**偏移量**而不是绝对位置。
+   原片是平铺构图，面板不能跑出画幅；所以这里对速度做归一化积分：
+   速度 = 拖影长度 / 快门（保证单帧曝光内位移 = L），
+   再减去包络自身的均值，使机位在 90 px 以内来回，平台期回到 0。
+   上一版直接积分绝对位置，3.3 秒累计位移 1500 px，面板被推出画幅。 */
+const CAM = { x: [], y: [], n: 0 };
+function buildCamera() {
+  const n = Math.ceil(DUR / SUBSTEP) + 3;
+  const vx = new Float64Array(n), vy = new Float64Array(n);
+  let mx = 0, my = 0;
+  for (let i = 0; i < n; i++) {
+    const t = i * SUBSTEP;
+    const v = smearPx(clarity(t)) / SHUTTER;
+    const th = dirDeg(t) * Math.PI / 180;
+    vx[i] = v * Math.cos(th); vy[i] = v * Math.sin(th);
+    mx += vx[i]; my += vy[i];
+  }
+  mx /= n; my /= n;
+  CAM.x = new Array(n); CAM.y = new Array(n); CAM.n = n;
+  let x = 0, y = 0;
+  const GAIN = 0.55;   // 只保留 55% 的累计摆动，面板始终在画面中段
+  for (let i = 0; i < n; i++) {
+    x += (vx[i] - mx) * SUBSTEP * GAIN;
+    y += (vy[i] - my) * SUBSTEP * GAIN;
+    CAM.x[i] = x; CAM.y[i] = y;
+  }
+  // 平台期之前把残余偏移拉回 0：原片停稳时构图是居中的
+  const tail = Math.round(1.42 / SUBSTEP);
+  const tx = CAM.x[tail], ty = CAM.y[tail];
+  for (let i = tail; i < n; i++) {
+    const u = smooth(Math.min(1, (i - tail) * SUBSTEP / 0.22));
+    CAM.x[i] -= tx * u; CAM.y[i] -= ty * u;
+  }
+  // 硬限幅：任何时刻都不让面板离开画面中段（±120 px）；
+  // 1.70 s 之后相机完全静止（原片 370.7–371.7 的帧差 0.02–0.15，等于静止）
+  const still = Math.round(1.70 / SUBSTEP);
+  for (let i = 0; i < n; i++) {
+    if (i >= still) { CAM.x[i] = 0; CAM.y[i] = 0; continue; }
+    CAM.x[i] = clamp(CAM.x[i], -120, 120);
+    CAM.y[i] = clamp(CAM.y[i], -120, 120);
+  }
+}
+function camAtRaw(t) {
+  const f = clamp(t / SUBSTEP, 0, CAM.n - 1.001);
+  const i = Math.floor(f), u = f - i;
+  return { x: lerp(CAM.x[i], CAM.x[i + 1], u), y: lerp(CAM.y[i], CAM.y[i + 1], u) };
+}
+const camAt = t => camAtRaw(clamp(t, 0, DUR));
+
+/* ---------- 4. 主体相对相机的屏幕偏移 ---------- */
+/* 包近似跟随但不完全跟随：屏幕速度 = 偏移的导数，所以它的糊比背景轻。
+   这些是构图选择，研究没有给出主体速度值。 */
+/* 主体偏移：原片 370.7–371.7 的整帧差分只有 0.02–0.15，
+   说明停稳之后连主体也不再漂。所以 1.800 之后偏移必须恒定 ——
+   上一版给了 6px 的缓慢漂移，平台期每帧差分被抬到 1.5–2.3。 */
+const DRIFT = [
+  { t: 0.000, x: 0, y: -60 }, { t: 0.300, x: 0, y: 15 },
+  { t: 0.433, x: 0, y: 28 },  { t: 0.600, x: 0, y: 16 },
+  { t: 1.200, x: 0, y: 8 },   { t: 1.800, x: 0, y: 6 },
+  { t: 2.800, x: 0, y: 6 },   { t: 3.300, x: 0, y: 6 }
+];
+function drift(t) {
+  if (t <= DRIFT[0].t) return DRIFT[0];
+  for (let i = 1; i < DRIFT.length; i++) {
+    const a = DRIFT[i - 1], b = DRIFT[i];
+    if (t < b.t) { const u = smooth((t - a.t) / (b.t - a.t));
+      return { x: lerp(a.x, b.x, u), y: lerp(a.y, b.y, u) }; }
+  }
+  return DRIFT[DRIFT.length - 1];
+}
+
+/* ---------- 5. 画布与离屏缓冲 ---------- */
+const canvas = document.getElementById('stage');
+const ctx = canvas.getContext('2d');
+const accum = document.createElement('canvas'); accum.width = W; accum.height = H;
+const actx = accum.getContext('2d');
+const bg = document.createElement('canvas'); bg.width = W; bg.height = H;
+const bctx = bg.getContext('2d');
+const smoothBuf = document.createElement('canvas'); smoothBuf.width = W; smoothBuf.height = H;
+const subAcc = document.createElement('canvas'); subAcc.width = W; subAcc.height = H;
+const sctx = subAcc.getContext('2d');
+const subTex = document.createElement('canvas'); subTex.width = 1000; subTex.height = 96;
+const stex = subTex.getContext('2d');
+let subTexKey = '';
+
+function paintBackground() {
+  // 原片底色是近乎中性的 rgb(14,15,18)，左上、右侧、下方三处取样一致；
+  // 没有冷色渐变，也没有中心光。上一版用了 #05080d→#0b1420 的蓝色渐变 +
+  // 束光和暗角，整页均值只有 15，比原片低 13 个灰阶。
+  bctx.fillStyle = '#0e0f12';
+  bctx.fillRect(0, 0, W, H);
+  // 极淡的中性提升，避免整页被压死（原片 24–30 的实际读数来自 HUD 与面板反光）
+  const r = bctx.createRadialGradient(W * 0.5, H * 0.45, 60, W * 0.5, H * 0.45, W * 0.75);
+  r.addColorStop(0, 'rgba(30,32,38,0.55)'); r.addColorStop(1, 'rgba(30,32,38,0)');
+  bctx.fillStyle = r; bctx.fillRect(0, 0, W, H);
+}
+
+/* ---------- 6. 世界层 ---------- */
+/* 原片这一段不是竖井。按 1920×1080 原帧逐像素量（368.900）：
+     · 整页底色 rgb(14,15,18)，左上与右侧一致，没有冷色渐变
+     · 中央一块圆角面板，x 443–1388（占画幅宽 43.8%），自 y≈16 顶到画幅底
+     · 面板内自上而下：猫图影像块 → 黑底分段数据条 → 紫带 rgb(67,54,100)
+       → 深绿带 rgb(13,23,20)；紫带上有一个亮点方块和一个"未确认 5 字节"标注
+   右侧 70% 起是零模糊 HUD：62,712 个包 / 你在这里 / 传输层 · TCP + 四条层级条。
+   本复现按这个平铺结构重建：面板是二维的，镜头只做平移，不做三维下潜。
+   竖井 / 通道 / 输送道那套几何是上一版的原创场景，已删除。 */
+const PANEL = { x: 296, y: 12, w: 560, h: 708, r: 14 };
+const PHOTO = { x: 338, y: 24, w: 476, h: 268 };
+const BAR = { x: 342, y: 306, w: 468, h: 96 };
+const BAND_PURPLE_Y = 402;
+const BAND_PURPLE_H = 274;
+const BAND_GREEN_Y = 676;
+
+const HASH = i => { let h = (i * 2654435761) >>> 0; h ^= h >>> 13; return (h >>> 0) % 1000 / 1000; };
+
+// 只保留原片真正出现的两种饱和色：紫 #a484fc、绿 #4cbc7c
+const STRIP_COLORS = ['#a484fc', '#4cbc7c'];
+
+const SEG_PURPLE_TICKS = [0.10, 0.26, 0.43, 0.60, 0.77];
+const SEG_GREEN_TICKS = [0.14, 0.34, 0.54, 0.74];
+
+/* 面板下排的小方块。原片在 370.700 的底部横带里有一排低亮度方块，
+   这里按同样的节奏摆，不再自造高密度细齿。 */
+const LANE = [];
+(function buildLane() {
+  for (let i = 0; i < 18; i++) {
+    LANE.push({
+      x: 348 + i * 25 + (HASH(i + 311) - 0.5) * 8,
+      w: 10 + Math.round(HASH(i + 17) * 5),
+      h: 10 + (i % 2) * 4,
+      col: i % 3 === 0 ? 'rgba(72,150,128,0.8)' : 'rgba(38,74,66,0.9)'
+    });
+  }
+})();
+
+/* 世界层大字：370.700 的 100 个包 / 14 个包 是画在场景层里的，
+   不是 HUD。它们在平台期提供主要高频 —— 上一版没有，平台期 T 只有 8018。 */
+const WORLD_TYPE = [
+  { t: 0.900, x: 30, y: 236, size: 60, text: '100 个包', color: '#eef4fa', align: 'left' },
+  { t: 1.980, x: 30, y: 560, size: 56, text: '100 个包', color: '#eef4fa', align: 'left' },
+  { t: 2.360, x: 700, y: 656, size: 54, text: '14 个包', color: '#f2c14b', align: 'left' }
+];
+
+function roundRect(g, x, y, w, h, r) {
+  const rr = Math.min(r, w / 2, h / 2);
+  g.beginPath();
+  g.moveTo(x + rr, y); g.arcTo(x + w, y, x + w, y + h, rr);
+  g.arcTo(x + w, y + h, x, y + h, rr); g.arcTo(x, y + h, x, y, rr);
+  g.arcTo(x, y, x + w, y, rr); g.closePath();
+}
+
+function drawGrid(g, cam) {
+  const step = 190;
+  const x0 = Math.floor((cam.x - W / 2) / step) * step;
+  const y0 = Math.floor((cam.y - H / 2) / step) * step;
+  g.fillStyle = 'rgba(64,78,96,0.085)';
+  for (let x = x0; x < cam.x + W / 2 + step; x += step)
+    for (let y = y0; y < cam.y + H / 2 + step; y += step)
+      g.fillRect(x, y, 1.4, 1.4);
+}
+
+/* 猫图影像块。原片是一张实拍猫照；这里用暖色块 + 明暗结构代替，
+   不复制任何帧内容。它的作用是给世界层一块低频亮面（原片均值 39.6 靠它撑）。 */
+function drawPhoto(g, x, y, w, h) {
+  g.fillStyle = '#0c0d10'; g.fillRect(x - 8, y - 8, w + 16, h + 16);
+  g.save();
+  g.beginPath(); g.rect(x, y, w, h); g.clip();
+  const sky = g.createLinearGradient(x, y, x, y + h * 0.55);
+  sky.addColorStop(0, '#b9cfe4'); sky.addColorStop(1, '#8ea9c0');
+  g.fillStyle = sky; g.fillRect(x, y, w, h * 0.55);
+  const room = g.createLinearGradient(x, y + h * 0.4, x, y + h);
+  room.addColorStop(0, '#6b5a44'); room.addColorStop(1, '#2e2820');
+  g.fillStyle = room; g.fillRect(x, y + h * 0.4, w, h * 0.6);
+
+  const cx = x + w * 0.46, cy = y + h * 0.60;
+  const fur = g.createRadialGradient(cx, cy, 10, cx, cy, w * 0.34);
+  fur.addColorStop(0, '#e8b183'); fur.addColorStop(0.55, '#c88a55'); fur.addColorStop(1, '#8a5c33');
+  g.fillStyle = fur;
+  g.beginPath(); g.ellipse(cx, cy, w * 0.28, h * 0.40, 0, 0, Math.PI * 2); g.fill();
+  g.beginPath(); g.arc(cx + w * 0.02, cy - h * 0.24, w * 0.12, 0, Math.PI * 2); g.fill();
+  g.beginPath(); g.moveTo(cx - w * 0.09, cy - h * 0.33); g.lineTo(cx - w * 0.03, cy - h * 0.46);
+  g.lineTo(cx + w * 0.01, cy - h * 0.34); g.fill();
+  g.beginPath(); g.moveTo(cx + w * 0.05, cy - h * 0.36); g.lineTo(cx + w * 0.11, cy - h * 0.47);
+  g.lineTo(cx + w * 0.13, cy - h * 0.33); g.fill();
+
+  // 窗棂在毛上的反光：给影像块制造细高频，曝光积分时这部分最先消失
+  g.fillStyle = 'rgba(255,240,220,0.30)';
+  for (let i = 0; i < 5; i++) g.fillRect(cx - w * 0.24 + i * 9, cy - h * 0.30, 3, h * 0.62);
+
+  g.fillStyle = 'rgba(70,96,62,0.85)';
+  for (let i = 0; i < 6; i++) {
+    g.beginPath();
+    g.ellipse(x + w * (0.08 + i * 0.035), y + h * (0.20 + (i % 3) * 0.10), 14, 22, 0.3, 0, Math.PI * 2);
+    g.fill();
+  }
+  g.fillStyle = 'rgba(196,186,172,0.9)';
+  g.fillRect(x + w * 0.62, y + h * 0.46, w * 0.34, h * 0.22);
+  g.restore();
+  g.strokeStyle = 'rgba(120,132,150,0.55)'; g.lineWidth = 2;
+  g.strokeRect(x, y, w, h);
+}
+
+/* 分段数据条：黑底、圆角、内描边；白齿 + 紫段 + 绿段。 */
+function drawDataBar(g, x, y, w, h) {
+  g.fillStyle = '#0a0a0c';
+  roundRect(g, x, y, w, h, 10); g.fill();
+  g.strokeStyle = 'rgba(150,160,175,0.55)'; g.lineWidth = 2.5;
+  roundRect(g, x, y, w, h, 10); g.stroke();
+
+  const ix = x + 6, iy = y + 6, iw = w - 12, ih = h - 12;
+  const teethW = iw * 0.13, purpleW = iw * 0.45, greenW = iw * 0.34;
+  const px = ix + teethW, gx = px + purpleW;
+
+  g.fillStyle = '#eef2f8';
+  for (let i = 0; i < 6; i++) {
+    const tw = teethW / 6;
+    g.fillRect(ix + i * tw + 1.5, iy, tw - 4, ih);
+  }
+  g.fillStyle = '#a484fc'; g.fillRect(px, iy, purpleW, ih);
+  g.fillStyle = '#4cbc7c'; g.fillRect(gx, iy, greenW, ih);
+
+  g.strokeStyle = 'rgba(20,20,28,0.65)'; g.lineWidth = 1.2;
+  for (const u of SEG_PURPLE_TICKS) {
+    g.beginPath(); g.moveTo(px + purpleW * u, iy + 6);
+    g.lineTo(px + purpleW * u, iy + ih - 6); g.stroke();
+  }
+  for (const u of SEG_GREEN_TICKS) {
+    g.beginPath(); g.moveTo(gx + greenW * u, iy + 6);
+    g.lineTo(gx + greenW * u, iy + ih - 6); g.stroke();
+  }
+}
+
+/* 被传输的主体：原片里是一个紫色小方块，从缓存条掉进紫带，再往右下漂。
+   它在屏幕上几乎跟机位同步，所以糊得比背景轻（DRIFT 是构图选择，研究未给速度值）。 */
+function drawPacket(g) {
+  const w = 64, h = 46;
+  g.save();
+  g.fillStyle = 'rgba(6,10,16,0.55)';
+  roundRect(g, -w / 2 - 4, -h / 2 - 4, w + 8, h + 8, 8); g.fill();
+  g.fillStyle = '#8f7cf0';
+  roundRect(g, -w / 2, -h / 2, w, h, 6); g.fill();
+  g.fillStyle = 'rgba(226,216,255,0.85)';
+  roundRect(g, -w / 2 + 7, -h / 2 + 8, w - 14, 8, 2); g.fill();
+  g.fillStyle = 'rgba(20,16,34,0.55)';
+  roundRect(g, -w / 2 + 7, -h / 2 + 21, w - 14, 4, 2); g.fill();
+  roundRect(g, -w / 2 + 7, -h / 2 + 29, w - 24, 4, 2); g.fill();
+  g.restore();
+}
+
+/* 面板本体：圆角灰框 + 紫带 + 绿带 + 亮点方块。 */
+function drawPlate(g, cam) {
+  const bx = PANEL.x - cam.x, by = PANEL.y - cam.y;
+  g.save();
+  g.fillStyle = '#101116';
+  roundRect(g, bx, by, PANEL.w, PANEL.h, PANEL.r); g.fill();
+  g.strokeStyle = 'rgba(118,128,142,0.85)'; g.lineWidth = 2.5;
+  roundRect(g, bx, by, PANEL.w, PANEL.h, PANEL.r); g.stroke();
+
+  // 面板左缘的紫 / 绿细棱
+  g.fillStyle = 'rgba(164,132,252,0.55)';
+  g.fillRect(bx + 2, by + 24, 5, BAND_GREEN_Y - 24);
+  g.fillStyle = 'rgba(76,188,124,0.55)';
+  g.fillRect(bx + 2, by + BAND_GREEN_Y, 5, PANEL.h - BAND_GREEN_Y - 2);
+
+  g.save(); g.translate(bx, by); g.translate(-PANEL.x, -PANEL.y);
+  drawPhoto(g, PHOTO.x, PHOTO.y, PHOTO.w, PHOTO.h);
+  drawDataBar(g, BAR.x, BAR.y, BAR.w, BAR.h);
+  g.restore();
+
+  // 紫带
+  g.fillStyle = '#2f2a40';
+  g.fillRect(bx + 8, by + BAND_PURPLE_Y, PANEL.w - 16, BAND_PURPLE_H);
+  // 亮点方块：原片紫带里那个发光的方块
+  const gcx = bx + 300, gcy = by + 470;
+  const glow = g.createRadialGradient(gcx, gcy, 4, gcx, gcy, 52);
+  glow.addColorStop(0, 'rgba(150,220,255,0.95)'); glow.addColorStop(1, 'rgba(150,220,255,0)');
+  g.fillStyle = glow; g.fillRect(gcx - 52, gcy - 52, 104, 104);
+  g.fillStyle = '#7ec8f0';
+  roundRect(g, gcx - 20, gcy - 20, 40, 40, 6); g.fill();
+  // 深绿带
+  g.fillStyle = '#0d1714';
+  g.fillRect(bx + 8, by + BAND_GREEN_Y, PANEL.w - 16, PANEL.h - BAND_GREEN_Y - 8);
+  // 底部下排方块
+  for (const b of LANE) {
+    g.fillStyle = b.col;
+    roundRect(g, bx + (b.x - 340), by + 690, b.w, b.h, 2); g.fill();
+  }
+  g.restore();
+}
+
+/* 世界层的大字标注（100 个包 / 14 个包）。它们跟着世界层一起被曝光积分抹开，
+   这也是"世界层糊、HUD 不糊"的直接证据。 */
+function drawWorldType(g, cam, t) {
+  g.save();
+  g.textBaseline = 'alphabetic';
+  for (const a of WORLD_TYPE) {
+    if (t < a.t) continue;
+    const alpha = clamp((t - a.t) / 0.12, 0, 1);
+    g.globalAlpha = alpha;
+    g.font = `700 ${a.size}px "Noto Sans SC","Microsoft YaHei",sans-serif`;
+    g.textAlign = a.align;
+    g.fillStyle = a.color;
+    const x = a.x - cam.x * 0.0;
+    g.fillText(a.text, x, a.y - cam.y);
+  }
+  g.globalAlpha = 1;
+  g.restore();
+}
+
+/* ---------- 7. 字幕层 ---------- */
+const CAPTIONS = [
+  { t: 0.000, text: '包离开缓存，镜头跟着它下潜' },
+  { t: 0.433, text: '转向前，背景先被拉成横条' },
+  { t: 1.167, text: '拉远：多条通道和计数一起进入' },
+  { t: 2.800, text: '停下来，让观众核对计数' }
+];
+function captionAt(t) {
+  let s = CAPTIONS[0].text;
+  for (const c of CAPTIONS) if (t >= c.t - 1e-9) s = c.text;
+  return s;
+}
+function buildSubTex(text) {
+  if (text === subTexKey) return;
+  subTexKey = text;
+  stex.clearRect(0, 0, subTex.width, subTex.height);
+  const padX = 16;
+  stex.font = '600 23px "Noto Sans SC","Microsoft YaHei",-apple-system,sans-serif';
+  const tw = stex.measureText(text).width;
+  const bw = Math.min(subTex.width - 20, tw + padX * 2), bh = 42;
+  const bx = (subTex.width - bw) / 2, by = (subTex.height - bh) / 2;
+  stex.fillStyle = 'rgba(6,10,16,0.82)';
+  roundRect(stex, bx, by, bw, bh, 8); stex.fill();
+  stex.fillStyle = '#e6eefa';
+  stex.textAlign = 'center'; stex.textBaseline = 'middle';
+  stex.fillText(text, subTex.width / 2, subTex.height / 2 + 1);
+}
+
+/* 字幕层：只做等比缩放与很轻的各向异性软化，不复制副本。
+   原片实测（1920×1080，第 4 行 2–3 块的图块 Tenengrad）：
+     · 字宽 145 px / 1080 高 ≈ 7.6% 画幅宽，字高 34 px
+     · 369.333 谷值 27552，对 369.600 的 33555 只掉 18%，不是 72%
+     · 370.033 那一次 16367 是换字幕造成的块统计异常，不是运动模糊
+   早期版本按 SUB_RATIO 抽了 16 份副本，字被拖成一排竖条 —— 这是实现错误，
+   不是原片特征。现在改成单次 drawImage + blur，软化量随 L 单调、封顶 1.4 px。 */
+function drawSubtitle(g, t, L) {
+  const text = captionAt(t);
+  buildSubTex(text);
+  const sig = Math.min(1.4, L * 0.045);
+  const sx = (W - subTex.width) / 2, sy = H - 106;
+  sctx.clearRect(0, 0, W, H);
+  if (sig > 0.25) {
+    sctx.save();
+    sctx.filter = 'blur(' + sig.toFixed(2) + 'px)';
+    sctx.drawImage(subTex, sx, sy);
+    sctx.restore();
+  } else {
+    sctx.drawImage(subTex, sx, sy);
+  }
+  g.drawImage(subAcc, 0, 0);
+}
+
+/* ---------- 8. HUD 层（零模糊） ---------- */
+let hudTick = 0;
+function drawHud(g, t, c, L, frameIdx) {
+  const x = W - 250;
+  g.save();
+  g.fillStyle = 'rgba(6,10,16,0.72)';
+  roundRect(g, x, 24, 226, 208, 10); g.fill();
+  g.strokeStyle = 'rgba(124,92,255,0.45)'; g.lineWidth = 1.5; g.stroke();
+
+  g.font = '700 11px "Cascadia Mono",Consolas,monospace';
+  g.fillStyle = '#7c8fa5'; g.textBaseline = 'alphabetic'; g.textAlign = 'left';
+  g.fillText('LAYER / WORLD', x + 16, 48);
+
+  g.font = '700 42px "Cascadia Mono",Consolas,monospace';
+  g.fillStyle = '#e6eefa';
+  g.fillText(String(frameIdx).padStart(3, '0'), x + 16, 96);
+
+  g.font = '600 12px "Cascadia Mono",Consolas,monospace';
+  g.fillStyle = '#7c8fa5';
+  g.fillText('FRAME', x + 16, 116);
+
+  // 计数在平台期继续递增 —— 相机停下不等于数据停止
+  g.font = '700 26px "Cascadia Mono",Consolas,monospace';
+  g.fillStyle = '#3ad6c6';
+  const count = 100 + Math.floor(clamp((t - 1.8) / 1.0, 0, 1) * 21);
+  g.fillText(String(count), x + 16, 162);
+  g.font = '600 11px "Cascadia Mono",Consolas,monospace';
+  g.fillStyle = '#7c8fa5';
+  g.fillText('QUEUE', x + 96, 162);
+
+  // 清晰度条
+  g.fillStyle = 'rgba(255,255,255,0.10)';
+  roundRect(g, x + 16, 182, 194, 8, 4); g.fill();
+  g.fillStyle = c >= 1 ? '#3ad6c6' : '#7c5cff';
+  roundRect(g, x + 16, 182, 194 * clamp(c / 1.285, 0, 1), 8, 4); g.fill();
+  g.font = '600 11px "Cascadia Mono",Consolas,monospace';
+  g.fillStyle = '#7c8fa5';
+  g.fillText('C ' + c.toFixed(3) + '  L ' + L.toFixed(1) + 'px', x + 16, 212);
+
+  // 左上角标识
+  g.font = '700 12px "Cascadia Mono",Consolas,monospace';
+  g.fillStyle = 'rgba(230,238,250,0.82)';
+  g.fillText('REPRO · PIECES 368.900–372.200', 28, 42);
+  g.font = '600 11px "Cascadia Mono",Consolas,monospace';
+  g.fillStyle = 'rgba(124,143,165,0.9)';
+  g.fillText('world layer only · HUD 0% blur', 28, 62);
+  g.restore();
+  hudTick++;
+}
+
+/* ---------- 9. 渲染 ---------- */
+let showHud = true, showSub = true, showPkt = true;
+
+/* 视差：原片面板是平面图形，镜头平移时各层位移几乎相同（世界层同一张图）。
+   这里只给背景网格留 0.6 的视差做一点空间感，面板与大字同步位移 ——
+   上一版给五层各配了 0.32–1.16 的系数，结果同一帧里出现五种拖影方向，
+   与原片"世界层整体一起糊"不符。 */
+const PAR = { grid: 0.60 };
+const bandOf = () => 0;
+
+function layer(g, cam, k, fn) {
+  g.save();
+  g.translate(W / 2 - cam.x * k, H / 2 - cam.y * k);
+  fn({ x: cam.x * k, y: cam.y * k });
+  g.restore();
+}
+
+function drawSample(g, t) {
+  const cam = camAt(t);
+  layer(g, cam, PAR.grid, c => drawGrid(g, c));
+  drawPlate(g, cam);
+  drawWorldType(g, cam, t);
+  if (showPkt) {
+    const d = drift(t);
+    g.save();
+    g.translate(W / 2 + d.x, H / 2 + d.y);
+    drawPacket(g);
+    g.restore();
+  }
+}
+
+let forceSharp = false;   // 同内容对照用：跳过曝光积分，得到零拖影版本
+function render(t) {
+  const c = clarity(t);
+  const L = smearPx(c);
+  // 采样密度：单样本间距不小于 3 px。再密就会在 1–2 px 尺度的细齿上造出
+  // 奈奎斯特级别的“鬼影”，让清晰度指标不降反升（实测小 L 时曾到 1.25 倍）。
+  const n = forceSharp ? 1 : (L < 3 ? 1 : Math.min(56, Math.ceil(L / 3)));
+  const frameIdx = Math.round(clamp(t, 0, DUR) * FPS);
+
+  if (n === 1) {
+    actx.clearRect(0, 0, W, H);
+    drawSample(actx, t);
+  } else {
+    // 曝光积分必须是等权平均：每份样本 1/n。
+    // 早先写成 1/(i+1)（越晚的样本权重越接近 1），叠加后早样本被反复覆盖，
+    // 谷值那一帧反而比平台期亮 1.35 倍 —— 与原片“越糊越暗”完全相反。
+    actx.clearRect(0, 0, W, H);
+    const a = 1 / n;
+    actx.globalAlpha = a;
+    for (let i = 0; i < n; i++) {
+      const sub = clamp(t + ((i + 0.5) / n - 0.5) * SHUTTER, 0, DUR);
+      drawSample(actx, sub);
+    }
+  }
+  actx.globalAlpha = 1;
+
+  // 连续拖尾：对累积结果做一遍很轻的模糊，把离散副本缝成一条尾巴。
+  // 强度随拖影长度增长，但封顶，避免把平台期的竖齿也磨掉。
+  let world = accum;
+  if (n > 1) {
+    const sig = Math.min(3.2, 0.35 + L * 0.014);
+    const wctx = smoothBuf.getContext('2d');
+    wctx.clearRect(0, 0, W, H);
+    wctx.save();
+    wctx.filter = 'blur(' + sig.toFixed(2) + 'px)';
+    wctx.drawImage(accum, 0, 0);
+    wctx.restore();
+    world = smoothBuf;
+  }
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.drawImage(bg, 0, 0);
+  ctx.drawImage(world, 0, 0);
+  if (showSub) drawSubtitle(ctx, t, L);
+  if (showHud) drawHud(ctx, t, c, L, frameIdx);
+
+  updatePanel(t, c, L, n);
+  drawEnvelope(t, c);
+  return { c, L, n };
+}
+
+/* ---------- 10. 包络条 ---------- */
+const envC = document.getElementById('envelope');
+const ectx = envC.getContext('2d');
+function drawEnvelope(tNow, cNow) {
+  const w = envC.width, h = envC.height;
+  const padL = 56, padR = 18, padT = 22, padB = 30;
+  const iw = w - padL - padR, ih = h - padT - padB;
+  const X = t => padL + (t / DUR) * iw;
+  const Y = c => padT + (1 - clamp(c / 1.45, 0, 1)) * ih;
+
+  ectx.clearRect(0, 0, w, h);
+  ectx.fillStyle = '#080c12'; ectx.fillRect(0, 0, w, h);
+
+  // 软窗：低于基线 50% 的连续帧，369.167–370.267（33 帧 / 1.100 秒）
+  ectx.fillStyle = 'rgba(124,92,255,0.16)';
+  ectx.fillRect(X(0.267), padT, X(1.367) - X(0.267), ih);
+  ectx.fillStyle = 'rgba(124,143,165,0.75)';
+  ectx.font = '10.5px "Cascadia Mono",Consolas,monospace';
+  ectx.textAlign = 'center'; ectx.textBaseline = 'top';
+  ectx.fillText('软窗 1.100s', (X(0.267) + X(1.367)) / 2, padT + 4);
+
+  // 网格
+  ectx.strokeStyle = 'rgba(60,84,110,0.45)'; ectx.lineWidth = 1;
+  for (const c of [0, 0.5, 1.0, 1.285]) {
+    ectx.beginPath(); ectx.moveTo(padL, Y(c)); ectx.lineTo(w - padR, Y(c)); ectx.stroke();
+    ectx.fillStyle = '#4e5f73'; ectx.font = '11px "Cascadia Mono",Consolas,monospace';
+    ectx.textAlign = 'right'; ectx.textBaseline = 'middle';
+    ectx.fillText(c.toFixed(2), padL - 8, Y(c));
+  }
+  ectx.fillStyle = 'rgba(255,138,92,0.75)';
+  ectx.fillRect(padL, Y(RETENTION_MIN), w - padR - padL, 1);
+
+  // 包络
+  ectx.beginPath();
+  for (let i = 0; i <= 120; i++) {
+    const t = i / 120 * DUR;
+    const c = clarityRaw(qFrame(t));
+    const px = X(t), py = Y(c);
+    i ? ectx.lineTo(px, py) : ectx.moveTo(px, py);
+  }
+  ectx.strokeStyle = '#3ad6c6'; ectx.lineWidth = 2; ectx.stroke();
+
+  // 4 处单帧台阶
+  const steps = [[0.667, 0.700, '+82%'], [1.133, 1.167, '+58%'], [1.500, 1.533, '+48%'], [3.200, 3.233, '−38%']];
+  ectx.font = '10.5px "Cascadia Mono",Consolas,monospace'; ectx.textAlign = 'center';
+  for (const [a, b, label] of steps) {
+    const ca = clarityRaw(qFrame(a - 0.001)), cb = clarityRaw(qFrame(b));
+    ectx.strokeStyle = 'rgba(242,181,68,0.85)'; ectx.lineWidth = 2;
+    ectx.beginPath(); ectx.moveTo(X(b), Y(ca)); ectx.lineTo(X(b), Y(cb)); ectx.stroke();
+    ectx.fillStyle = '#f2b544'; ectx.textBaseline = 'bottom';
+    ectx.fillText(label, X(b), Y(Math.max(ca, cb)) - 4);
+  }
+
+  // 谷值标记
+  ectx.fillStyle = 'rgba(255,138,92,0.9)'; ectx.textAlign = 'left'; ectx.textBaseline = 'top';
+  ectx.fillText('谷值 0.20 · 1 帧', X(0.433) + 6, Y(0.2) + 6);
+
+  // 播放头
+  const px = X(clamp(tNow, 0, DUR));
+  ectx.strokeStyle = 'rgba(230,238,250,0.9)'; ectx.lineWidth = 1.5;
+  ectx.beginPath(); ectx.moveTo(px, padT - 6); ectx.lineTo(px, h - padB + 4); ectx.stroke();
+  ectx.fillStyle = '#e6eefa';
+  ectx.beginPath(); ectx.arc(px, Y(cNow), 4, 0, Math.PI * 2); ectx.fill();
+
+  // 时间刻度
+  ectx.fillStyle = '#4e5f73'; ectx.font = '11px "Cascadia Mono",Consolas,monospace';
+  ectx.textAlign = 'center'; ectx.textBaseline = 'top';
+  for (const st of [368.9, 369.5, 370.0, 370.5, 371.0, 371.5, 372.2]) {
+    const lx = X(st - T0);
+    ectx.fillText(st.toFixed(1), lx, h - padB + 10);
+  }
+}
+
+/* ---------- 11. 面板 ---------- */
+const el = id => document.getElementById(id);
+let lastState = '';
+function updatePanel(t, c, L, n) {
+  el('cNow').textContent = c.toFixed(3);
+  el('lNow').textContent = L.toFixed(1) + ' px';
+  const d = dirDeg(t);
+  el('dirNow').textContent = d > 80 ? '90°（纵向）' : d < 10 ? '0°（横向）' : d.toFixed(0) + '°（转向中）';
+  el('nNow').textContent = n + ' 次';
+  el('subNow').textContent = (L * SUB_RATIO).toFixed(1) + ' px';
+  el('barC').style.width = clamp(c / 1.285, 0, 1) * 100 + '%';
+
+  const s = stateText(t, c);
+  if (s !== lastState) { el('stateNow').textContent = s; lastState = s; }
+}
+function stateText(t, c) {
+  if (t < 0.233) return '开场：还没到加速段。世界层已经开始软化（C 0.67→0.58），HUD 与字幕仍清楚 —— 模糊只发生在世界层。';
+  if (t < 0.433) return '加速斜坡：0.200 秒内 0.58→0.20，ease-in。拖影在这一段是纵向的（相机下潜，gx/gy 1.42–1.56）。';
+  if (t < 0.667) return '谷值与转向：C 触底 0.20，只停 1 帧。方向在 369.316 穿过各向同性，从纵向翻成横向 —— 不是零速，谷值仍有拖影。';
+  if (t < 1.133) return '回弹：单帧 +82% 跳到 0.604，然后横向拖影展开（gx/gy 0.23–0.36）。这一步是台阶，不是斜坡。';
+  if (t < 1.533) return '第二段软窗：再次下去到 0.295，再用 +58% 的单帧台阶回来。两段 0.400 + 0.500 秒，中间给了一次半清回弹。';
+  if (t < 1.800) return '减速斜坡：+48% 台阶之后连续爬升，拍到比开场更清楚的画面。';
+  if (t < 2.800) return '收尾平台：31 帧、极差 2.0%，比开场静置还高 1.29 倍。相机停了，计数还在走 —— 给观众核对结论的时间。';
+  if (t < 3.200) return '平台结束，开始下降：0.500 秒的连续斜坡（不是台阶）。';
+  return '收尾 −38% 单帧台阶：窗口在模糊中结束，和它开始时一样。';
+}
+
+/* ---------- 12. 测量 ---------- */
+function tenengradRegion(x, y, w, h) {
+  const tmp = document.createElement('canvas');
+  tmp.width = w; tmp.height = h;
+  const tc = tmp.getContext('2d', { willReadFrequently: true });
+  tc.drawImage(canvas, x, y, w, h, 0, 0, w, h);
+  const img = tc.getImageData(0, 0, w, h).data;
+  const gray = new Float32Array(w * h);
+  for (let i = 0, p = 0; i < gray.length; i++, p += 4)
+    gray[i] = 0.299 * img[p] + 0.587 * img[p + 1] + 0.114 * img[p + 2];
+  let sum = 0, sx = 0, sy = 0, cnt = 0;
+  for (let yy = 1; yy < h - 1; yy++) for (let xx = 1; xx < w - 1; xx++) {
+    const i = yy * w + xx;
+    const gx = (gray[i + 1 - w] + 2 * gray[i + 1] + gray[i + 1 + w])
+             - (gray[i - 1 - w] + 2 * gray[i - 1] + gray[i - 1 + w]);
+    const gy = (gray[i + 1 - w] + 2 * gray[i + w] + gray[i + 1 + w])
+             - (gray[i - 1 - w] + 2 * gray[i - w] + gray[i - 1 + w]);
+    sum += gx * gx + gy * gy; sx += gx * gx; sy += gy * gy; cnt++;
+  }
+  return { T: sum / cnt, ax: sx / cnt, ay: sy / cnt };
+}
+let plateauT = null;
+function measurePlateau() {
+  const keep = time;
+  time = 2.3; render(2.3);          // 平台中段 1.800–2.800
+  plateauT = tenengradRegion(40, 60, 880, 520).T;
+  time = keep;
+  render(time);                     // 恢复播放头对应的画面与面板
+}
+el('measure').addEventListener('click', () => {
+  const keep = time;
+  // 1) 当前帧（带曝光积分）
+  render(keep);
+  const m = tenengradRegion(40, 60, 880, 520);
+  const c = clarity(keep);
+  // 2) 同机位、同内容、零拖影的对照组：这才是拖影本身造成的损失
+  forceSharp = true; render(keep); forceSharp = false;
+  const ref = tenengradRegion(40, 60, 880, 520);
+  render(keep);
+
+  el('mT').textContent = m.T.toFixed(1);
+  el('mRef').textContent = ref.T.toFixed(1);
+  el('mRatio').textContent = (m.T / Math.max(ref.T, 1e-6)).toFixed(3);
+  // 原文：单帧衰减比 ≈ 1/(1+L)，L 用本复现的显示值反推的 C
+  el('mExpect').textContent = c.toFixed(3) + '（期望 C）';
+  el('mAniso').textContent = (m.ax / Math.max(m.ay, 1e-6)).toFixed(2) +
+    ' / 无拖影 ' + (ref.ax / Math.max(ref.ay, 1e-6)).toFixed(2);
+});
+
+/* ---------- 13. 音频（全程序化） ---------- */
+let audioCtx = null;
+function playAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const ac = audioCtx, now = ac.currentTime + 0.06;
+
+  // 带限噪声：3–6 kHz，低频让位 —— 对应实测 3000–6000 Hz 撑住、20–120 Hz 抑制
+  const dur = 0.9, sr = ac.sampleRate;
+  const buf = ac.createBuffer(1, Math.floor(sr * dur), sr);
+  const ch = buf.getChannelData(0);
+  for (let i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1;
+
+  const mk = (offset, strength) => {
+    const src = ac.createBufferSource(); src.buffer = buf;
+    const bp = ac.createBiquadFilter(); bp.type = 'bandpass';
+    bp.frequency.value = 4500; bp.Q.value = 1.15;
+    const hp = ac.createBiquadFilter(); hp.type = 'highpass';
+    hp.frequency.value = 2800;
+    const g = ac.createGain();
+    const peak = 0.055 + strength * 0.0075;
+    const t0 = now + offset;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(peak, t0 + 0.012);
+    g.gain.exponentialRampToValueAtTime(peak * 0.45, t0 + 0.12);  // 主能量 0.10–0.15 秒
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.62);
+    src.connect(bp); bp.connect(hp); hp.connect(g); g.connect(ac.destination);
+    src.start(t0); src.stop(t0 + 0.7);
+  };
+  // 谷值 369.333 之后 0.490 秒（369.824，strength 9.25）与 0.820 秒（370.149，13.74）
+  mk(0.924, 9.25);
+  mk(1.249, 13.74);
+}
+el('audio').addEventListener('click', playAudio);
+
+/* ---------- 14. 传输与循环 ---------- */
+let time = 0, playing = false, lastTS = 0;
+const scrub = el('scrub');
+
+function readHashTime() {
+  const p = new URLSearchParams(location.search);
+  if (!p.has('t')) return null;
+  const v = parseFloat(p.get('t'));
+  if (!Number.isFinite(v)) return null;
+  return clamp(v > DUR + 1 ? v - T0 : v, 0, DUR);
+}
+function setTime(t, fromUser) {
+  time = clamp(t, 0, DUR);
+  if (fromUser) { playing = false; el('play').textContent = '播放'; }
+  scrub.value = (T0 + time).toFixed(3);
+  el('tSrc').textContent = (T0 + time).toFixed(3);
+  el('tLocal').textContent = time.toFixed(3);
+  el('tFrame').textContent = String(Math.round(time * FPS)).padStart(3, '0');
+  render(time);
+}
+function loop(ts) {
+  if (playing) {
+    if (!lastTS) lastTS = ts;
+    time += (ts - lastTS) / 1000;
+    lastTS = ts;
+    if (time >= DUR) { time = DUR; playing = false; el('play').textContent = '播放'; }
+    scrub.value = (T0 + time).toFixed(3);
+    el('tSrc').textContent = (T0 + time).toFixed(3);
+    el('tLocal').textContent = time.toFixed(3);
+    el('tFrame').textContent = String(Math.round(time * FPS)).padStart(3, '0');
+    render(time);
+  } else lastTS = 0;
+  requestAnimationFrame(loop);
+}
+
+el('play').addEventListener('click', () => {
+  if (!playing) {
+    if (time >= DUR - 1e-6) time = 0;
+    playing = true; lastTS = 0; el('play').textContent = '暂停';
+    playAudio();
+  } else { playing = false; el('play').textContent = '播放'; }
+});
+el('prev').addEventListener('click', () => setTime(qFrame(time) - FRAME, true));
+el('next').addEventListener('click', () => setTime(qFrame(time) + FRAME, true));
+scrub.addEventListener('input', () => setTime(parseFloat(scrub.value) - T0, true));
+el('tgHud').addEventListener('change', e => { showHud = e.target.checked; setTime(time, false); });
+el('tgSub').addEventListener('change', e => { showSub = e.target.checked; setTime(time, false); });
+el('tgPkt').addEventListener('change', e => { showPkt = e.target.checked; setTime(time, false); });
+el('scale').addEventListener('input', e => {
+  LMAX = parseFloat(e.target.value);
+  el('scaleVal').textContent = String(LMAX);
+  buildCamera(); plateauT = null; setTime(time, false);
+});
+window.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') { setTime(qFrame(time) - FRAME, true); e.preventDefault(); }
+  if (e.key === 'ArrowRight') { setTime(qFrame(time) + FRAME, true); e.preventDefault(); }
+  if (e.key === ' ') { el('play').click(); e.preventDefault(); }
+});
+
+/* ---------- 15. 锚点表 ---------- */
+(function fillAnchors() {
+  const dl = el('anchors');
+  const rows = [
+    ['368.900', '0.670'], ['369.133', '0.580'], ['369.333', '0.200'],
+    ['369.600', '0.604'], ['370.033', '0.295'], ['370.700', '1.285'], ['372.200', '0.281']
+  ];
+  for (const [t, c] of rows) {
+    const dt = document.createElement('dt'); dt.textContent = t + 's';
+    const dd = document.createElement('dd'); dd.textContent = c;
+    if (t === '369.333') { dt.style.color = '#ff8a5c'; dd.style.color = '#ff8a5c'; }
+    dl.append(dt, dd);
+  }
+})();
+
+/* ---------- 16. 启动 ---------- */
+paintBackground();
+buildCamera();
+const preset = readHashTime();
+requestAnimationFrame(loop);
+if (preset !== null) { setTime(preset, true); }
+else { setTime(0.6, true); }
+// 平台基准延后测量（需要先渲染一帧）
+setTimeout(() => { try { measurePlateau(); } catch (err) { console.warn(err); } }, 120);
+</script>
+</body>
+</html>

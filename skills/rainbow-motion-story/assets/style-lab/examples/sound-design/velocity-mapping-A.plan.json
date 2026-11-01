@@ -1,0 +1,152 @@
+{
+  "id": "velocity-mapping",
+  "title": "速度应该听得出来",
+  "question": "连续空气声与转动声，能否同时表达加速、经过和减速？",
+  "duration": 8,
+  "variants": [
+    {
+      "id": "A",
+      "title": "均匀参数",
+      "description": "声音起止相同，频谱与声像保持不变。"
+    },
+    {
+      "id": "B",
+      "title": "跟随运动",
+      "description": "频率、响度和左右声像读取同一条动作进度曲线。"
+    }
+  ],
+  "events": [
+    {
+      "id": "pass",
+      "kind": "passby",
+      "onset": 0.75,
+      "peak": 2.3,
+      "contact": 2.3,
+      "end": 3.85,
+      "priority": 1
+    },
+    {
+      "id": "turn",
+      "kind": "servo",
+      "onset": 4.3,
+      "peak": 5.4,
+      "contact": 5.4,
+      "end": 6.5,
+      "priority": 1
+    }
+  ],
+  "speechWindows": [],
+  "readWindows": [],
+  "variant": "A",
+  "options": {
+    "sampleRate": 48000,
+    "offsetMs": 0,
+    "gainDb": 0,
+    "intensity": 1,
+    "includeSpeechPlaceholder": false
+  },
+  "cues": [
+    {
+      "id": "environment",
+      "sound": "room-air",
+      "eventId": null,
+      "anchor": "onset",
+      "anchorTime": 0,
+      "anchorOffset": 0,
+      "start": 0,
+      "duration": 8,
+      "priority": 0.1,
+      "gain": 0.026,
+      "pan": 0,
+      "seed": 45671,
+      "params": {},
+      "policy": "space",
+      "designSyncDelta": 0,
+      "end": 8
+    },
+    {
+      "id": "pass:air-passby",
+      "sound": "air-passby",
+      "eventId": "pass",
+      "anchor": "peak",
+      "anchorTime": 2.3,
+      "anchorOffset": 1.5499999999999998,
+      "start": 0.75,
+      "duration": 3.1,
+      "priority": 1,
+      "gain": 0.16,
+      "pan": 0,
+      "seed": 1709,
+      "params": {
+        "peakFraction": 0.49999999999999994,
+        "motionStart": 0.75,
+        "motionEnd": 3.85,
+        "mapping": false
+      },
+      "policy": "full",
+      "designSyncDelta": 0,
+      "end": 3.85
+    },
+    {
+      "id": "turn:servo",
+      "sound": "servo",
+      "eventId": "turn",
+      "anchor": "onset",
+      "anchorTime": 4.3,
+      "anchorOffset": 0,
+      "start": 4.3,
+      "duration": 2.2,
+      "priority": 1,
+      "gain": 0.12,
+      "pan": 0,
+      "seed": 9628,
+      "params": {
+        "peakFraction": 0,
+        "motionStart": 4.3,
+        "motionEnd": 6.5,
+        "mapping": false
+      },
+      "policy": "full",
+      "designSyncDelta": 0,
+      "end": 6.5
+    }
+  ],
+  "excludedCues": [],
+  "masterGain": 0.82,
+  "placeholderNotice": "Optional surrogate is amplitude-modulated synthetic tones/noise, NOT voice, TTS or proof of intelligibility.",
+  "soundOrigin": "Original deterministic synthesis; no third-party samples.",
+  "cueMeasurements": [
+    {
+      "id": "pass:air-passby",
+      "sound": "air-passby",
+      "designAnchor": "peak",
+      "designAnchorTime": 2.3,
+      "designAnchorOffset": 1.5499999999999998,
+      "designedSyncDelta": 0,
+      "measuredThreshold10PercentTime": 1.1506041666666667,
+      "measuredAbsolutePeakTime": 2.2833541666666664,
+      "measured8msRmsPeakTime": 2.477479166666667,
+      "peakDelayFromAnchor": -0.01664583333333347,
+      "thresholdDelayFromAnchor": -1.1493958333333332,
+      "sourcePeak": 0.3534691333770752,
+      "firstSample": 0,
+      "lastSample": 0
+    },
+    {
+      "id": "turn:servo",
+      "sound": "servo",
+      "designAnchor": "onset",
+      "designAnchorTime": 4.3,
+      "designAnchorOffset": 0,
+      "designedSyncDelta": 0,
+      "measuredThreshold10PercentTime": 4.306375,
+      "measuredAbsolutePeakTime": 5.356395833333333,
+      "measured8msRmsPeakTime": 5.1328125,
+      "peakDelayFromAnchor": 1.0563958333333332,
+      "thresholdDelayFromAnchor": 0.006375000000000242,
+      "sourcePeak": 0.29249149560928345,
+      "firstSample": 0,
+      "lastSample": 0
+    }
+  ]
+}

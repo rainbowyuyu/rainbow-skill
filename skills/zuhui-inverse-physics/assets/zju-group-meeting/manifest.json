@@ -1,0 +1,51 @@
+{
+  "style": "ZJU group meeting, user-selected reference",
+  "emblem": {
+    "file": "zju-emblem.svg",
+    "source": "https://upload.wikimedia.org/wikipedia/en/1/16/Zhejiang_University_Logo.svg",
+    "description": "https://en.wikipedia.org/wiki/File:Zhejiang_University_Logo.svg",
+    "credited_institutional_source": "http://www.zju.edu.cn/572/list.htm",
+    "type": "original path-based SVG; no embedded bitmap",
+    "rights": "University emblem/trademark; source marks non-free logo. Institutional identification in the requested presentation; not MIT or an unrestricted stock asset.",
+    "sha256": "db5b60090e946c3c88c40dacc824c36e847f6a2f9e9da063aba6c2e6d17835fc"
+  },
+  "references": [
+    {
+      "file": "reference-cover.png",
+      "source": "User-supplied reference image",
+      "sha256": "96f2395cec20e27b777a4594f5781b9147e32eaee9a3eb7b4910d4a1f6c67ea1"
+    },
+    {
+      "file": "reference-content.png",
+      "source": "User-supplied reference image",
+      "sha256": "a0df827a1d3d912d55789e7d9fc8f273b6b97e89d0e90fcd0ae00123df09642e"
+    },
+    {
+      "file": "reference-emblem.png",
+      "source": "User-supplied reference image",
+      "sha256": "00078fd0c91f06c92085511ca01663de74d7fb54f81f60fef7d7e00bfc25589a"
+    }
+  ],
+  "generated_assets": [
+    {
+      "file": "probability-grid.svg",
+      "role": "teaching Gaussian density; editable vector paths",
+      "sha256": "2c56f60ae0a4415a1bc7b004c2b5e96c57a22c7531e2e2c6ddfcf319c59c54e7"
+    },
+    {
+      "file": "cover-template.svg",
+      "role": "editable cover structure, generic identity fields",
+      "sha256": "85266d2c320b1faa34e703e36265a06cb611103d58e3a2392816669736e8dc6e"
+    },
+    {
+      "file": "content-template.svg",
+      "role": "editable content structure, generic labels",
+      "sha256": "83745653dc14597aa8412781ef83bc0f926ba79448e85d37bcee57f474786a79"
+    },
+    {
+      "file": "theme.css",
+      "role": "16:9 HTML projection theme",
+      "sha256": "27a8d35b44df88e376adef76cdc8d47aa3f7549121d7eee2b8ab26c549299ea0"
+    }
+  ]
+}

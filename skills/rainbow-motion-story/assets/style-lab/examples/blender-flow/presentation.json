@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "title": "水过青瓷",
+  "defaultFrame": 2,
+  "video": {
+    "src": "scene/porcelain_spillway_preview.mp4",
+    "poster": "scene/poster/frame_0096.png",
+    "fps": 24,
+    "durationSeconds": 4,
+    "audio": false
+  },
+  "frames": [
+    {
+      "src": "scene/keyframes/frame_0024.png",
+      "label": "槽口蓄水",
+      "detail": "第 24 帧 · 整体",
+      "frame": 24,
+      "caption": "第 24 帧 / 上槽蓄水，水面接近溢流唇。",
+      "alt": "青瓷上槽中的水面接近前方溢流唇，下槽尚未积水。"
+    },
+    {
+      "src": "scene/keyframes/frame_0060.png",
+      "label": "完整路径",
+      "detail": "第 60 帧 · 整体",
+      "frame": 60,
+      "caption": "第 60 帧 / 水流连接两层容器，水片中央形成空洞。",
+      "alt": "三分之四视角下的双层青瓷溢流装置，中央带空洞的水片落入下槽。"
+    },
+    {
+      "src": "scene/poster/frame_0096.png",
+      "label": "持续溢流",
+      "detail": "第 96 帧 · 整体",
+      "frame": 96,
+      "caption": "第 96 帧 / 水片持续下落，下槽蓄水并激起局部飞溅。",
+      "alt": "持续溢流的青瓷水槽，水片落入下槽积水，左侧盆口上方有局部飞溅。"
+    },
+    {
+      "src": "scene/closeup/frame_0060.png",
+      "label": "槽口近景",
+      "detail": "第 60 帧 · 近景",
+      "frame": 60,
+      "caption": "第 60 帧 / 靠近槽口，观察水片空洞与边缘的反射。",
+      "alt": "青瓷溢流唇与透明水片的近景，中央空洞和左右水流边缘清楚可见。"
+    }
+  ],
+  "scene": {
+    "src": "scene/porcelain_spillway.blend"
+  },
+  "technical": {
+    "items": [
+      { "label": "软件 / 渲染器", "value": "Blender 5.1.2 / Cycles" },
+      { "label": "液体求解", "value": "Mantaflow FLIP · 域最长边 64 格" },
+      { "label": "短片", "value": "640 × 360 / 24 fps / 4 秒 / 无音轨" },
+      { "label": "视频采样", "value": "16 samples" },
+      { "label": "整体静帧", "value": "640 × 360 / 32 samples" },
+      { "label": "封面静帧", "value": "1280 × 720 / 64 samples" },
+      { "label": "近景静帧", "value": "960 × 540 / 48 samples" },
+      { "label": "水材质", "value": "透射 1 / IOR 1.333" }
+    ],
+    "cacheNote": "液体缓存独立于 .blend，未随场景下载。复现流动需按接入文档运行生成脚本并重新烘焙。"
+  }
+}

@@ -1,0 +1,824 @@
+{
+  "schemaVersion": "1.0.0",
+  "title": "把一份水送到远方：无人机、PID 与可更新的世界模型",
+  "status": "planned-not-rendered",
+  "purpose": "供新一轮完整重构选择、试拍与接入；旧机器人版本仅作事实和资产参考。",
+  "libraryRoot": "../..",
+  "pathConvention": "libraryRoot 相对本 JSON 文件所在目录解析；所有 localPath、code、styleDoc、demoDoc 均相对解析后的方法库根目录。安装版与研究版使用同一规则。",
+  "guide": "guides/integrated-direction.md",
+  "targetDurationSeconds": 320,
+  "durationStatus": "rough-editorial-budget; must be rebuilt from recorded narration and analysed music phrases",
+  "music": {
+    "requestedFile": "D:/CloudMusic/李化禹 - 唢风吟.mp3",
+    "analysisStatus": "not-analysed-in-this-recipe",
+    "rule": "先试听并标乐句、重音和高潮；下列节奏事件不能直接当作曲目的真实卡点。"
+  },
+  "sourceScope": {
+    "lemoRepository": "https://github.com/lemomo-ai/lemo-opuscar",
+    "lemoCommit": "3961ddb3d24d8876e0e2754f7790d66908acee51",
+    "catalog": "lab/lemo-catalog.json",
+    "knownStudyCoverage": "59 ready styles + 98 archive notes; 157 source stills inspected as thumbnail contact sheets; 14 original silent technique studies; zero complete source-film reviews in this study",
+    "sourceFilmAndAudioReviewRequiredBeforeTimingClaims": true,
+    "aeroVlaIdentityPolicy": "先查用户自己的 AeroVLA 工程与报告；历史 /data/AeroVLA 线索不等于本次运行。不得把用户项目自动等同于公开同名项目。",
+    "optionalPublicAeroVlaReference": "https://github.com/XuPeng23/AeroVLA",
+    "publicAeroVlaInterface": "公开项目采用前视与下视双相机输入，自回归数值 token 输出 3DoF + LAND。用户工程接口另行核对；扩散规划独立说明。",
+    "aeroVlaRuntimeStatus": "not-integrated-or-run-by-this-recipe",
+    "metricsPolicy": "引用论文的数据注明论文与实验口径；本片运行数据须另测。不填未经运行的成功率、延迟、精度。"
+  },
+  "sharedDesign": {
+    "heroId": "water-delivery-drone-01",
+    "payloadId": "sealed-water-vessel-01",
+    "world": "原创山海之间的供水站与远端收货平台；地形、建筑和道路构成明确飞行走廊。可依据合法实景资料重建，未核验前不冠以真实地名或飞行航线。",
+    "mainLook": "暖白机壳、深墨绿结构、低饱和自然环境、有限琥珀强调。宏大环境和工业微距共享主角、光向与材质。",
+    "palette": {
+      "shell": "#E6DECD",
+      "structure": "#142C31",
+      "ink": "#F2EBDD",
+      "selectedRoute": "#DAB070",
+      "measurement": "#73B5AC",
+      "rejectedRoute": "#A36B61"
+    },
+    "semanticColorRule": "颜色配合线型与短标签；正常执行、观测及候选淘汰的语义保持稳定。P/I/D 使用固定符号与位置，不靠全片反复换色。",
+    "type": "统一中文无衬线家族与公式字形；标题、关键词、注释三级。文字在曝光/景深合成后保持清晰。",
+    "brandRule": "沿用用户现有 rainbow鱼 logo；实际版本与画面对比度由制作工程选择，保留原始资产。",
+    "payloadRule": "使用密封水容器与可解释的安装支架；透明训练视图与最终运输状态明确区分。",
+    "noDependencyDuplication": true
+  },
+  "sharedStateContract": {
+    "time": [
+      "renderTime",
+      "worldTime",
+      "cameraTime",
+      "musicSourceTime"
+    ],
+    "identity": [
+      "objectId",
+      "partId",
+      "quantityId",
+      "candidateId",
+      "observationId"
+    ],
+    "physics": [
+      "position_m",
+      "quaternion",
+      "velocity_mps",
+      "acceleration_mps2",
+      "payloadMass_kg",
+      "actuatorCommand",
+      "saturation"
+    ],
+    "controller": [
+      "reference",
+      "measurement",
+      "error",
+      "pTerm",
+      "iTerm",
+      "dTerm",
+      "filterState",
+      "antiWindupState"
+    ],
+    "planning": [
+      "observationTimestamp",
+      "candidatePaths",
+      "constraintResults",
+      "rejectedIds",
+      "selectedId",
+      "decisionSummary"
+    ],
+    "geometry": [
+      "restTransform",
+      "parentId",
+      "assemblyAxis",
+      "worldAnchor",
+      "bounds"
+    ],
+    "continuity": [
+      "screenAnchor",
+      "focusAnchor",
+      "cameraPose",
+      "readWindow"
+    ],
+    "provenance": [
+      "source",
+      "method",
+      "measuredOrSimulatedOrIllustrated",
+      "units"
+    ],
+    "determinism": "绝对时间采样；固定随机种子；物理状态预计算或可重复积分。乱序 seek 不改变结果。",
+    "controllerTeachingModel": "单个水平外环的简化教学：e_x=x_ref−x，u_x=Kp*e_x+Ki*integral(e_x)−Kd*v_x_filtered。u_x 是水平加速度命令；姿态/角速度环与旋翼混合另行呈现。",
+    "controllerCaveat": "D 使用测量速度以避免设定值跳变的微分冲击。教学外环不等同于完整真实飞控；真实参数、采样率、限幅与滤波由工程核定。",
+    "clockRule": "所有镜头保存四个时刻的映射；音乐源曲和相机局部时间不得覆盖持续的物理时钟；旁白cue按renderTime对齐。"
+  },
+  "integrationBoundaries": {
+    "cameraDriver": "lab/camera-driver.js",
+    "cameraPoseAdapter": "lab/adapter.js",
+    "cameraTimeMapping": "sampleCameraShot 接收局部 frame；其 worldTime 是候选局部时刻。调用方必须显式转换为项目世界时间，记录 sourceWorldStart 和 remap，不能每段从仿真0秒重播。",
+    "cameraSpaceMapping": "为示例 position/target/focusAnchor 同时转换坐标轴、单位比例和主角锚点；焦距/FOV按光学接口处理，不给方向或角度误乘长度比例。检查转换后端点、速度与遮挡。",
+    "planningExample": "examples/drone-delivery-rebuild/replanning-example.mjs",
+    "planningApi": "examples/drone-delivery-rebuild/API.md",
+    "planningScope": "恒高二维有限候选 A* 等规划与点质量 PID 跟踪；只接入06和08中的相应规划解释，原样例不提供真实VLA/扩散、自由三维飞行、姿态、旋翼、风场或液体。",
+    "controlExperimentsRequired": "02—05的侧风/噪声/增益对照需另建真实扰动项与可重复仿真；相同初态、风、目标只改控制变量。不得传未支持wind选项并宣称风已模拟。",
+    "fullScenePhysicsRequired": "07大幅飞行和08着陆须另建符合机体与载荷约束的状态；不沿用点质量yaw来冒充完整姿态动力学。"
+  },
+  "globalChecks": [
+    "正式渲染前逐段打开所列技能、Lemo STYLE/DEMO 和本地代码；保存所借技法与当前题材的对应关系。",
+    "同一镜头至少比较两种结构不同的方案；选中的原因落到理解、空间或节奏上。",
+    "任何世界状态改变都先发生在数据源，再驱动实体、曲线、公式和标签。",
+    "子弹时刻中相机与世界时间分开；所有机体/水体/数据读取同一 worldTime。",
+    "飞行动力学、流体、光追、Gaussian Splatting 和模型推理分别记录实际实现；不用名称替代实现证据。",
+    "每段检查建立、变化、落定三帧，并连续查看最难动作与两端接缝。",
+    "旁白保持自然语速；实际 TTS 与总混必须听审；音乐可在已解释动作上独立释放。",
+    "全片正常速度审查因果、字幕、遮挡、纹理、声音和叙事闭合，不只检查联系表。"
+  ],
+  "sections": [
+    {
+      "id": "01-water-mission-overview",
+      "title": "一份水，一段还没走通的路",
+      "status": "planned-not-rendered",
+      "budgetSeconds": 24,
+      "storyQuestion": "带着这份水，它怎样飞过去，还能稳稳落下？",
+      "narrationIntent": "先把无人机送水的任务给观众，再预告稳定与规划两个问题；开场先看再听，不报一串技术名。",
+      "draftLine": "让这架无人机把水送过去。风会推它，转弯会带动载荷，路也可能临时变。它凭什么飞得稳，还找得到路？",
+      "observableAction": [
+        "密封容器与机体同框，起飞点和远方收货平台在同一空间建立。",
+        "希区柯克变焦保持机体尺度，背景山海走廊迅速展开；先给完整主角。",
+        "短暂子弹时刻围绕同一架无人机，展示测量点、装配关系与候选路线的预告；拆装阶段冻结旋翼并明确为结构说明，不暗示拆开的机体仍真实飞行。",
+        "沿选中路线向前释放，落到可以读清误差的稳定机位。"
+      ],
+      "guides": [
+        "guides/storytelling.md",
+        "guides/camera.md",
+        "guides/rhythm.md",
+        "guides/lemo-opuscar.md"
+      ],
+      "moduleCandidates": [
+        {
+          "code": "lab/modules/storytelling.js",
+          "candidateId": "story-question-reveal",
+          "use": "任务先出现，悬念落在稳定与路线。"
+        },
+        {
+          "code": "lab/modules/camera-time.js",
+          "candidateId": "camera-hitchcock-zoom",
+          "use": "保持主角取景，拉开背景空间。"
+        },
+        {
+          "code": "lab/modules/camera-time.js",
+          "candidateId": "camera-bullet-time",
+          "use": "世界减速、镜头绕行；只提示后文。"
+        },
+        {
+          "code": "lab/modules/rhythm.js",
+          "candidateId": "rhythm-state-relay",
+          "use": "少量连续状态快速交接后真正停住。"
+        }
+      ],
+      "lemo": [
+        {
+          "slug": "glass-product",
+          "styleDoc": "evidence/lemo-opuscar/docs/glass-product/STYLE.md",
+          "demoDoc": "evidence/lemo-opuscar/docs/glass-product/DEMO.md",
+          "borrow": "窄条灯面从轮廓走到内部，材料有分工；保留全片语义配色，不照搬薄字或整套黑棚。"
+        },
+        {
+          "slug": "white-model",
+          "styleDoc": "evidence/lemo-opuscar/docs/white-model/STYLE.md",
+          "demoDoc": "evidence/lemo-opuscar/docs/white-model/DEMO.md",
+          "borrow": "任务走廊和尺度先成立，再进入观测层。"
+        }
+      ],
+      "cameraAndMotion": "开场大角度推拉但机体中心连续；变焦期间用主体屏幕尺寸求 FOV。短绕行结束对准后文观察位；roll 来自转向并在阅读位归正。",
+      "materialAndData": "真实外壳与结构材质；多视角点云预告与主角共用位置。没有实际重建时标为点云表现研究，不称完成 Gaussian Splatting。",
+      "rateChoices": [
+        {
+          "code": "lab/rate-curves.js",
+          "presetId": "rush-hold-release",
+          "target": "状态预告到稳定观察"
+        }
+      ],
+      "breathAndSound": "按实际音乐首个有力乐句放大空间；起飞和通过镜头有明确事件声。总览中留4—6秒可调整的无旁白窗口，结尾留约2秒看清主角。",
+      "failureChecks": [
+        "主角一出现就能认出水容器和目的地",
+        "变焦不只是缩放画布",
+        "点云和实体不能无因跳位",
+        "总览没有提前塞完 PID 解释",
+        "FOV、焦距与遮挡无跳变"
+      ],
+      "handoff": {
+        "objectId": "water-delivery-drone-01",
+        "anchor": "payload-mount",
+        "nextQuestion": "目标就在这里，为什么机体总会偏离？"
+      },
+      "alternative": "从降落前一次轻微偏移开始，冻结水容器，回看起飞点；使用 story-failure-rewind 的共同起点，空间总览延后到因果建立之后。",
+      "factBoundary": "原创任务与镜头设计，不作为某款真实产品的送水实录。"
+    },
+    {
+      "id": "02-body-sensor-loop",
+      "title": "它先得知道自己偏在哪里",
+      "status": "planned-not-rendered",
+      "budgetSeconds": 36,
+      "storyQuestion": "目标、测量和执行之间怎样接起来？",
+      "narrationIntent": "用一次可见偏移建立闭环；预告 P 看差距、D 看变化、I 看累计，公式只作固定导航。",
+      "draftLine": "目标在这里，机身却被风推开了。先量出差多少，再改下一次动作。接下来就看三个量：现在差多少、还在往哪边动、这个偏差已经留了多久。",
+      "observableAction": [
+        "一阵可见侧风使机体位移，固定目标点保留；误差向量连接同一测量点与目标。",
+        "进入冻结的结构说明状态，外壳沿真实装配轴退开，传感器、控制板与电机安装点保持身份。",
+        "示意信号说明一次测量如何进入控制器；同屏留下目标与实测，旋翼保持冻结。",
+        "装回机体再恢复物理时间，以执行命令改变转子推力；误差标签进入固定公式位置。"
+      ],
+      "guides": [
+        "guides/anatomy-mechanics.md",
+        "guides/continuity.md",
+        "guides/type-color.md"
+      ],
+      "moduleCandidates": [
+        {
+          "code": "lab/modules/mechanics.js",
+          "candidateId": "mechanics-axial-exploded",
+          "use": "借装配次序与轴向，不借示例零件形状。"
+        },
+        {
+          "code": "lab/modules/continuity.js",
+          "candidateId": "continuity-shell-to-force",
+          "use": "外形、结构、作用点使用同一主角。"
+        },
+        {
+          "code": "lab/modules/type-life.js",
+          "candidateId": "type-anchored-label",
+          "use": "标签从真实安装点投影。"
+        },
+        {
+          "code": "lab/modules/continuity.js",
+          "candidateId": "continuity-quantity-to-term",
+          "use": "误差先发生，再进入公式。"
+        }
+      ],
+      "lemo": [
+        {
+          "slug": "teardown",
+          "styleDoc": "evidence/lemo-opuscar/docs/teardown/STYLE.md",
+          "demoDoc": "evidence/lemo-opuscar/docs/teardown/DEMO.md",
+          "borrow": "整机到安装关系，剖面边缘有厚度，内部近景前给整体定位。"
+        },
+        {
+          "slug": "blueprint",
+          "styleDoc": "evidence/lemo-opuscar/docs/blueprint/STYLE.md",
+          "demoDoc": "evidence/lemo-opuscar/docs/blueprint/DEMO.md",
+          "borrow": "作用点、轴和尺寸长在对象上；未核实的尺寸不写。"
+        }
+      ],
+      "cameraAndMotion": "围绕机体缓慢转入三分之四观察位，外壳到位后才推入控制板；借前景壳体遮挡完成近景交接。拆开和装回都保持安全间隙。",
+      "materialAndData": "机壳、碳纤维或金属支架、电路板和橡胶各有粗糙度；硬件型号未定时画功能模型。分开真实结构与示意信号流。",
+      "rateChoices": [
+        {
+          "code": "lab/rate-curves.js",
+          "presetId": "minimum-jerk",
+          "target": "结构拆离与落定"
+        }
+      ],
+      "breathAndSound": "旁白说出测量后，让误差稳定可读；拆壳声轻于解释。给测量到执行一轮闭环留完整观察窗，避免每条信号线都发声。",
+      "failureChecks": [
+        "电机和轴不随剖面重置相位",
+        "背面标签不穿透前景",
+        "只画有功能依据的结构",
+        "测量和控制命令不画成同一种数据",
+        "没有把 PID 描述为语言理解模块"
+      ],
+      "handoff": {
+        "objectId": "water-delivery-drone-01",
+        "quantityId": "position-error-x",
+        "nextQuestion": "差得越远，就该推得越大吗？"
+      },
+      "alternative": "先只显示固定参考点与机体轮廓，完成一次闭环，再进入结构。适合开场信息已经较密的版本。",
+      "factBoundary": "完整硬件建模需实际公开尺寸或合法 CAD；转子发动机样例只提供状态/装配模式，不能当无人机内部几何。"
+    },
+    {
+      "id": "03-proportional-pull",
+      "title": "P：差得远，修正就大",
+      "status": "planned-not-rendered",
+      "budgetSeconds": 42,
+      "storyQuestion": "只看当前误差，为什么既能拉回目标，也可能冲过头？",
+      "narrationIntent": "给比例项一个直观对应：同一误差改变修正量；先看一次回到目标，再只改增益对照超调。",
+      "draftLine": "离目标越远，修正就越大，这一项叫比例。把它调大，反应会更快。可机体已经有速度了，到了目标也不会凭空停住。",
+      "observableAction": [
+        "目标固定，机体横向偏移；误差线长度与 P 命令箭头同步变化。",
+        "同一初态回放两次，只改变 Kp；保留目标和时间刻度。",
+        "过目标的一刻，误差换号，机体仍向前；显示惯性与回拉产生的摆动。",
+        "视图落定到当前速度，提出制动问题。"
+      ],
+      "guides": [
+        "guides/storytelling.md",
+        "guides/visualization.md",
+        "guides/type-color.md",
+        "guides/rate-curves.md"
+      ],
+      "moduleCandidates": [
+        {
+          "code": "lab/modules/storytelling.js",
+          "candidateId": "story-counterfactual",
+          "use": "共同初态，只改一个控制参数。"
+        },
+        {
+          "code": "lab/modules/visualization.js",
+          "candidateId": "visualization-entity-formula",
+          "use": "实测位置差与比例项共用数据。"
+        },
+        {
+          "code": "lab/modules/type-life.js",
+          "candidateId": "type-equation-identity",
+          "use": "公式不换位置，只强调 P。"
+        },
+        {
+          "code": "lab/modules/rhythm.js",
+          "candidateId": "rhythm-explanation-hold",
+          "use": "越过目标后真正停下画面读关系。"
+        }
+      ],
+      "lemo": [
+        {
+          "slug": "data-physical",
+          "styleDoc": "evidence/lemo-opuscar/docs/data-physical/STYLE.md",
+          "demoDoc": "evidence/lemo-opuscar/docs/data-physical/DEMO.md",
+          "borrow": "误差以同一把空间尺比较，命令长度具有一致比例。"
+        },
+        {
+          "slug": "dataviz",
+          "styleDoc": "evidence/lemo-opuscar/docs/dataviz/STYLE.md",
+          "demoDoc": "evidence/lemo-opuscar/docs/dataviz/DEMO.md",
+          "borrow": "先见当前采样点，随后留下历史曲线；时间轴与实体同步。"
+        }
+      ],
+      "cameraAndMotion": "横向轨道保持目标与主角同框；对照期间固定相机与投影尺度。越过目标的一瞬可短慢放，随后恢复同一数据时间。",
+      "materialAndData": "地面尺为嵌入场景的训练刻度，不大面积覆盖全景。箭头取真实符号和单位；机体姿态由水平控制加速度和内环决定。",
+      "rateChoices": [
+        {
+          "code": "lab/rate-curves.js",
+          "presetId": "rush-hold-release",
+          "target": "实体量向公式交接；不驱动控制物理"
+        }
+      ],
+      "breathAndSound": "通过目标后留约2秒看见速度仍在；旁白避开快速回放，轻短声音只提示本轮参数确认。",
+      "failureChecks": [
+        "对照只改 Kp，其他条件相同",
+        "箭头换号经过零值",
+        "曲线与实体不提前/滞后",
+        "没有用装饰 easing 伪造超调",
+        "公式单位和外环定义清楚"
+      ],
+      "handoff": {
+        "quantityId": "velocity-x",
+        "anchor": "drone-center-of-mass",
+        "nextQuestion": "怎样在还没冲过头时就开始收力？"
+      },
+      "alternative": "单机连续调参配可见历史轨迹，替代左右分屏；调参时刻保留状态而非重置位置。",
+      "factBoundary": "画面使用可重复的控制教学模型；示意参数不能标成某款商用无人机的飞控参数。"
+    },
+    {
+      "id": "04-derivative-brake",
+      "title": "D：看清速度，提前收住",
+      "status": "planned-not-rendered",
+      "budgetSeconds": 36,
+      "storyQuestion": "怎样抑制来回摆动，同时不放大测量噪声？",
+      "narrationIntent": "从上段未停住的机体直接讲速度反馈，先展示刹住的变化，再给滤波和噪声一个可理解的短例子。",
+      "draftLine": "再看它靠近目标有多快。还没到，就逐渐收力，来回摆动会小一些。速度读数也会抖，所以不能把每一点噪声都变成电机动作。",
+      "observableAction": [
+        "承接上一段同一状态，叠加与测量速度相反的 D 修正。",
+        "相同初态下比较 P 与 PD；目标误差、速度和命令共用一个游标。",
+        "测量噪声在近景中可见，滤波后命令变化更稳；保留滤波引入的响应变化。",
+        "载荷和机体一起恢复稳定，展示当前项在公式的位置。"
+      ],
+      "guides": [
+        "guides/continuity.md",
+        "guides/camera-depth.md",
+        "guides/visualization.md",
+        "guides/sound-design.md"
+      ],
+      "moduleCandidates": [
+        {
+          "code": "lab/modules/camera-depth.js",
+          "candidateId": "camera-focus-track",
+          "use": "相机移动时跟踪真实载荷/机体锚点。"
+        },
+        {
+          "code": "lab/modules/type-life.js",
+          "candidateId": "type-equation-identity",
+          "use": "从 P 转移到 D 的固定位置。"
+        },
+        {
+          "code": "lab/modules/continuity.js",
+          "candidateId": "continuity-quantity-to-term",
+          "use": "速度变化先发生，再进入当前项。"
+        }
+      ],
+      "lemo": [
+        {
+          "slug": "dataviz",
+          "styleDoc": "evidence/lemo-opuscar/docs/dataviz/STYLE.md",
+          "demoDoc": "evidence/lemo-opuscar/docs/dataviz/DEMO.md",
+          "borrow": "固定尺度对照测量、滤波与执行，不让平滑动画掩盖滤波响应。"
+        },
+        {
+          "slug": "swiss-motion",
+          "styleDoc": "evidence/lemo-opuscar/docs/swiss-motion/STYLE.md",
+          "demoDoc": "evidence/lemo-opuscar/docs/swiss-motion/DEMO.md",
+          "borrow": "同一网格中只转移当前强调，文字抵达后稳定。"
+        }
+      ],
+      "cameraAndMotion": "从宽景误差轨道进入侧面载荷近景；相机先抵达，再切焦点。解释噪声时机位稳定，不额外抖动画面。",
+      "materialAndData": "密封容器可以短时进入标明教学视图的半透明剖面。液面依有效重力和所用晃荡模型更新；未计算的液面只作定性示意。",
+      "rateChoices": [
+        {
+          "code": "lab/rate-curves.js",
+          "presetId": "spring-critical",
+          "target": "说明框的干净响应，不用于代替 PD 仿真"
+        }
+      ],
+      "breathAndSound": "一次回稳完整看完；噪声演示只配受控的短颗粒声，解释滤波时让声音同步收敛。真实旁白优先，避免让尖细音盖住辅音。",
+      "failureChecks": [
+        "D 符号与当前坐标系一致",
+        "使用测量微分时说明其实现",
+        "液面不独立循环或穿透容器",
+        "浅景深不吞掉当前公式",
+        "滤波不宣称无代价且不捏造实测"
+      ],
+      "handoff": {
+        "quantityId": "steady-error-x",
+        "anchor": "target-marker",
+        "nextQuestion": "它已经不怎么摆了，为什么还偏在一边？"
+      },
+      "alternative": "保留宽景，只让一条速度投影弧贴近主角；删去液体近景，适合节奏需要收束的版本。",
+      "factBoundary": "PD 改善与参数、被控对象有关；不承诺任意设置都无超调。"
+    },
+    {
+      "id": "05-integral-crosswind",
+      "title": "I：把一直没改掉的偏差算进去",
+      "status": "planned-not-rendered",
+      "budgetSeconds": 40,
+      "storyQuestion": "持续侧风造成的残余偏差，怎样逐渐补足？",
+      "narrationIntent": "用持续扰动解释积分累积；让饱和与防积分饱和成为同一任务中实际可见的一次变化。",
+      "draftLine": "风一直推着它，单靠眼前那一点误差，可能还留着一点偏。把这段没改掉的偏差积下来，修正就会继续补上。可电机有上限，到顶以后还一直积，等风停了又可能冲出去。",
+      "observableAction": [
+        "同一方向持续来风，PD 达到带残余偏差的状态。",
+        "误差历史像一条有单位的带状面积逐段累积，对应 I 修正增加。",
+        "机体回到目标；再展示一次达到执行限幅的情形。",
+        "防积分饱和状态可见，扰动移除后比较恢复；最后收拢三项到同一控制命令。"
+      ],
+      "guides": [
+        "guides/visualization.md",
+        "guides/storytelling.md",
+        "guides/type-color.md",
+        "guides/continuity.md"
+      ],
+      "moduleCandidates": [
+        {
+          "code": "lab/modules/visualization.js",
+          "candidateId": "visualization-multistate-confluence",
+          "use": "P/I/D 三项汇入一个执行命令，但保持各项身份。"
+        },
+        {
+          "code": "lab/modules/type-life.js",
+          "candidateId": "type-equation-identity",
+          "use": "积分窗口与 I 项对应。"
+        },
+        {
+          "code": "lab/modules/storytelling.js",
+          "candidateId": "story-counterfactual",
+          "use": "相同饱和条件比较开启/关闭防积分饱和。"
+        }
+      ],
+      "lemo": [
+        {
+          "slug": "data-physical",
+          "styleDoc": "evidence/lemo-opuscar/docs/data-physical/STYLE.md",
+          "demoDoc": "evidence/lemo-opuscar/docs/data-physical/DEMO.md",
+          "borrow": "把累计量的增长变得可数、可定位；单位不随造型变化。"
+        },
+        {
+          "slug": "dataviz",
+          "styleDoc": "evidence/lemo-opuscar/docs/dataviz/STYLE.md",
+          "demoDoc": "evidence/lemo-opuscar/docs/dataviz/DEMO.md",
+          "borrow": "控制输出上下界与历史同时可见，当前值与累计值分开。"
+        }
+      ],
+      "cameraAndMotion": "先在横向宽景看持续偏移，随后俯视地面轨迹与误差历史；相机不跨过误差轴导致左右颠倒。总结时回到最初取景。",
+      "materialAndData": "风用场方向和受力变化表达，避免整屏随机流线。累计面积来自同一采样序列；限幅是可见边界。",
+      "rateChoices": [
+        {
+          "code": "lab/rate-curves.js",
+          "presetId": "linear",
+          "target": "等时间样本扫描，累计面积由真实数据积分"
+        }
+      ],
+      "breathAndSound": "先听清持续偏差的原因，再让累计过程独立演出；到限幅时只给一次克制提示，不把告警做成娱乐游戏音。",
+      "failureChecks": [
+        "累计量有正确符号与时间单位",
+        "抗饱和算法明确且与图一致",
+        "积分不因切镜清零",
+        "风移除时间与实体响应一致",
+        "三项合成不等于三个独立物理推力"
+      ],
+      "handoff": {
+        "quantityId": "control-command",
+        "anchor": "selected-reference",
+        "nextQuestion": "飞得稳以后，下一段路该往哪走？"
+      },
+      "alternative": "只展示持续侧风与积分补偿，把饱和放入末段任务的一次实际触发；省出的时间留给完整回稳观察。",
+      "factBoundary": "反事实对照须同条件重放；没有数据就只做解释示意，不填控制性能百分比。"
+    },
+    {
+      "id": "06-world-to-candidates",
+      "title": "看见环境，再选择下一小段路",
+      "status": "planned-not-rendered",
+      "budgetSeconds": 46,
+      "storyQuestion": "世界模型和候选规划怎样给控制器提供下一段目标？",
+      "narrationIntent": "分清观测、预测/候选生成、约束检查与低层执行；让抽象规划始终对应同一场景。",
+      "draftLine": "稳住只是第一步。前面的通道有没有被挡住，下一段该往哪飞，还得从观测里更新。先给出几条候选，避开障碍，留下能执行的一条，再交给控制器跟上。",
+      "observableAction": [
+        "前视与下视观测绑定同一无人机姿态，扫描前沿进入已有环境。",
+        "点云或简化占据模型与原场景严格对齐；未观测区域保留不同状态。",
+        "候选曲线保留稳定 candidateId，依次显示碰撞、动力学与任务约束淘汰。",
+        "一条选中路线从平面分析进入三维世界，再生成控制参考。"
+      ],
+      "guides": [
+        "guides/generative-style.md",
+        "guides/continuity.md",
+        "guides/visualization.md",
+        "guides/lemo-opuscar.md"
+      ],
+      "moduleCandidates": [
+        {
+          "code": "lab/modules/generative-flow.js",
+          "candidateId": "visualization-observation-fan",
+          "use": "观测改变后重组候选，保留原问题。"
+        },
+        {
+          "code": "lab/modules/generative-flow.js",
+          "candidateId": "visualization-directed-flow",
+          "use": "只有采用真实方法时才映射生成方向；示例流场不当作模型输出。"
+        },
+        {
+          "code": "lab/modules/visualization.js",
+          "candidateId": "visualization-route-bridge",
+          "use": "平面与三维共用路径点 ID。"
+        },
+        {
+          "code": "lab/modules/type-life.js",
+          "candidateId": "type-palette-attention",
+          "use": "观测、候选、选中路径逐次成为视觉重点。"
+        }
+      ],
+      "lemo": [
+        {
+          "slug": "lidar-survey",
+          "styleDoc": "evidence/lemo-opuscar/docs/lidar-survey/STYLE.md",
+          "demoDoc": "evidence/lemo-opuscar/docs/lidar-survey/DEMO.md",
+          "borrow": "扫描前沿与切面在同一世界坐标里揭示空间；模拟观测不可冒充真实测绘。"
+        },
+        {
+          "slug": "white-model",
+          "styleDoc": "evidence/lemo-opuscar/docs/white-model/STYLE.md",
+          "demoDoc": "evidence/lemo-opuscar/docs/white-model/DEMO.md",
+          "borrow": "用明确体块和阴影呈现通道、遮挡和安全裕度。"
+        }
+      ],
+      "cameraAndMotion": "从机载镜头沿其光轴后撤成离体漂移，展示无人机、观测范围和目的地的完整关系；路线落入世界后再贴近执行。",
+      "materialAndData": "主环境不换世界；观测层只改变可见信息。实际 diffusion 过程须使用真实采样状态；未运行时用候选轨迹示意标签。用户 AeroVLA 接口先查工程；若引用公开同名项目，其自回归接口与 diffusion 分开。",
+      "rateChoices": [
+        {
+          "code": "lab/rate-curves.js",
+          "presetId": "hesitate-commit",
+          "target": "确有新观测/检查事件时的等待与选定"
+        }
+      ],
+      "breathAndSound": "候选增多可随音乐渐密，正式选定前留一点空隙；淘汰只给少量分组事件声。解释一句后让约束淘汰的过程自己呈现。",
+      "failureChecks": [
+        "候选不是逐帧随机重画",
+        "平面到空间没有路径侧成一条线",
+        "被淘汰理由与约束一致",
+        "未观测不画成已知安全",
+        "VLA、扩散规划和 PID 的职责清楚",
+        "不显示伪造隐藏思考链"
+      ],
+      "handoff": {
+        "candidateId": "selected-path-current",
+        "anchor": "path-first-executable-segment",
+        "nextQuestion": "选好了路，真正飞起来会遇到什么？"
+      },
+      "alternative": "先在一个狭窄通道做三条候选的清楚对照，再拉到宏大环境；比满屏几十条曲线更适合第一次解释。",
+      "factBoundary": "发光曲线、点云和扫描效果是表现方式；只有真实后端或可重复仿真日志才能支撑实时计算声明。"
+    },
+    {
+      "id": "07-music-flight-release",
+      "title": "把刚讲清的控制，放进辽阔的路上",
+      "status": "planned-not-rendered",
+      "budgetSeconds": 38,
+      "storyQuestion": "一个稳定的局部动作，怎样支撑穿过更大空间的任务？",
+      "narrationIntent": "这一段主要让观众看成果，少讲新概念。音乐高潮承载同一条路线上的完整大动作。",
+      "draftLine": "现在，让它带着这份水，沿这条路飞过去。",
+      "observableAction": [
+        "无人机沿选中路线通过近景结构，山海和目的地逐渐展开。",
+        "FPV 绕飞、受控俯冲与拉起属于同一条安全路线；机体和载荷真实联动。",
+        "一个大弯处进入短子弹时刻，已解释过的控制量只作有限回顾。",
+        "镜头从广阔远景自然归回无人机的机载安装点，为最后任务交接。"
+      ],
+      "guides": [
+        "guides/camera.md",
+        "guides/camera-depth.md",
+        "guides/rhythm.md",
+        "guides/look.md",
+        "guides/sound-design.md"
+      ],
+      "moduleCandidates": [
+        {
+          "code": "lab/modules/camera-flight.js",
+          "candidateId": "camera-fpv-slalom",
+          "use": "由近景遮挡和转向 bank 建立飞行速度。"
+        },
+        {
+          "code": "lab/modules/camera-flight.js",
+          "candidateId": "camera-fpv-dive",
+          "use": "尺度清楚的俯冲与拉起，重算当前地形安全路径。"
+        },
+        {
+          "code": "lab/modules/camera-time.js",
+          "candidateId": "camera-bullet-time",
+          "use": "已知机制的一次空间回顾。"
+        },
+        {
+          "code": "lab/modules/aesthetic-direction.js",
+          "candidateId": "look-orbital-return",
+          "use": "宏大最后回到具体的水和接收者。"
+        },
+        {
+          "code": "lab/modules/look.js",
+          "candidateId": "look-multisample-shutter",
+          "use": "曝光窗口子帧采样，文字单独清晰。"
+        }
+      ],
+      "lemo": [
+        {
+          "slug": "urban-sketch",
+          "styleDoc": "evidence/lemo-opuscar/docs/urban-sketch/STYLE.md",
+          "demoDoc": "evidence/lemo-opuscar/docs/urban-sketch/DEMO.md",
+          "borrow": "以近处具体尺度物组织远景，保持观察感；可短时用轮廓绘制作匹配交接，不全片换纸面。"
+        },
+        {
+          "slug": "glass-product",
+          "styleDoc": "evidence/lemo-opuscar/docs/glass-product/STYLE.md",
+          "demoDoc": "evidence/lemo-opuscar/docs/glass-product/DEMO.md",
+          "borrow": "机体轮廓光与材料微距的短暂呼应，保持同一产品身份。"
+        }
+      ],
+      "cameraAndMotion": "三维位置先按弧长分配速度，look-ahead 决定视线，bank 跟转向；避免无目的正弦摇摆。近景高速穿越后接开阔长弧，留空间给乐句。",
+      "materialAndData": "前中远景共用光向与空气透视；高频地表与水面纹理需抗混叠。水面反射按实际渲染方案标记，不能用闪烁噪声装成波光。",
+      "rateChoices": [
+        {
+          "code": "lab/rate-curves.js",
+          "presetId": "minimum-jerk",
+          "target": "镜头抵达机载锚点"
+        },
+        {
+          "code": "lab/rate-curves.js",
+          "presetId": "ease-in-out",
+          "target": "全景长弧的起落，连续飞行中不每点归零"
+        }
+      ],
+      "breathAndSound": "由实际高潮长度决定可调整的8—14秒无旁白大动作；旋翼、风与通过声保留远近，低频冲击只给一个主要释放点。",
+      "failureChecks": [
+        "镜头路径与机体执行路径分别安全",
+        "俯冲没有穿地或不可能拉起",
+        "主体不因大运镜丢失",
+        "滚转归正不突然",
+        "音乐高潮没有新公式和长字幕争抢",
+        "水与叶片运动无频闪/摩尔纹"
+      ],
+      "handoff": {
+        "objectId": "water-delivery-drone-01",
+        "anchor": "onboard-front-camera",
+        "nextQuestion": "到了最后一段，环境又变了，它能及时改路吗？"
+      },
+      "alternative": "用一个连续长镜头从微距机臂穿到山海全景，再归回机载视角；相较多视角快剪，强调辽阔和持续前进。",
+      "factBoundary": "飞行动作根据载荷与机体约束制作；镜头自由飞行不等于无人机本体拥有同样极限。"
+    },
+    {
+      "id": "08-first-person-delivery-aerovla",
+      "title": "看见变化，改一小段，送到手中",
+      "status": "planned-not-rendered",
+      "budgetSeconds": 58,
+      "storyQuestion": "观测更新以后，规划与控制怎样共同完成最后一次交付？",
+      "narrationIntent": "让观众亲历一轮闭环，用水送达收束故事，再说明 AeroVLA 和本片方法的位置。",
+      "draftLine": "前面的落点被挡住了。更新观测，放弃这条候选，换到旁边能落下的位置。目标变了，控制器继续跟上。水送到了，刚才那条从看见、选择到执行的链，也走完了一次。",
+      "observableAction": [
+        "画面严格接上机载相机；前视为主，下视在降落阶段出现，挂载位置与机体同步。",
+        "一个明确的新障碍进入观测；界面更新时间戳和障碍状态，旧选中路径标记失效。",
+        "有限候选被约束淘汰，选中路径更新为新的稳定 ID；只显示简短决策摘要。",
+        "目标轨迹到位置/姿态跟踪再到执行响应；机体减速、对准并着陆。",
+        "先确认着陆状态，再展示安全卸载密封容器和接收结果。",
+        "由实际机载观测/任务记录退到 AeroVLA 论文页，清楚区分来源研究、本片实现和实测数据。"
+      ],
+      "guides": [
+        "guides/camera.md",
+        "guides/camera-depth.md",
+        "guides/continuity.md",
+        "guides/type-color.md",
+        "guides/lemo-opuscar.md"
+      ],
+      "moduleCandidates": [
+        {
+          "code": "lab/modules/camera-flight.js",
+          "candidateId": "camera-first-person",
+          "use": "借视线先行与空间锚点；替换人眼高度/步态为无人机真实挂载变换。"
+        },
+        {
+          "code": "lab/modules/camera-flight.js",
+          "candidateId": "camera-soul-drift",
+          "use": "从机载锚点抽离到外部观察，再回到同一锚点；按无人机重算路径。"
+        },
+        {
+          "code": "lab/modules/visualization.js",
+          "candidateId": "visualization-route-bridge",
+          "use": "决策面板和世界路径使用同一 ID/点集。"
+        },
+        {
+          "code": "lab/modules/type-life.js",
+          "candidateId": "type-anchored-label",
+          "use": "落点、避障与载荷状态贴近对应物。"
+        },
+        {
+          "code": "lab/modules/look.js",
+          "candidateId": "look-editorial-layout",
+          "use": "尾页以清楚层级展示论文、方法和真实记录。"
+        }
+      ],
+      "lemo": [
+        {
+          "slug": "visual-investigation",
+          "styleDoc": "evidence/lemo-opuscar/docs/visual-investigation/STYLE.md",
+          "demoDoc": "evidence/lemo-opuscar/docs/visual-investigation/DEMO.md",
+          "borrow": "从可见证据到判断，来源紧贴结论，记录与画面互相对照。"
+        },
+        {
+          "slug": "swiss-motion",
+          "styleDoc": "evidence/lemo-opuscar/docs/swiss-motion/STYLE.md",
+          "demoDoc": "evidence/lemo-opuscar/docs/swiss-motion/DEMO.md",
+          "borrow": "尾页网格与文字层级稳定，重点逐项交接。"
+        },
+        {
+          "slug": "dataviz",
+          "styleDoc": "evidence/lemo-opuscar/docs/dataviz/STYLE.md",
+          "demoDoc": "evidence/lemo-opuscar/docs/dataviz/DEMO.md",
+          "borrow": "任务轨迹、误差历史与事件时间对齐；没有测得的指标保持空缺。"
+        }
+      ],
+      "cameraAndMotion": "FPV 姿态来自机体/云台，感光与曝光连续；禁止照搬人类步行的头部起伏。落地后先稳定观察，再从水容器尺度缓缓拉远。",
+      "materialAndData": "HUD 只保留当前目标、观测时间、所选路径和控制状态；落点/障碍处用空间标注。若没有实时后端则标为教学回放，决策摘要由已记录事件生成。",
+      "rateChoices": [
+        {
+          "code": "lab/rate-curves.js",
+          "presetId": "minimum-jerk",
+          "target": "尾页与结尾外部镜头抵达"
+        },
+        {
+          "code": "lab/rate-curves.js",
+          "presetId": "rush-hold-release",
+          "target": "新观测确认、选定和执行的阅读交接"
+        }
+      ],
+      "breathAndSound": "重规划时降低音乐密度，观测变化和选定各给一个短提示；着陆接触声绑定真正接触帧。送达后留3—5秒可调整的安静结果，再接论文页。",
+      "paperPage": {
+        "heading": "AeroVLA",
+        "identityFirst": "读取用户自己的 AeroVLA 工程和报告，验证名称、接口与版本。公开同名项目只作可选独立文献。",
+        "optionalPublicReference": "https://github.com/XuPeng23/AeroVLA",
+        "publicReferenceInterfaceLabel": "前视/下视观测 → 自回归数值动作 token → 3DoF + LAND",
+        "userModelInterfaceLabel": null,
+        "separateMethodLabel": "世界模型与扩散候选规划：按本片实际实现单独列出",
+        "implementationPolicy": "先区分用户工程与公开同名项目；未接入运行时写引用方法或拟接入，不能宣称本片使用了实际权重或达到了论文性能。",
+        "dataSlots": [
+          "实际任务条件",
+          "运行/回放性质",
+          "观测与命令时间",
+          "位置误差记录",
+          "已执行实验的来源与版本"
+        ],
+        "unmeasuredData": null
+      },
+      "failureChecks": [
+        "先有新观测再更新路径",
+        "候选拒绝与选中不发生在同一不可读瞬间",
+        "HUD 不编造内部推理或实时算力",
+        "用户 AeroVLA 与公开同名项目身份分开，引用接口与扩散方法分开",
+        "进入机载视角没有姿态跳跃",
+        "卸载发生在安全着陆之后",
+        "接收者与旋翼有合理安全关系",
+        "尾页没有捏造模型指标或跑通记录"
+      ],
+      "handoff": {
+        "objectId": "sealed-water-vessel-01",
+        "anchor": "delivery-received",
+        "resolution": "回到开场的送水目标；观众看见结果与完整闭环。"
+      },
+      "alternative": "保持连续机载视角完成交付，结尾用真实任务日志覆盖同一画面，论文页仅在最后短暂进入；避免尾段突然变成独立演示软件。",
+      "factBoundary": "无人机送水是本片任务设计。AeroVLA 名称与公开接口可引用，但完整无人机控制、液体运输和扩散规划的联合系统必须另行实现和验证。"
+    }
+  ]
+}

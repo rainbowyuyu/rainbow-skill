@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="研究 3Blue1Brown 公开代码中的数学表达方法，比较四个原创 Manim 迁移样例与同参数交互。">
+  <title>公式有来处 · Manim 可视化研究室</title>
+  <link rel="stylesheet" href="./manim-formula.css"><link rel="stylesheet" href="./document-reader.css">
+</head>
+<body>
+  <a class="skip" href="#study">跳到样例</a>
+  <header class="topbar"><a class="brand" href="./index.html"><img src="./brand.png" alt="rainbow鱼" width="45" height="32"><span>镜头与节奏<small>MANIM / MATHEMATICAL EXPLANATION</small></span></a><nav aria-label="研究与复现"><a href="../studies/3b1b-manim-source.md">公开源码研究 ↗</a><a href="../guides/manim-formula-language.md">公式编排方法 ↗</a><a href="../examples/manim-formula/API.md">运行说明 ↗</a></nav></header>
+  <main>
+    <section class="intro"><div><p class="eyebrow">STUDY 3B1B · ORIGINAL MANIM EXAMPLES</p><h1>让公式<span>自己说明。</span></h1></div><p>符号从哪里来，变化后去了哪里。<br>在图形里看见，再回到公式里读懂。</p></section>
+    <section id="study" class="study" aria-labelledby="study-title">
+      <div class="study-heading"><h2 id="study-title">四种数学表达 · 对照选用</h2><span id="engine">原生 Manim 样例</span></div>
+      <div id="scene-tabs" class="scene-tabs" role="tablist" aria-label="四种数学表达方法"></div>
+      <div class="study-layout">
+        <div id="scene-panel" class="media-column" role="tabpanel" tabindex="0">
+          <div class="media-stage"><video id="film" playsinline preload="metadata" aria-label="原创 Manim 样例"></video><div id="media-wait" class="media-wait"><span aria-hidden="true">ƒ</span><h3>载入原生渲染</h3><p id="media-status">读取样例清单与媒体状态。</p></div><span id="render-badge" class="render-badge" hidden>MANIM · 实际渲染</span></div>
+          <div class="transport"><button id="restart" type="button" aria-label="回到片头">↺</button><button id="prev" type="button" aria-label="上一帧">‹</button><button id="play" type="button" disabled>播放</button><button id="next" type="button" aria-label="下一帧">›</button><input id="timeline" type="range" min="0" max="1" step="0.041666667" value="0" aria-label="样片时间" disabled><output id="time">0.00 / 0.00</output><label class="sr-only" for="speed">播放速度</label><select id="speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option></select></div>
+          <div class="phase-caption"><span id="active-phase">选择一个样例</span><span id="media-meta">原创迁移 · 无声练习</span></div>
+        </div>
+        <aside class="inspector"><p id="scene-kicker" class="eyebrow">SEMANTIC TRANSFORM</p><h3 id="scene-title">符号保留身份</h3><p id="scene-question" class="question"></p><div id="formula" class="formula" aria-label="本例公式"></div><div class="invariant"><span>变化中保留</span><p id="invariant"></p></div><div class="invariant"><span>画面改变</span><p id="changing"></p></div><div class="scene-actions"><button id="code-open" type="button">查看 Python 代码 ↗</button><button id="copy-recipe" type="button">复制接入配方</button></div></aside>
+      </div>
+      <div id="chapters" class="chapters" aria-label="样片解释阶段"></div>
+      <p class="evidence-line">上方是本机生成的原创 Manim Community 样片；研究源于 3b1b 公开代码。版本与迁移关系见来源记录。</p>
+    </section>
+    <section class="interactive" aria-labelledby="interactive-title">
+      <div class="section-title"><div><p class="eyebrow">ONE PARAMETER · TWO VIEWS</p><h2 id="interactive-title">拖一个量，看两种表达。</h2></div><p>下方是网页 SVG 交互示意。<br>用来检查数学联动；不是 Manim 视频渲染。</p></div>
+      <div class="interactive-grid"><div class="svg-stage"><svg id="linked-view" viewBox="0 0 760 360" role="img" aria-labelledby="svg-title svg-desc"><title id="svg-title">同一参数驱动图形</title><desc id="svg-desc">拖动参数，数值和图形同步更新。</desc></svg><span class="svg-badge">LIVE SVG / 数学联动</span></div><div class="parameter-panel"><p id="live-question"></p><div class="parameter-top"><label id="parameter-label" for="parameter">参数</label><output id="parameter-value"></output></div><input id="parameter" type="range" min="0" max="1" step="0.01" value="0.5"><div class="slider-ends"><span id="parameter-min"></span><button id="reset-parameter" type="button">还原</button><span id="parameter-max"></span></div><output id="live-equation" class="live-equation"></output><p id="live-meaning" class="live-meaning"></p></div></div>
+    </section>
+    <section class="language" aria-label="三个编排约束"><article><span>01 / IDENTITY</span><h3>颜色追踪数学对象。</h3><p>同一量在公式、几何与读数中保持关联。颜色承担含义，变化才有来处。</p></article><article><span>02 / CAUSALITY</span><h3>动作只推进一步。</h3><p>先拆一项、移一个点或换一个基，再给观众观察结果的时间。</p></article><article><span>03 / INVARIANT</span><h3>说清什么没有变。</h3><p>等式两侧的值、同一条曲线或向量坐标，是穿过变化的参照物。</p></article></section>
+    <section class="resources"><div><p class="eyebrow">REUSE WITH A PURPOSE</p><h2>先定要解释的关系，再选动画。</h2><p>四例展示符号身份、导数联动、基变换与旋转投影。它们是可修改的原创迁移，不是对原作者全部视频与实例库的复刻。</p><div class="resource-links"><a href="../examples/manim-formula/scenes.py" download>完整 Python 源码 ↓</a><a href="../examples/manim-formula/API.md">运行与参数 ↗</a><a href="../guides/manim-formula-language.md">接入技能 ↗</a></div></div><div class="source-box"><h3>来源与实现分开记录</h3><dl><dt>原作者</dt><dd>3Blue1Brown / 3b1b</dd><dt>研究对象</dt><dd>公开视频工程与 ManimGL 的表达方法</dd><dt>当前实现</dt><dd>Manim Community · 原创四场景</dd><dt>交互示意</dt><dd>原生 JavaScript + SVG · 无新增依赖</dd></dl><a href="../studies/3b1b-manim-source.md">查看具体文件、提交与证据范围 ↗</a></div></section>
+  </main>
+  <footer><span>对象有身份 · 变化有因果 · 观察有时间</span><a href="https://github.com/3b1b/videos" target="_blank" rel="noopener noreferrer">3b1b / videos ↗</a></footer>
+  <dialog id="code-dialog" aria-labelledby="code-title"><div class="dialog-top"><div><p class="eyebrow">ORIGINAL IMPLEMENTATION</p><h2 id="code-title">Manim 场景代码</h2></div><button id="code-close" aria-label="关闭代码" type="button">×</button></div><p>完整脚本保留公共组件与四个场景；当前例子的类名会显示在下方。</p><div class="code-toolbar"><code id="class-name"></code><button id="copy-code" type="button" disabled>复制完整代码</button><a href="../examples/manim-formula/scenes.py" download>下载源文件 ↓</a></div><pre id="code-content" tabindex="0">载入中…</pre></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./manim-formula.js"></script><script type="module" src="./document-reader.js"></script>
+</body>
+</html>

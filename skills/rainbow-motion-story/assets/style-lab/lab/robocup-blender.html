@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="从 RoboCup 参考片研究空间叙事，用原创 Blender 场景练习低位、升高、拆层、贴地与结构揭示。">
+  <title>让镜头解释空间 · Blender 运镜研究室</title>
+  <link rel="stylesheet" href="./robocup-blender.css">
+  <link rel="stylesheet" href="./document-reader.css">
+</head>
+<body>
+  <a class="skip-link" href="#work">跳到原创样片</a>
+  <header class="site-header">
+    <a class="brand" href="./index.html"><img src="./brand.png" alt="rainbow鱼" width="45" height="32"><span>镜头与节奏<small>BLENDER / SPATIAL EXPLANATION</small></span></a>
+    <nav aria-label="研究资料"><a href="../studies/robocup-blender.md">原片观察 ↗</a><a href="../guides/robot-spatial-explainer.md">制作方法 ↗</a><a href="../examples/robocup-blender/API.md">代码接入 ↗</a></nav>
+  </header>
+  <main>
+    <section class="introduction" aria-labelledby="page-title">
+      <div><p class="eyebrow">ORIGINAL BLENDER STUDY / 02</p><h1 id="page-title">让镜头解释<span>空间。</span></h1></div>
+      <p class="intro-copy">靠近，看清一个零件。升高，看懂它所在的系统。<br>同一台机器人，连接感知、地图与行动。</p>
+    </section>
+
+    <section id="work" class="work" aria-labelledby="work-title">
+      <div class="work-heading"><h2 id="work-title"><span class="status-dot" aria-hidden="true"></span>原创机器人 · 镜头与结构练习</h2><span id="render-label" class="render-label">媒体清单载入中</span></div>
+      <div class="media-layout">
+        <div class="media-main">
+          <div class="media-stage">
+            <div id="film-view" class="film-view" hidden><video id="film" controls playsinline preload="metadata" aria-label="原创机器人 Blender 运镜短片" aria-describedby="playback-hint"></video></div>
+            <figure id="still-view" class="still-view" hidden><img id="still" alt="" width="1280" height="720"><figcaption id="still-caption"></figcaption></figure>
+            <div id="empty-media" class="empty-media"><span class="empty-orbit" aria-hidden="true"></span><h3>等待实际渲染资产</h3><p id="empty-copy">读取原创示例的媒体清单。下方可先查看镜头配方与制作方法。</p></div>
+            <p id="media-error" class="media-error" role="status" hidden></p>
+          </div>
+          <div class="media-bar">
+            <div class="mode-switch" role="group" aria-label="查看方式"><button id="film-mode" type="button" aria-pressed="false" disabled>▷ 看运镜</button><button id="still-mode" type="button" aria-pressed="true" disabled>▧ 看细节</button></div>
+            <span id="media-meta" class="media-meta">原创场景 · 实际出图后显示</span>
+          </div>
+          <div id="transport" class="transport" hidden><button id="replay" type="button" aria-label="回到片头">↺</button><button id="prev-frame" type="button" aria-label="上一帧">‹</button><button id="play" type="button">播放</button><button id="next-frame" type="button" aria-label="下一帧">›</button><label>速度 <select id="speed" aria-label="播放速度"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option></select></label><output id="time">0.00 / 0.00 s</output></div>
+        </div>
+        <aside class="frame-rail" aria-labelledby="frames-title"><div class="rail-heading"><p class="eyebrow">PAUSE & LOOK</p><h3 id="frames-title">先看清，再移动。</h3><span id="frame-count">代表静帧载入中</span></div><div id="frames" class="frames" role="group" aria-label="选择实际渲染代表帧"></div><p class="rail-note">短片检查镜头连续性。静帧检查轮廓、遮挡与材料；二者的渲染器分别标注。</p></aside>
+      </div>
+      <p id="playback-hint" class="playback-hint">不自动播放。‹ / › 按短片帧率逐帧查看；切到静帧或离开页面会暂停。</p>
+    </section>
+
+    <section class="recipes-section" aria-labelledby="recipes-title">
+      <div class="section-intro"><div><p class="eyebrow">CAMERA RECIPES</p><h2 id="recipes-title">每一次转向，都有一个问题。</h2></div><p>五种可迁移的方法。下方配方来自参考研究，<br>不是对作者焦距、插件或工程设置的推断。</p></div>
+      <div class="recipe-layout">
+        <div id="recipe-tabs" class="recipe-tabs" role="tablist" aria-orientation="vertical" aria-label="可复用镜头配方">
+          <button id="tab-sensor" role="tab" aria-selected="true" aria-controls="recipe-panel" tabindex="0" data-recipe="sensor"><span class="recipe-number">01</span><span>靠近感知<small>从整体到传感器</small></span><span class="recipe-arrow" aria-hidden="true">↗</span></button>
+          <button id="tab-rise" role="tab" aria-selected="false" aria-controls="recipe-panel" tabindex="-1" data-recipe="rise"><span class="recipe-number">02</span><span>升高见全局<small>从射线到空间</small></span><span class="recipe-arrow" aria-hidden="true">↗</span></button>
+          <button id="tab-layers" role="tab" aria-selected="false" aria-controls="recipe-panel" tabindex="-1" data-recipe="layers"><span class="recipe-number">03</span><span>斜看拆层<small>让层次保留厚度</small></span><span class="recipe-arrow" aria-hidden="true">↗</span></button>
+          <button id="tab-field" role="tab" aria-selected="false" aria-controls="recipe-panel" tabindex="-1" data-recipe="field"><span class="recipe-number">04</span><span>贴近数据地形<small>把数值放回现场</small></span><span class="recipe-arrow" aria-hidden="true">↗</span></button>
+          <button id="tab-chassis" role="tab" aria-selected="false" aria-controls="recipe-panel" tabindex="-1" data-recipe="chassis"><span class="recipe-number">05</span><span>进入执行机构<small>从指令到真实部件</small></span><span class="recipe-arrow" aria-hidden="true">↗</span></button>
+        </div>
+        <article id="recipe-panel" class="recipe-panel" role="tabpanel" aria-labelledby="tab-sensor" tabindex="0">
+          <div class="recipe-topline"><p id="recipe-reference" class="recipe-reference">参考观察 / 约 3–6.5 秒</p><span id="recipe-tag" class="recipe-tag">目标交接</span></div>
+          <h3 id="recipe-title">先认出机器人，再让视线落到传感器。</h3>
+          <p id="recipe-copy" class="recipe-copy">整体轮廓给观众一个方向。推进时把观察目标缓慢移向传感器；射线从真实位置发出，信息就有了归属。</p>
+          <ol id="recipe-steps" class="recipe-steps"><li>用三分之四低机位交代机器人。</li><li>相机接近，同时把目标交接到传感器。</li><li>镜头稳定后，才呈现测量射线与结果。</li></ol>
+          <div class="recipe-bottom"><p><span>检查</span><span id="recipe-check">传感器不要被壳体挡住；射线起点跟随部件，不飘在画面上。</span></p><button id="copy-recipe" type="button">复制这条配方 <span aria-hidden="true">↗</span></button></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="principles" aria-label="空间解释的三个约束"><article><span>01 / ANCHOR</span><h3>换表达，不换归属。</h3><p>实体、点云、地图共用空间坐标。观众始终知道，眼前的数据属于哪台机器。</p></article><article><span>02 / DEPTH</span><h3>透明，也要有前后。</h3><p>只揭开需要解释的部分。轮廓、实体遮挡与固定灯位共同维持体积。</p></article><article><span>03 / BREATH</span><h3>移动之后，留出阅读。</h3><p>位移用来带到问题，稳定用来讲清原因。别让解释窗口也一直在飞。</p></article></section>
+
+    <section class="resources" aria-labelledby="resources-title">
+      <div><p class="eyebrow">OPEN THE SCENE</p><h2 id="resources-title">把方法带进自己的工程。</h2><p>代码与原生场景属于这份原创练习。修改机位、目标与材料时，先检查代表帧，再检查连续运动。</p><div class="resource-actions"><a id="scene-link" class="primary-link" hidden download>打开 .blend 场景 ↓</a><button id="code-open" type="button">读生成代码 ↗</button><a href="../examples/robocup-blender/API.md">复现说明 ↗</a></div></div>
+      <div class="verification"><h3>这次具体做了什么</h3><dl id="technical-data"><dt>参考研究</dt><dd>源片采样观察，与原创实现分开记录</dd><dt>原创资产</dt><dd>以实际媒体清单为准</dd></dl><p id="technical-note">示例用于镜头与空间表达练习。路径、数据和拆解动画不等同于真实机器人导航或物理仿真。</p><a href="../studies/robocup-blender-technical.md">Blender 接口与官方资料核对 ↗</a></div>
+    </section>
+  </main>
+  <footer><span>实体 · 数据 · 观察顺序</span><a href="https://v.douyin.com/MbHeNWgRuNE/" target="_blank" rel="noopener noreferrer">参考：林花钱《26年robocup国冠作品思路简介（一）》 ↗</a></footer>
+  <dialog id="code-dialog" aria-labelledby="code-title"><div class="dialog-heading"><div><p class="eyebrow">ORIGINAL IMPLEMENTATION</p><h2 id="code-title">Blender 场景生成代码</h2></div><button id="code-close" type="button" aria-label="关闭代码">×</button></div><p class="dialog-note">这是本研究的原创实现，不是参考作者的源工程。</p><div class="code-actions"><a id="code-download" href="../examples/robocup-blender/build_demo.py" download>下载 Python 文件 ↓</a><button id="copy-code" type="button" disabled>复制代码</button></div><pre id="code-content" tabindex="0">载入中…</pre></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./robocup-blender.js"></script>
+  <script type="module" src="./document-reader.js"></script>
+</body>
+</html>

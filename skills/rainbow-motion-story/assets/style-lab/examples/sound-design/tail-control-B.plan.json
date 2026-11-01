@@ -1,0 +1,112 @@
+{
+  "id": "tail-control",
+  "title": "落定以后，把空间还给阅读",
+  "question": "同一个金属落定后，长尾还是短尾更适合读公式？",
+  "duration": 8,
+  "variants": [
+    {
+      "id": "A",
+      "title": "长尾持续",
+      "description": "同一模态和初始增益，衰减延续2.8秒。"
+    },
+    {
+      "id": "B",
+      "title": "短尾落定",
+      "description": "同一模态和初始增益，衰减缩短到0.42秒。"
+    }
+  ],
+  "events": [
+    {
+      "id": "seat",
+      "kind": "metal",
+      "onset": 0.8,
+      "peak": 1.45,
+      "contact": 1.8,
+      "end": 2.3,
+      "priority": 1
+    }
+  ],
+  "speechWindows": [],
+  "readWindows": [
+    {
+      "start": 2.25,
+      "end": 5.6,
+      "label": "公式阅读窗口"
+    }
+  ],
+  "variant": "B",
+  "options": {
+    "sampleRate": 48000,
+    "offsetMs": 0,
+    "gainDb": 0,
+    "intensity": 1,
+    "includeSpeechPlaceholder": false
+  },
+  "cues": [
+    {
+      "id": "environment",
+      "sound": "room-air",
+      "eventId": null,
+      "anchor": "onset",
+      "anchorTime": 0,
+      "anchorOffset": 0,
+      "start": 0,
+      "duration": 8,
+      "priority": 0.1,
+      "gain": 0.026,
+      "pan": 0,
+      "seed": 45671,
+      "params": {},
+      "policy": "space",
+      "designSyncDelta": 0,
+      "end": 8
+    },
+    {
+      "id": "seat:metal-contact",
+      "sound": "metal-contact",
+      "eventId": "seat",
+      "anchor": "contact",
+      "anchorTime": 1.8,
+      "anchorOffset": 0,
+      "start": 1.8,
+      "duration": 0.42,
+      "priority": 1,
+      "gain": 0.28,
+      "pan": 0,
+      "seed": 1709,
+      "params": {
+        "peakFraction": 0,
+        "motionStart": 0.8,
+        "motionEnd": 2.3,
+        "mapping": false,
+        "decay": 0.105,
+        "brightness": 0.92
+      },
+      "policy": "full",
+      "designSyncDelta": 0,
+      "end": 2.22
+    }
+  ],
+  "excludedCues": [],
+  "masterGain": 0.82,
+  "placeholderNotice": "Optional surrogate is amplitude-modulated synthetic tones/noise, NOT voice, TTS or proof of intelligibility.",
+  "soundOrigin": "Original deterministic synthesis; no third-party samples.",
+  "cueMeasurements": [
+    {
+      "id": "seat:metal-contact",
+      "sound": "metal-contact",
+      "designAnchor": "contact",
+      "designAnchorTime": 1.8,
+      "designAnchorOffset": 0,
+      "designedSyncDelta": 0,
+      "measuredThreshold10PercentTime": 1.8007083333333334,
+      "measuredAbsolutePeakTime": 1.802375,
+      "measured8msRmsPeakTime": 1.8053125,
+      "peakDelayFromAnchor": 0.002375000000000016,
+      "thresholdDelayFromAnchor": 0.0007083333333333108,
+      "sourcePeak": 0.7462205290794373,
+      "firstSample": 0,
+      "lastSample": 0
+    }
+  ]
+}

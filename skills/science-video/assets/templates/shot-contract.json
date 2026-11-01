@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Copy and adapt to the actual scene; example timings are not a prescribed story.",
+  "fps": 30,
+  "size": [1920, 1080],
+  "world": {"unit": "m", "up": "+Y", "seed": 42},
+  "shot": {
+    "id": "drop-entry",
+    "frameIn": 1020,
+    "frameOutExclusive": 1170,
+    "narrationIds": ["sentence-07"],
+    "visualAction": "Camera follows the light into the existing drop; the front surface becomes transparent.",
+    "subjectId": "drop-01",
+    "anchor": {"objectId": "drop-01", "localPosition": [0, 0, 0]},
+    "displayScaleNote": "Enlarged geometric-optics illustration; retain validated ray angles.",
+    "camera": {"pathId": "drop-orbit", "entryPose": null, "exitPose": null, "entryVelocity": null, "exitVelocity": null},
+    "transition": {"anchor": "drop-center", "occluder": "front-water-surface", "incomingShot": "rain-field", "outgoingShot": "refraction"},
+    "layers": {"foreground": "water-surface", "focus": "ray-entry-point", "background": "rain-field", "opacityTrack": "drop-surface-reveal"},
+    "text": {"label": "光进水滴", "anchorId": "ray-entry-point", "avoid": ["brand", "captions", "mechanism"], "fontFamily": null},
+    "dataSourceIds": [],
+    "assetIds": [],
+    "reviewFrames": [1019, 1020, 1021, 1095, 1169, 1170],
+    "review": {"geometry": "pending", "occlusion": "pending", "motion": "pending", "normalSpeedPlayback": "pending"}
+  }
+}

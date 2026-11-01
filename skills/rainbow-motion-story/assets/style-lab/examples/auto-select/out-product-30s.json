@@ -1,0 +1,380 @@
+{
+  "schema": "auto-select/plan@1",
+  "brief": {
+    "title": "卡片式素材管理器：30 秒功能演示",
+    "topic": "从素材库里找到一张卡片，拖入时间线，看到它到达播放头并提交，随后在新面板里展开详情",
+    "duration": 30.0,
+    "aspect": "9:16",
+    "genre": "product",
+    "tones": [
+      "brisk",
+      "warm"
+    ],
+    "need_sound": true,
+    "must_explain": [
+      "找到素材并选中",
+      "拖到时间线并提交",
+      "结果确认"
+    ],
+    "audience": "短视频创作者，已会用剪辑软件但不熟悉这个产品"
+  },
+  "segmentBudget": [
+    {
+      "segment": "hook",
+      "name": "钩子",
+      "seconds": 3.6,
+      "share": 0.12
+    },
+    {
+      "segment": "explain",
+      "name": "解释",
+      "seconds": 18.12,
+      "share": 0.604
+    },
+    {
+      "segment": "reveal",
+      "name": "揭示",
+      "seconds": 5.88,
+      "share": 0.196
+    },
+    {
+      "segment": "close",
+      "name": "收束",
+      "seconds": 2.4,
+      "share": 0.08
+    }
+  ],
+  "timeline": [
+    {
+      "beat": 1,
+      "segment": "hook",
+      "segmentName": "钩子",
+      "start": 0.0,
+      "end": 3.6,
+      "duration": 3.6,
+      "techniqueId": "hook-type-orbit",
+      "technique": "环形字粒收束到一句可读标题",
+      "moduleIds": [
+        "motionface-type.js"
+      ],
+      "params": {
+        "holdSeconds": 1.4,
+        "lockLayoutBeforeReveal": true,
+        "maxCharsPerLine": 12
+      },
+      "sound": {
+        "layer": "air",
+        "detail": "字粒落下时一次短气流，收住后静音进正文"
+      },
+      "why": "genre=product；tone=brisk；aspect=9:16",
+      "risk": "长句不要塞进环阵；落定后必须停止位移",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/motionface-type.md",
+          "claim": "先把文字当作有身份的图形队列，再按既定目标位逐组落定"
+        },
+        {
+          "path": "assets/style-lab/studies/motionface-focus.md",
+          "claim": "环阵提供方向和速度感，阅读窗口中停止旋转和拖影"
+        },
+        {
+          "path": "assets/style-lab/guides/motionface-type.md",
+          "claim": "短句适合开场，长句先分语义组"
+        }
+      ]
+    },
+    {
+      "beat": 2,
+      "segment": "explain",
+      "segmentName": "解释",
+      "start": 3.6,
+      "end": 9.64,
+      "duration": 6.04,
+      "techniqueId": "explain-ui-relay",
+      "technique": "界面对象接力：同一素材跨容器移动",
+      "moduleIds": [
+        "ui-identity-relay",
+        "ui-click-to-timeline"
+      ],
+      "params": {
+        "holdSeconds": 1.8,
+        "assetIdRequired": true,
+        "liftToOverlay": true
+      },
+      "sound": {
+        "layer": "contact",
+        "detail": "到达与提交分开；commit 才响确认"
+      },
+      "why": "genre=product；tone=brisk/warm；aspect=9:16；关键词命中：软件、面板、素材、选中",
+      "risk": "跨容器直接跳坐标，原容器会留下第二张主卡片",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/ui-continuity.md",
+          "claim": "先保存对象的屏幕矩形，提升到共同浮层，再交给目标容器"
+        },
+        {
+          "path": "assets/style-lab/studies/max-ui-motion.md",
+          "claim": "把找素材—导入—进入时间线连成一组明确动作"
+        },
+        {
+          "path": "assets/style-lab/guides/ui-continuity.md",
+          "claim": "大面板负责动，小文字负责读"
+        }
+      ]
+    },
+    {
+      "beat": 3,
+      "segment": "explain",
+      "segmentName": "解释",
+      "start": 9.64,
+      "end": 15.68,
+      "duration": 6.04,
+      "techniqueId": "explain-state-commit",
+      "technique": "状态提交与确认：反馈和结果分两个时刻",
+      "moduleIds": [
+        "ui-click-to-timeline",
+        "type-anchored-label"
+      ],
+      "params": {
+        "holdSeconds": 2.0,
+        "feedbackBeforeCommit": true,
+        "confirmOnce": true,
+        "curve": "spring-critical"
+      },
+      "sound": {
+        "layer": "confirm",
+        "detail": "先给接收反馈，状态真正提交后才响确认声"
+      },
+      "why": "genre=product；tone=brisk/warm；aspect=9:16；关键词命中：确认、提交、结果、到达",
+      "risk": "每个数字刷新都响一次，会被误听成多次结论",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/ui-continuity.md",
+          "claim": "按钮反馈与成功确认不是一个时刻；按下时显示接收到操作，结果真实提交以后才出现确认"
+        },
+        {
+          "path": "assets/style-lab/guides/ui-continuity.md",
+          "claim": "声音接入 commit，不在素材还没到达时先响完成"
+        },
+        {
+          "path": "assets/style-lab/guides/sound-design.md",
+          "claim": "小状态确认约 0.08–0.25 秒的短声，状态提交时触发一次"
+        }
+      ]
+    },
+    {
+      "beat": 4,
+      "segment": "explain",
+      "segmentName": "解释",
+      "start": 15.68,
+      "end": 21.72,
+      "duration": 6.04,
+      "techniqueId": "explain-transmission",
+      "technique": "高速传输：跟随曝光与窗口接力",
+      "moduleIds": [
+        "look-tracking-exposure",
+        "visualization-window-relay"
+      ],
+      "params": {
+        "shutterAngle": 180,
+        "fps": 30,
+        "holdSeconds": 2.0,
+        "keepBackgroundRef": true
+      },
+      "sound": {
+        "layer": "air",
+        "detail": "掠过声在最近点前 0.15–0.45 秒进入，随后回落"
+      },
+      "why": "genre=product；tone=brisk；aspect=9:16",
+      "risk": "只对主体加糊、不给背景参照，就看不出速度",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/transmission-effects.md",
+          "claim": "T = angle / (360 × fps)；30fps、180° 约 16.67ms"
+        },
+        {
+          "path": "assets/style-lab/studies/motion-blur-technical.md",
+          "claim": "原片具体引擎和模糊算法未确认"
+        },
+        {
+          "path": "assets/style-lab/guides/transmission-effects.md",
+          "claim": "保留两端或尺的一部分，同一个窗口框进入特写"
+        }
+      ]
+    },
+    {
+      "beat": 5,
+      "segment": "reveal",
+      "segmentName": "揭示",
+      "start": 21.72,
+      "end": 27.6,
+      "duration": 5.88,
+      "techniqueId": "reveal-window-relay",
+      "technique": "窗口接力：局部放大后仍知道自己在哪",
+      "moduleIds": [
+        "visualization-window-relay"
+      ],
+      "params": {
+        "holdSeconds": 2.4,
+        "keepEdgeAnchor": true,
+        "arriveThenHold": true
+      },
+      "sound": {
+        "layer": "air",
+        "detail": "窗口框进入特写时起声，抵达后静音"
+      },
+      "why": "genre=product；aspect=9:16",
+      "risk": "数字还没读完镜头就走，会把揭示变成闪过",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/transmission-effects.md",
+          "claim": "保留两端或尺的一部分，同一个窗口框进入特写"
+        },
+        {
+          "path": "assets/style-lab/guides/transmission-effects.md",
+          "claim": "抵达后保持结果；下一次运动由新的解释任务触发"
+        }
+      ]
+    },
+    {
+      "beat": 6,
+      "segment": "close",
+      "segmentName": "收束",
+      "start": 27.6,
+      "end": 30.0,
+      "duration": 2.4,
+      "techniqueId": "close-title-hold",
+      "technique": "结论/片名稳定阅读收住",
+      "moduleIds": [
+        "symbolic-titles.js",
+        "type-anchored-label"
+      ],
+      "params": {
+        "holdSeconds": 2.5,
+        "noMotionAfterLock": true,
+        "maxLines": 2
+      },
+      "sound": {
+        "layer": "bed",
+        "detail": "落版时让声音收住，不要再多一次 whoosh"
+      },
+      "why": "genre=product；tone=warm；aspect=9:16",
+      "risk": "标题落定后还在漂移，观众会以为片子没结束",
+      "refs": [
+        {
+          "path": "assets/style-lab/guides/symbolic-title-sequence.md",
+          "claim": "红字黑场片名稳定；连续转换后留一次完整阅读"
+        },
+        {
+          "path": "assets/style-lab/guides/rate-curves.md",
+          "claim": "抵达之后让字体稳定，别靠不断抖动维持注意力"
+        }
+      ]
+    }
+  ],
+  "techniqueSet": [
+    {
+      "id": "hook-type-orbit",
+      "segment": "hook",
+      "technique": "环形字粒收束到一句可读标题",
+      "moduleIds": [
+        "motionface-type.js"
+      ],
+      "refs": [
+        "assets/style-lab/guides/motionface-type.md",
+        "assets/style-lab/studies/motionface-focus.md",
+        "assets/style-lab/guides/motionface-type.md"
+      ]
+    },
+    {
+      "id": "explain-ui-relay",
+      "segment": "explain",
+      "technique": "界面对象接力：同一素材跨容器移动",
+      "moduleIds": [
+        "ui-identity-relay",
+        "ui-click-to-timeline"
+      ],
+      "refs": [
+        "assets/style-lab/guides/ui-continuity.md",
+        "assets/style-lab/studies/max-ui-motion.md",
+        "assets/style-lab/guides/ui-continuity.md"
+      ]
+    },
+    {
+      "id": "explain-state-commit",
+      "segment": "explain",
+      "technique": "状态提交与确认：反馈和结果分两个时刻",
+      "moduleIds": [
+        "ui-click-to-timeline",
+        "type-anchored-label"
+      ],
+      "refs": [
+        "assets/style-lab/guides/ui-continuity.md",
+        "assets/style-lab/guides/ui-continuity.md",
+        "assets/style-lab/guides/sound-design.md"
+      ]
+    },
+    {
+      "id": "explain-transmission",
+      "segment": "explain",
+      "technique": "高速传输：跟随曝光与窗口接力",
+      "moduleIds": [
+        "look-tracking-exposure",
+        "visualization-window-relay"
+      ],
+      "refs": [
+        "assets/style-lab/guides/transmission-effects.md",
+        "assets/style-lab/studies/motion-blur-technical.md",
+        "assets/style-lab/guides/transmission-effects.md"
+      ]
+    },
+    {
+      "id": "reveal-window-relay",
+      "segment": "reveal",
+      "technique": "窗口接力：局部放大后仍知道自己在哪",
+      "moduleIds": [
+        "visualization-window-relay"
+      ],
+      "refs": [
+        "assets/style-lab/guides/transmission-effects.md",
+        "assets/style-lab/guides/transmission-effects.md"
+      ]
+    },
+    {
+      "id": "close-title-hold",
+      "segment": "close",
+      "technique": "结论/片名稳定阅读收住",
+      "moduleIds": [
+        "symbolic-titles.js",
+        "type-anchored-label"
+      ],
+      "refs": [
+        "assets/style-lab/guides/symbolic-title-sequence.md",
+        "assets/style-lab/guides/rate-curves.md"
+      ]
+    }
+  ],
+  "soundPlan": {
+    "enabled": true,
+    "layerCounts": {
+      "air": 3,
+      "contact": 1,
+      "confirm": 1,
+      "bed": 1
+    },
+    "note": "接触声跟接触帧，确认声跟状态提交，掠过声在最近点前 0.15–0.45 秒进入；旁白活动窗口内先避让，再考虑减小增益。",
+    "refs": [
+      "assets/style-lab/guides/sound-design.md",
+      "assets/style-lab/guides/emotion-motion.md"
+    ]
+  },
+  "unresolved": [
+    "时长 30 秒 < 45 秒：已去掉对照段，其份额 60% 并入解释、40% 并入揭示。需要 A/B 对照时用 overrides 手工加回。"
+  ],
+  "limits": [
+    "选型器只安排技法与时长，不生成事实、公式结果、数值或科学结论。",
+    "params 是起点值，须按当前对象尺度与旁白重新调；不是验收标准。",
+    "refs 表示该文件支持这条技法，不代表已完成主观听审或全片验收。",
+    "参考作品的配乐、水印、人物与第三方代码不可直接进入交付包。"
+  ]
+}

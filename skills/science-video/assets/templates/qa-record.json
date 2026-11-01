@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "artifact": {"path": null, "sha256": null},
+  "sourceSnapshotSha256": null,
+  "renderer": {"entry": null, "version": null, "configSha256": null},
+  "checks": {
+    "sourcesAndScience": {"status": "pending", "evidence": []},
+    "currentEntryCodeAndMotion": {"status": "pending", "evidence": []},
+    "fullDecode": {"status": "pending", "evidence": []},
+    "frameReview": {"status": "pending", "frameRanges": [], "findings": []},
+    "transitionPlayback": {"status": "pending", "timeRanges": []},
+    "fullNormalSpeedPlayback": {"status": "pending", "timeRanges": []},
+    "audioMetrics": {"status": "pending", "integratedLUFS": null, "truePeakDBTP": null},
+    "subjectiveListening": {"status": "pending", "timeRanges": []},
+    "captionSyncAndOcclusion": {"status": "pending", "evidence": []},
+    "recoveryPackage": {"status": "pending", "evidence": []}
+  },
+  "cleanup": {"authorizedScope": null, "executed": false, "removedBytes": 0},
+  "notes": "Use passed/failed/pending/not_applicable with actual evidence. Sampling does not imply full playback or listening."
+}

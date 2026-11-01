@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "title": "观察问题、对照解释、音乐留白",
+  "voice_profile": "rainbow-personal",
+  "clips": [
+    {
+      "id": "question",
+      "text": "同样向前推一下，为什么它们停下来的时间不同？",
+      "role": "curious",
+      "direction": {"intensity": 0.45, "pace": "natural", "emphasis": ["时间不同"]},
+      "pause_after_ms": 350,
+      "context": {"sceneAction": "对照两个物体的停止时刻", "musicHandoff": "speech-bed", "exampleOnly": true}
+    },
+    {
+      "id": "compare",
+      "text": "先看它们从哪里开始减速，再看哪一个先停下。",
+      "role": "contrast",
+      "direction": {"intensity": 0.4, "pace": "natural", "emphasis": ["开始减速", "先停下"]},
+      "pause_after_ms": 300,
+      "context": {"sceneAction": "同尺度对照轨迹", "exampleOnly": true}
+    },
+    {"id": "observation-window", "type": "pause", "seconds": 2.4, "purpose": "完整看一次对照动作；无需旁白"},
+    {
+      "id": "next-question",
+      "text": "如果改变表面，下次又会在哪里停下？",
+      "role": "curious",
+      "direction": {"intensity": 0.35, "pace": "natural", "emphasis": ["改变表面"]},
+      "pause_after_ms": 500,
+      "context": {"exampleOnly": true}
+    }
+  ]
+}

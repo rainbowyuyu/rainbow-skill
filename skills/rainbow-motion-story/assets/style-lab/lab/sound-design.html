@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>声音落在动作上 · Motion Atelier</title>
+  <link rel="stylesheet" href="./sound-design.css">
+</head>
+<body>
+  <a class="skip" href="#playButton">跳到播放器</a>
+  <header class="masthead">
+    <a class="brand" href="./index.html"><img src="./brand.png" alt="rainbow鱼"><span>声音落在动作上<small>MOTION ATELIER / SOUND DESIGN</small></span></a>
+    <nav aria-label="工作台导航"><a href="./shuffle-rhythm.html">洗牌声画</a><a href="../examples/audio/index.html">音乐 A/B</a><a href="./index.html">返回方法库 ↗</a></nav>
+  </header>
+  <main class="workspace">
+    <aside class="scene-rail" aria-label="语义场景">
+      <div class="section-eyebrow">选一种动作</div>
+      <div id="sceneList" class="scene-list"></div>
+      <div class="rail-note"><span class="signal-dot"></span><p>先看见发生了什么<br>再决定声音落在哪一刻</p></div>
+    </aside>
+    <section class="stage-area" aria-label="同步示意与时间线">
+      <div class="scene-heading"><div><div id="sceneIndex" class="section-eyebrow">01 / TIMING STUDY</div><h1 id="sceneTitle">正在载入场景</h1><p id="sceneQuestion">把起音、接触和尾音放在同一个时间轴上。</p></div><span class="synthesis-tag">原创合成示例</span></div>
+      <div class="visual-shell">
+        <canvas id="sceneCanvas" width="1200" height="640" role="img" tabindex="0" aria-label="动作同步示意。空格播放或暂停，左右方向键逐帧定位。"></canvas>
+        <div class="visual-top"><span id="visualStage">准备</span><span id="audioStatus">点击播放后启用声音</span></div>
+        <div class="visual-bottom"><span id="visualMessage">同一画面，只比较声音</span><span id="eventStatus">待播放</span></div>
+      </div>
+      <div class="transport">
+        <div class="transport-actions"><button id="replayButton" class="icon-button" aria-label="从头重播" title="从头重播">↺</button><button id="playButton" class="play-button" aria-label="播放">▶ <span>播放</span></button><button id="stopButton" class="icon-button" aria-label="停止并回到开头" title="停止并回到开头">■</button><button id="muteButton" class="quiet-button sound-button" aria-pressed="false">声音开</button></div>
+        <output id="timeDisplay" class="time-display" aria-label="当前时间">0.000 <span>/ 8.000 s</span></output>
+        <label class="speed-control">速度<select id="speedSelect" aria-label="播放速度"><option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option></select></label>
+      </div>
+      <label class="seek-label" for="seekInput">画面时间 <span id="frameDisplay">第 0 帧 · 30 fps</span></label>
+      <input id="seekInput" class="seek" type="range" min="0" max="8" step="0.001" value="0" aria-label="定位画面时间">
+      <div class="timeline-heading"><h2>把声音和动作对齐</h2><div class="legend"><span class="legend-cyan">起音</span><span class="legend-gold">动作接触</span><span class="legend-tail">尾音</span></div></div>
+      <div class="timeline-shell"><canvas id="timelineCanvas" width="1200" height="285" role="img" tabindex="0" aria-label="声音与动作时间线，点击定位，左右键逐帧调整画面时间。"></canvas></div>
+      <p class="timeline-mobile-note">竖线是画面接触时刻；圆点是音效设计锚点，不代表实测主峰。</p>
+      <div class="event-table-wrap"><table class="event-table"><caption>当前方案的声音时机，单位为秒</caption><thead><tr><th>音效</th><th>起音</th><th>接触 / 锚点</th><th>结束</th></tr></thead><tbody id="eventRows"></tbody></table></div>
+      <p class="transport-note">空格播放 / 暂停 · ← → 逐帧 · Shift + ← → 跳 0.5 秒。播放速度会同时改变样例的音高与时长。</p>
+    </section>
+    <aside class="inspector" aria-label="音效方案与参数">
+      <section class="control-section"><div class="section-eyebrow">A/B 同画面对照</div><div class="variant-switch" role="group" aria-label="音效方案"><button id="variantA" data-variant="A" aria-pressed="false">A <span>对照</span></button><button id="variantB" data-variant="B" aria-pressed="true">B <span>调整</span></button></div><h2 id="variantTitle">调整方案</h2><p id="variantDescription" class="control-description"></p><p class="micro-note">切换保留画面时间；两个方案共用下方增益。</p></section>
+      <section class="control-section"><div class="control-title"><label for="offsetRange">声音偏移</label><button id="offsetReset" class="text-button">归零</button></div><div class="offset-number"><input id="offsetMs" type="number" min="-500" max="500" step="1" value="0" aria-label="音效偏移毫秒"><span>ms</span></div><input id="offsetRange" type="range" min="-500" max="500" step="1" value="0" aria-label="音效偏移滑块"><div class="range-ends"><span>提前 500 ms</span><span>延后 500 ms</span></div><div class="frame-row"><label for="offsetFrames">等于<input id="offsetFrames" type="number" min="-30" max="30" step="0.1" value="0">帧</label><label for="fpsSelect"><select id="fpsSelect" aria-label="帧率"><option value="24">24 fps</option><option value="30" selected>30 fps</option><option value="60">60 fps</option></select></label></div><p class="micro-note">仅平移音效，画面接触时刻与保护窗口保持原位。</p></section>
+      <section class="control-section"><div class="control-title"><label for="intensityInput">音效强度</label><output id="intensityValue">1.00×</output></div><input id="intensityInput" type="range" min="0" max="1.5" step="0.05" value="1"><div class="control-title gain-title"><label for="gainInput">共同增益</label><output id="gainValue">0 dB</output></div><input id="gainInput" type="range" min="-18" max="6" step="1" value="0"><label class="checkbox-label"><input id="placeholderInput" type="checkbox"><span>加入拟声占位<small>合成参考声，不是人声，也不验证解说可懂度</small></span></label><button id="resetButton" class="quiet-button reset-button">还原本场景参数</button></section>
+      <section class="export-section"><h2>把这次选择带走</h2><button id="exportButton" class="primary-button">导出时机 JSON <span>↗</span></button><button id="wavButton" class="quiet-button">下载当前方案 WAV</button><div class="export-help">WAV 保存当前偏移、强度和增益，输出原速音频。播放速度与静音仅影响试听。</div><output id="renderStatus" class="render-status" aria-live="polite">尚未生成音频</output></section>
+    </aside>
+  </main>
+  <footer class="page-footer"><p>所有音效由本地代码合成，无参考作品音频采样。图形是时机示意；人声保护使用占位窗口。数值与浏览器检查不代表主观听感通过。</p><div class="footer-links"><a href="../guides/sound-design.md">何时用音效</a><a href="../studies/sound-design.md">研究来源</a><a href="../examples/sound-design/index.html">离线音效 A/B</a><a href="./sound-design.js">合成代码</a></div></footer>
+  <div id="notice" class="notice" role="status" aria-live="polite"></div>
+  <script type="module" src="./sound-design-studio.js"></script>
+</body>
+</html>

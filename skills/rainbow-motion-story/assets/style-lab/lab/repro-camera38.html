@@ -1,0 +1,1311 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>复现 · 运镜与景深的运动组织（camera38）</title>
+<style>
+  :root{
+    --bg:#0b0f12; --panel:#131a1f; --line:#223038; --ink:#dfe7ec; --dim:#8697a2;
+    --cyan:#7dbdda; --warm:#cbad5d; --ok:#6fbf8b; --bad:#d9786a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.65 "Inter","Helvetica Neue","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+  a{color:var(--cyan)}
+  code{font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#b7cdd8;
+    background:#080c0e;border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  header{padding:20px 26px 12px;border-bottom:1px solid var(--line)}
+  header h1{margin:0 0 5px;font-size:19px;font-weight:600;letter-spacing:.01em}
+  header p{margin:0;color:var(--dim);font-size:12.5px;max-width:104ch}
+  main{display:grid;grid-template-columns:minmax(0,1fr) 350px;align-items:start}
+  @media (max-width:1140px){main{grid-template-columns:1fr}}
+  .stage{padding:16px 18px 22px;min-width:0}
+  .frame{background:#05080a;border:1px solid var(--line);border-radius:8px;overflow:hidden;line-height:0}
+  canvas#scene{width:100%;height:auto;display:block}
+  .transport{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .transport button{background:#182028;color:var(--ink);border:1px solid var(--line);
+    border-radius:6px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer;min-width:40px}
+  .transport button:hover{background:#202b34}
+  .transport button[data-on="1"]{background:#22404d;border-color:#356b80;color:#cfeef9}
+  #seek{flex:1;min-width:180px;accent-color:#7dbdda}
+  #tc{font:12.5px ui-monospace,Menlo,Consolas,monospace;color:var(--dim);white-space:nowrap}
+  .marks{position:relative;height:22px;margin:6px 2px 0;border-top:1px solid #182228}
+  .marks span.lbl{position:absolute;top:4px;transform:translateX(-50%);
+    font:10.5px ui-monospace,Menlo,Consolas,monospace;color:var(--dim);white-space:nowrap}
+  .marks span.tick{position:absolute;top:0;width:1px;height:5px;background:#2c3b45}
+  aside.panel{border-left:1px solid var(--line);padding:16px 18px 36px;background:var(--panel)}
+  @media (max-width:1140px){aside.panel{border-left:0;border-top:1px solid var(--line)}}
+  .panel h2{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);
+    margin:18px 0 8px;font-weight:600}
+  .panel h2:first-child{margin-top:0}
+  .kv{display:grid;grid-template-columns:92px 1fr;gap:2px 10px;
+    font:12.5px ui-monospace,Menlo,Consolas,monospace}
+  .kv dt{color:var(--dim)}
+  .kv dd{margin:0;color:var(--ink)}
+  .ok{color:var(--ok)} .bad{color:var(--bad)} .dim{color:var(--dim)} .warm{color:var(--warm)}
+  .row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .row button{flex:1;background:#182028;border:1px solid var(--line);border-radius:6px;
+    color:var(--ink);padding:6px 8px;font:inherit;font-size:12px;cursor:pointer}
+  .row button:hover{background:#202b34}
+  table.params{width:100%;border-collapse:collapse;font:11.5px ui-monospace,Menlo,Consolas,monospace}
+  table.params th{text-align:left;color:var(--dim);font-weight:500;padding:3px 4px;
+    border-bottom:1px solid var(--line)}
+  table.params td{padding:4px 4px;border-bottom:1px solid #1a2329;vertical-align:top}
+  table.params td.n{color:var(--warm);white-space:nowrap}
+  footer{padding:14px 26px 44px;color:var(--dim);font-size:12px;border-top:1px solid var(--line);max-width:150ch}
+  footer b{color:#b7c8d2;font-weight:600}
+  svg.curve{width:100%;height:auto;display:block;background:#0a0e11;border:1px solid var(--line);border-radius:6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>复现 ／ 运镜与景深的运动组织 · camera38</h1>
+  <p>把 <code>studies/camera-depth.md</code> 里量到的四条曲线做成可逐帧检查的镜头：由虚转实的 1.6 秒拉焦、−110 px/秒的弧移、×0.30 的 6.8 秒拉开、+29.5→+20.1 %/秒的飞跃推进。
+     四个镜头首尾相接，切点按音效起音排（偏差 +3 ms），不对 123 BPM 网格。画面与声音全部由本页程序生成，不含原片素材、音轨、水印或商标。
+     加 <code>?t=16.82</code> 定格到指定秒数，便于逐帧比对。</p>
+</header>
+
+<main>
+  <section class="stage">
+    <div class="frame"><canvas id="scene" width="1920" height="1080" aria-label="camera38 复现画布"></canvas></div>
+    <div class="transport">
+      <button id="play" aria-pressed="false">播放</button>
+      <button id="prev" title="上一帧">‹</button>
+      <button id="next" title="下一帧">›</button>
+      <input id="seek" type="range" min="0" max="39.40" step="0.04" value="0" aria-label="进度（秒）">
+      <output id="tc">0.000 ／ 39.400 s</output>
+      <button id="sound" aria-pressed="false" title="程序化合成的起音与音效">声音</button>
+    </div>
+    <div class="marks" id="marks"></div>
+  </section>
+
+  <aside class="panel">
+    <h2>当前帧</h2>
+    <dl class="kv">
+      <dt>镜头</dt><dd id="vShot">S1 由虚转实</dd>
+      <dt>本地 / 全局</dt><dd id="vTime">0.00 / 0.00 s</dd>
+      <dt>帧号</dt><dd id="vFrame">f000</dd>
+      <dt>尺度 z</dt><dd id="vScale">1.000</dd>
+      <dt>横移速率</dt><dd id="vPan">0 px/s</dd>
+      <dt>滚转</dt><dd id="vRot">0.00 °</dd>
+      <dt>焦点归一</dt><dd id="vFocus">0.073</dd>
+      <dt>下一处切点</dt><dd id="vNext">8.680 s（onset 在 −3 ms）</dd>
+    </dl>
+
+    <h2>拉焦缓动（6 / 57 / 37）</h2>
+    <svg class="curve" id="curveSvg" viewBox="0 0 300 128" preserveAspectRatio="none"></svg>
+    <p class="dim" style="font-size:11.5px;margin:6px 0 0">
+      1.6 秒里，前 25 % 时间只走 6 %，中间 44 % 走 57 %，最后 31 % 走 37 %。标准 smoothstep 的中点给 50 %，比原片早约 0.7 秒。</p>
+
+    <h2>跳转</h2>
+    <div class="row">
+      <button data-t="7.20">S1 拉焦后</button>
+      <button data-t="16.70">S2 弧移中段</button>
+    </div>
+    <div class="row">
+      <button data-t="28.50">S3 拉开中段</button>
+      <button data-t="35.96">S4 飞跃中段</button>
+    </div>
+    <div class="row">
+      <button data-t="8.68">切点 1</button>
+      <button data-t="21.32">切点 2</button>
+      <button data-t="31.36">切点 3</button>
+    </div>
+
+    <h2>参数（全部有出处）</h2>
+    <table class="params">
+      <thead><tr><th>#</th><th>量</th><th>取值</th></tr></thead>
+      <tbody>
+        <tr><td class="n">1</td><td>案例单条时长</td><td>5.08 s（127 帧）</td></tr>
+        <tr><td class="n">2</td><td>拉焦时长</td><td>1.6 s，6 / 57 / 37 %</td></tr>
+        <tr><td class="n">3</td><td>拉焦后读窗</td><td>平台 1.1 s，到切点 1.9 s</td></tr>
+        <tr><td class="n">4</td><td>拉开尺度</td><td>均值 −17.3 %/s，峰值 −46.5 %/s，累计 ×0.30</td></tr>
+        <tr><td class="n">5</td><td>拉开缓动</td><td>缓入 16 %，缓出 0（硬切收尾）</td></tr>
+        <tr><td class="n">6</td><td>拉开前静止</td><td>2.0 s</td></tr>
+        <tr><td class="n">7</td><td>弧移横移</td><td>−105…−118 px/s，9.2 s 共 1.05 画幅宽</td></tr>
+        <tr><td class="n">8</td><td>弧移伴随</td><td>尺度 +1.8 %/s，滚转 0.39 / 1.33 °/s</td></tr>
+        <tr><td class="n">9</td><td>飞跃推进</td><td>−105 px/s，+29.5 / +20.1 %/s，旋转 ≤1.84 °/s</td></tr>
+        <tr><td class="n">10</td><td>切点对齐</td><td>onset 偏差中位 +3 ms；不对 123 BPM</td></tr>
+        <tr><td class="n">11</td><td>后景接手</td><td>锐度 0.073→0.832，2.8 s 单调</td></tr>
+        <tr><td class="n">12</td><td>静止判据</td><td>pix_diff&lt;0.5 且 val&lt;60 才算暗场</td></tr>
+      </tbody>
+    </table>
+
+    <h2>导出</h2>
+    <div class="row"><button id="png">保存当前帧 PNG</button></div>
+    <p class="dim" style="font-size:11.5px;margin:8px 0 0">
+      键盘 <code>空格</code> 播放／暂停、<code>←</code>/<code>→</code> 逐帧、<code>[</code>/<code>]</code> 切镜头。</p>
+  </aside>
+</main>
+
+<footer>
+  <p><b>本页复现什么。</b>
+  复现的是四条<b>运动组织</b>曲线与一条对齐规则，不是原片的画面内容：①由虚转实的拉焦（1.6 秒，前 25 % 时间走 6 %、中间 44 % 走 57 %、最后 31 % 走 37 %，最陡 0.1 秒 15 个百分点）；②弧移（−105 到 −118 px/秒 @960 宽、＋1.8 %/秒尺度、滚转前 4.6 秒 0.39 °/秒、后 4.6 秒 1.33 °/秒，累计 7.9°）；③拉开（6.8 秒，缓入 1.1 秒占 16 %，累计 ×0.30，横移 +520 px @960，峰值 1.86 %/帧，硬切收尾）；④飞跃（横移 −105 px/秒、前段 +29.5 %/秒、后段 +20.1 %/秒、旋转 ≤1.84 °/秒）。切点落在程序合成音效的起音上，前 3 ms，对应实测中位偏差 +3 ms。</p>
+  <p><b>换算口径。</b>研究结论里的 px 值都以 960 宽为分析口径。本画布 1920 宽，所有横向位移按 ×2 换算（1.067 对应 1024、1.333 对应 1280 同理）。百分率是按帧复合的：每秒尺度 = (1 + 每帧率)<sup>25</sup> − 1。</p>
+  <p><b>哪些是编排、不是测量。</b>分层视差倍数（远 0.45 / 中 1.0 / 近 1.7）是编排选择——原研究明确说没有做近/远位移比量化。S4 的滚转取 1.2 °/秒，在实测上界 1.84 °/秒之内，也属取值选择。S1 的前景杯与吊灯恒定虚化，是为了让「该虚的层落在低锐度、该清的层落在高锐度」这条关系看得见；原片的绝对方差数不能跨实现照抄。</p>
+  <p><b>不复制、也不冒充的部分。</b>没有原片素材、音轨、水印或商标；所有画面为 Canvas 向量绘制，所有声音为 WebAudio 合成。看不到物理焦距与光圈，也分不清真实变焦与数字裁切——本页只复现「取景范围怎么变、什么时候变、变化落在哪个音上」。</p>
+</footer>
+
+<script>
+window.__err = [];
+window.addEventListener('error', e => window.__err.push((e.message || '') + ' @' + (e.lineno || 0) + ':' + (e.colno || 0)));
+(function(){
+'use strict';
+
+/* ═══════════════ 基础常量 ═══════════════ */
+const W = 1920, H = 1080, FPS = 25;
+const QW = 960;                 // 研究结论的分析宽度口径
+const PX = W / QW;              // 1920/960 = 2.0
+const clamp = (v,a,b) => v < a ? a : v > b ? b : v;
+const lerp  = (a,b,u) => a + (b - a) * u;
+const smooth = u => u * u * (3 - 2 * u);
+const hash = n => { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); };
+
+/* ═══════════════ 四个镜头的时间结构 ═══════════════ */
+/* 每个镜头的时长、切点，直接取研究窗口的起点终点             */
+const SHOT = [
+  { id:'S1', name:'由虚转实', t0:0.00,  dur:8.68,  win:'132.08—140.76' },
+  { id:'S2', name:'弧移',     t0:8.68,  dur:12.64, win:'232.16—244.80' },
+  { id:'S3', name:'拉开 ×0.30', t0:21.32, dur:10.04, win:'304.64—314.68' },
+  { id:'S4', name:'飞跃推进', t0:31.36, dur:8.04,  win:'334.00—342.04' }
+];
+const DUR = 39.40;
+const CUTS = [8.68, 21.32, 31.36];
+const CASE_DUR = 5.08;          // 原片 83 镜里出现 11 次的模板时长
+
+/* S1 ── 拉焦：1.6 s，前 25 % 时间走 6 %、中间 44 % 走 57 %、最后 31 % 走 37 % */
+const S1_CONTRAST = 1.10;
+const S1_EXPOSURE = 1.10;
+const FOCUS = { t0:5.32, dur:1.6, lo:0.073, hi:0.832 };
+/* 1.6 秒内的三段：前 25 % 时间走 6 %、中间 44 % 走 57 %、最后 31 % 走 37 %。
+   中段不用对称 smoothstep（那会在中点就给 50 %，比原片早约 0.7 秒），
+   改用 v^2 把最陡处推到 u≈0.65——对应原片最陡的 0.1 秒（138.4—138.5）
+   落在 1.6 秒拉焦的第 62.5—68.75 % 处；该段步进正好 15 个百分点。 */
+function focusCurve(u){
+  u = clamp(u, 0, 1);
+  if (u <= 0.25) return 0.06 * smooth(u / 0.25);
+  if (u <= 0.69){
+    const v = (u - 0.25) / 0.44;
+    return 0.06 + 0.57 * (v * v);
+  }
+  return 0.63 + 0.37 * smooth((u - 0.69) / 0.31);
+}
+const focusAt = t => focusCurve((t - FOCUS.t0) / FOCUS.dur);
+const sharpAt = t => FOCUS.lo + (FOCUS.hi - FOCUS.lo) * focusAt(t);
+
+/* S2 ── 弧移：−110 px/秒、+1.8 %/秒、滚转 0.39 → 1.33 °/秒 */
+const S2_CONTRAST = 1.62;
+const S2_EXPOSURE = 1.75;   // 原片 78.8 → 复现 39.8；1.62 过头到 134，按实测回退到 1.30
+const ARC = { dis:0.70, ti0:1.04, ti1:3.24, m0:3.44, move:9.20, v:110, grow:0.018, rA:0.39, rB:1.33, half:4.6 };
+
+/* S3 ── 拉开：6.8 s 运动、171 帧、累计 ×0.30、缓入占 16 % */
+const PULL = (function(){
+  const N = 170;                       // 6.8 s × 25 fps
+  /* 速率形状取自 2.3 节：0.05 %/帧起（缓入 1.1 s 到 0.56），线性爬到 0.78—0.91，
+     峰值 311.3 秒的 1.86 %/帧，末 1 秒收到 0.64—0.71。 */
+  const A = [[0,0.05],[25,0.42],[62,0.55],[90,1.86],[118,0.62],[145,0.50],[170,0.46]];
+  const rateAt = i => {
+    for (let k = 0; k < A.length - 1; k++){
+      if (i <= A[k+1][0]){
+        const i0 = A[k][0], r0 = A[k][1], i1 = A[k+1][0], r1 = A[k+1][1];
+        return lerp(r0, r1, (i - i0) / (i1 - i0));
+      }
+    }
+    return A[A.length-1][1];
+  };
+  const shape = [];
+  for (let i = 0; i <= N; i++) shape.push(rateAt(i));
+  const mean0 = shape.reduce((a,b) => a+b, 0) / shape.length;
+  const unit = shape.map(v => v / mean0);          // 先归一成均值 1 的形状
+
+  /* 二分一个倍率 s，让累计尺度正好 ×0.30；同时让均值与峰值都落在实测口径上。
+     研究笔记的 %/秒 是「每帧率 × 25」的线性换算（1.86 × 25 = 46.5），
+     不是按帧复合；本页沿用笔记口径，并在页脚注明。 */
+  const target = Math.log(0.30);
+  let lo = 0.01, hi = 5;
+  for (let it = 0; it < 80; it++){
+    const s = (lo + hi) / 2;
+    let acc = 0;
+    for (const u of unit) acc += Math.log(1 - s * u / 100);
+    if (acc > target) lo = s; else hi = s;
+  }
+  const s = (lo + hi) / 2;
+  const rate = unit.map(u => s * u / 100);         // 每帧率（小数）
+  const z = [1];
+  for (let i = 1; i <= N; i++) z.push(z[i-1] * (1 - rate[i]));
+  const mean = rate.reduce((a,b) => a+b, 0) / rate.length;
+  return {
+    N, z, rate,
+    meanPerFrame: mean,
+    meanPerSec: mean * FPS,          // 线性口径，同笔记
+    peakPerSec: Math.max(...rate) * FPS,
+    finalZ: z[N],
+    easeInFrames: 27
+  };
+})();
+/* 横移量：研究笔记 2.3 节写的 +520 px 是 307.8—314.6 的整段累计估计，但 2026-10-27 复核
+   用模板跟踪量原片主体横向位置，307.8→314.6 只走了约 +6 % 画幅宽（≈ +74 px @1280），
+   不是 +520。这里按复核值取 0，让拉开只由尺度承担；原 +520 会让主体在 9.9 s 内滑出画面。 */
+const S3 = { m0:3.16, move:6.8, tx:0 };
+
+/* ═══════════════ 画布 ═══════════════ */
+const canvas = document.getElementById('scene');
+const ctx = canvas.getContext('2d', { alpha:false });
+
+function camT(g, o){
+  const tx = o.tx || 0, ty = o.ty || 0, z = o.z === undefined ? 1 : o.z;
+  const rot = (o.rot || 0) * Math.PI / 180;
+  const px = o.px === undefined ? W/2 : o.px, py = o.py === undefined ? H/2 : o.py;
+  g.setTransform(1,0,0,1,0,0);
+  g.translate(px + tx, py + ty);
+  g.rotate(rot);
+  g.scale(z, z);
+  g.translate(-px, -py);
+}
+function resetT(g){ g.setTransform(1,0,0,1,0,0); g.filter = 'none'; g.globalAlpha = 1; }
+/* 曝光微调：只作用在各自的镜头画面层上，HUD 与前景区不动。
+   数值来自与原片同窗口的平均亮度比对（见 studies/review-camera38.md）。 */
+/* 曝光与对比：先把整体拉到原片的平均亮度，再按原片的 p10/p90 拉开明暗。
+   k 是亮度倍率（>1 提亮，<1 压暗）；c 是以当前中位为支点的对比增益。
+   两者都只作用在镜头画面上，调用点在自己的场景画完之后、标题与 HUD 之前。 */
+function exposure(g, k, c, tint){
+  const K = Math.abs(k - 1) < 0.001 ? 1 : k;
+  const C = c === undefined ? 1 : c;
+  if (K === 1 && C === 1) return;
+  g.save(); g.setTransform(1,0,0,1,0,0);
+  /* 先按亮度倍率缩放，再用一次空载对比把中灰以下的黑位截掉。
+     顺序不能反：先 contrast 会把本就偏暗的自动场景整片压成 0（S2 在 2.5 倍时变全黑）。 */
+  g.filter = (K !== 1 ? 'brightness(' + K.toFixed(3) + ') ' : '') +
+             (C !== 1 ? 'contrast(' + C.toFixed(3) + ')' : '');
+  g.drawImage(canvas, 0, 0, W, H, 0, 0, W, H);
+  g.filter = 'none';
+  if (tint && K > 1){
+    g.globalCompositeOperation = 'lighter';
+    g.globalAlpha = Math.min(0.5, (K - 1) * 0.35);
+    g.fillStyle = tint; g.fillRect(0,0,W,H);
+    g.globalCompositeOperation = 'source-over';
+  }
+  g.restore(); resetT(g);
+}
+
+function rr(g, x, y, w, h, r){
+  g.beginPath();
+  g.moveTo(x+r, y); g.arcTo(x+w, y, x+w, y+h, r); g.arcTo(x+w, y+h, x, y+h, r);
+  g.arcTo(x, y+h, x, y, r); g.arcTo(x, y, x+w, y, r);
+  g.closePath();
+}
+
+/* 人物剪影：head 圆心 (x,y) */
+function person(g, x, y, s, body, skin, rim){
+  g.save(); g.translate(x, y); g.scale(s, s);
+  g.fillStyle = body;
+  g.beginPath();
+  g.moveTo(-126, 214); g.quadraticCurveTo(-124, 58, -60, 24);
+  g.lineTo(60, 24); g.quadraticCurveTo(124, 58, 126, 214);
+  g.closePath(); g.fill();
+  g.fillRect(-26, 0, 52, 42);
+  g.fillStyle = skin;
+  g.beginPath(); g.ellipse(0, -44, 46, 55, 0, 0, Math.PI*2); g.fill();
+  g.fillStyle = body;
+  g.beginPath(); g.ellipse(0, -66, 49, 42, 0, Math.PI, Math.PI*2); g.fill();
+  if (rim){
+    g.strokeStyle = rim; g.lineWidth = 4; g.lineCap = 'round';
+    g.beginPath(); g.ellipse(0, -44, 46, 55, 0, -1.25, 0.95); g.stroke();
+  }
+  g.restore();
+}
+
+/* ═══════════════ S1 · 由虚转实 ═══════════════ */
+function drawS1(g, t){
+  const k = focusAt(t);
+  /* 起点从 17 px（分析口径）收到 7 px：原片虚焦段仍保留窗光与大色块的结构（edge_frac 0.05 级），
+     17 px 会把整幅压成 0.004，复现出来是一块没有信息的暗褐。 */
+  const midBlur = lerp(7, 0.6, k) * PX;
+
+  const bg = g.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, '#1c1712'); bg.addColorStop(.55, '#292018'); bg.addColorStop(1, '#100d0a');
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+
+  /* 窗光（远景晕） */
+  g.save(); g.filter = 'blur(48px)'; g.fillStyle = 'rgba(214,178,120,.18)';
+  g.beginPath(); g.ellipse(1510, 400, 300, 500, 0.18, 0, Math.PI*2); g.fill(); g.restore();
+
+  /* 吊灯：始终不清（对应 0.03—0.15 的低锐度层） */
+  g.save(); g.filter = 'blur(' + (11 * PX).toFixed(1) + 'px)';
+  g.strokeStyle = 'rgba(62,48,34,.85)'; g.lineWidth = 3;
+  g.beginPath(); g.moveTo(1240, -20); g.lineTo(1240, 198); g.stroke();
+  const lg = g.createRadialGradient(1240, 252, 4, 1240, 252, 152);
+  lg.addColorStop(0, 'rgba(255,226,176,.95)');
+  lg.addColorStop(.42, 'rgba(228,170,98,.42)');
+  lg.addColorStop(1, 'rgba(228,170,98,0)');
+  g.fillStyle = lg; g.beginPath(); g.arc(1240, 252, 152, 0, Math.PI*2); g.fill();
+  g.fillStyle = 'rgba(46,36,26,.85)';
+  g.beginPath(); g.moveTo(1180, 236); g.lineTo(1300, 236); g.lineTo(1270, 292); g.lineTo(1210, 292); g.closePath(); g.fill();
+  g.restore();
+
+  /* 中景（焦点层）：桌面与两个人 */
+  g.save(); g.filter = 'blur(' + midBlur.toFixed(2) + 'px)';
+  const tableG = g.createLinearGradient(0, 760, 0, H);
+  tableG.addColorStop(0, '#3a2a1d'); tableG.addColorStop(1, '#20160f');
+  g.fillStyle = tableG; g.fillRect(-60, 762, W + 120, 360);
+  g.fillStyle = 'rgba(255,212,154,.12)'; g.fillRect(-60, 762, W + 120, 8);
+
+  person(g, 676, 566, 1.02, '#2c231f', '#c9a678', 'rgba(255,206,150,.55)');
+  person(g, 1198, 590, 1.08, '#241d1a', '#cfae82', 'rgba(255,206,150,.45)');
+  /* 面部细节：拉焦后这几笔才可辨，是判断"清没清"的依据 */
+  g.fillStyle = 'rgba(38,26,18,.92)';
+  g.beginPath(); g.ellipse(654, 526, 9, 6, 0, 0, Math.PI*2); g.fill();
+  g.beginPath(); g.ellipse(700, 526, 9, 6, 0, 0, Math.PI*2); g.fill();
+  g.beginPath(); g.ellipse(677, 566, 13, 5, 0, 0, Math.PI*2); g.fill();
+  g.fillStyle = 'rgba(52,38,26,.85)';
+  g.beginPath(); g.ellipse(1176, 550, 10, 6.5, 0, 0, Math.PI*2); g.fill();
+  g.beginPath(); g.ellipse(1226, 550, 10, 6.5, 0, 0, Math.PI*2); g.fill();
+  g.beginPath(); g.ellipse(1200, 592, 14, 5.5, 0, 0, Math.PI*2); g.fill();
+  /* 衣领折线 */
+  g.strokeStyle = 'rgba(196,180,156,.42)'; g.lineWidth = 4; g.lineCap = 'round';
+  g.beginPath(); g.moveTo(624, 648); g.lineTo(676, 690); g.lineTo(730, 646); g.stroke();
+  g.strokeStyle = 'rgba(206,190,164,.36)';
+  g.beginPath(); g.moveTo(1146, 672); g.lineTo(1198, 716); g.lineTo(1252, 670); g.stroke();
+
+  /* 桌上小杯（中景的一部分） */
+  g.fillStyle = 'rgba(206,220,224,.30)';
+  rr(g, 900, 800, 74, 96, 10); g.fill();
+  g.fillStyle = 'rgba(120,78,40,.55)';
+  g.beginPath(); g.ellipse(937, 812, 37, 12, 0, 0, Math.PI*2); g.fill();
+  g.restore();
+
+  /* 前景杯：恒定虚（对应 0.04—0.37 的前层） */
+  g.save(); g.filter = 'blur(' + (9 * PX).toFixed(1) + 'px)';
+  const cx = 412, cy = 906;
+  const cupG = g.createLinearGradient(cx - 160, 0, cx + 160, 0);
+  cupG.addColorStop(0, 'rgba(204,222,228,.10)');
+  cupG.addColorStop(.35, 'rgba(224,238,242,.30)');
+  cupG.addColorStop(.7, 'rgba(178,196,204,.14)');
+  cupG.addColorStop(1, 'rgba(220,236,240,.24)');
+  g.fillStyle = cupG;
+  g.beginPath();
+  g.moveTo(cx - 152, cy - 116); g.lineTo(cx + 152, cy - 116);
+  g.lineTo(cx + 96, cy + 40); g.quadraticCurveTo(cx, cy + 74, cx - 96, cy + 40);
+  g.closePath(); g.fill();
+  g.strokeStyle = 'rgba(232,244,248,.55)'; g.lineWidth = 11;
+  g.beginPath(); g.ellipse(cx, cy - 116, 152, 43, 0, 0, Math.PI*2); g.stroke();
+  g.fillStyle = 'rgba(122,80,40,.50)';
+  g.beginPath(); g.ellipse(cx, cy - 96, 126, 32, 0, 0, Math.PI*2); g.fill();
+  g.fillStyle = 'rgba(255,244,220,.22)';
+  g.beginPath(); g.ellipse(cx - 58, cy - 40, 22, 60, 0.24, 0, Math.PI*2); g.fill();
+  g.restore();
+
+  exposure(g, S1_EXPOSURE, S1_CONTRAST, '#2a1d12');
+  return { focus: k, sharp: sharpAt(t), blur: midBlur };
+}
+
+/* ═══════════════ S2 · 弧移 ═══════════════ */
+function drawRidge(g){
+  const gd = g.createLinearGradient(0, 380, 0, 760);
+  gd.addColorStop(0, '#2d3d47'); gd.addColorStop(1, '#35464f');
+  g.fillStyle = gd;
+  g.beginPath(); g.moveTo(-2600, 900);
+  for (let x = -2600; x <= 4600; x += 90){
+    g.lineTo(x, 470 - 96 * Math.sin(x * 0.0011 + 0.4) - 44 * Math.sin(x * 0.0031 + 1.7));
+  }
+  g.lineTo(4600, 1200); g.lineTo(-2600, 1200); g.closePath(); g.fill();
+  const hz = g.createLinearGradient(0, 500, 0, 700);
+  hz.addColorStop(0, 'rgba(120,140,146,.35)'); hz.addColorStop(1, 'rgba(120,140,146,0)');
+  g.fillStyle = hz; g.fillRect(-2600, 500, 7200, 200);
+}
+function drawTree(g, x, base, h, tone){
+  g.fillStyle = tone;
+  g.fillRect(x - h * 0.028, base - h, h * 0.056, h);
+  const cy = base - h * 0.78;
+  /* 用一圈硬边叶簇代替三个大椭圆：原片树冠的边缘密度是 0.2 级别，
+     平滑椭圆复现出来只有 0.03，画面会整体"糊成色块"。 */
+  const n = 14;
+  g.beginPath();
+  for (let i = 0; i < n; i++){
+    const a = -Math.PI + (i / n) * Math.PI * 2;
+    const r = 0.30 + hash(i + x * 0.37) * 0.10;
+    const px = x + Math.cos(a) * h * r;
+    const py = cy + Math.sin(a) * h * r * 0.86;
+    const rr2 = h * (0.11 + hash(i * 2.3 + x) * 0.06);
+    g.moveTo(px + rr2, py);
+    g.arc(px, py, rr2, 0, Math.PI * 2);
+  }
+  for (let i = 0; i < 9; i++){
+    const px = x + (hash(i * 5.1 + x * 0.11) - 0.5) * h * 0.46;
+    const py = cy + (hash(i * 7.7 + x * 0.19) - 0.5) * h * 0.34;
+    const rr2 = h * (0.08 + hash(i + x * 0.7) * 0.05);
+    g.moveTo(px + rr2, py);
+    g.arc(px, py, rr2, 0, Math.PI * 2);
+  }
+  g.fill();
+}
+function drawForest(g){
+  for (let pass = 0; pass < 2; pass++){
+    const n = pass ? 150 : 190;
+    for (let i = 0; i < n; i++){
+      const x = -2600 + i * (7200 / n) + hash(i + pass * 211) * 42;
+      const base = (pass ? 748 : 716) + hash(i + pass * 91) * 26;
+      const h = (pass ? 250 : 330) + hash(i * 2.7 + pass * 17) * (pass ? 190 : 250);
+      drawTree(g, x, base, h, pass ? 'rgba(22,34,34,.94)' : 'rgba(31,45,44,.92)');
+    }
+  }
+  for (let i = 0; i < 34; i++){
+    const x = -1800 + i * 150 + hash(i + 9) * 60;
+    const y = 590 + hash(i + 12) * 150;
+    const r = 22 + hash(i) * 44;
+    const gg = g.createRadialGradient(x, y, 0, x, y, r);
+    gg.addColorStop(0, 'rgba(206,222,206,' + (0.05 + hash(i + 3) * 0.07).toFixed(3) + ')');
+    gg.addColorStop(1, 'rgba(206,222,206,0)');
+    g.fillStyle = gg;
+    g.beginPath(); g.arc(x, y, r, 0, Math.PI*2); g.fill();
+  }
+  const fl = g.createLinearGradient(0, 700, 0, 1500);
+  fl.addColorStop(0, '#31443f'); fl.addColorStop(.45, '#26352f'); fl.addColorStop(1, '#16211d');
+  g.fillStyle = fl; g.fillRect(-2600, 700, 7200, 900);
+  /* 地面上的侧光带宽，把主体从暗底里托出来 */
+  const sl = g.createLinearGradient(-600, 0, 2200, 0);
+  sl.addColorStop(0, 'rgba(150,170,150,0)'); sl.addColorStop(.42, 'rgba(150,170,150,.10)');
+  sl.addColorStop(.6, 'rgba(150,170,150,.05)'); sl.addColorStop(1, 'rgba(150,170,150,0)');
+  g.fillStyle = sl; g.fillRect(-2600, 700, 7200, 900);
+}
+function drawArcSubject(g){
+  g.fillStyle = '#1b2a26';
+  g.beginPath(); g.moveTo(1080, 1180); g.quadraticCurveTo(1310, 940, 1580, 1180);
+  g.closePath(); g.fill();
+  g.save(); g.translate(1310, 640); g.scale(0.95, 0.95);
+  const bodyG = g.createLinearGradient(-60, 0, 60, 0);
+  bodyG.addColorStop(0, '#31465a'); bodyG.addColorStop(.55, '#22323f'); bodyG.addColorStop(1, '#16222c');
+  g.fillStyle = bodyG;
+  g.beginPath();
+  g.moveTo(-58, 18); g.quadraticCurveTo(-64, 150, -40, 268);
+  g.lineTo(40, 268); g.quadraticCurveTo(64, 150, 58, 18); g.closePath(); g.fill();
+  /* 手臂的分界阴影，让轮廓不再是方块 */
+  g.fillStyle = 'rgba(10,16,20,.45)';
+  g.beginPath(); g.moveTo(18, 26); g.quadraticCurveTo(30, 150, 24, 268);
+  g.lineTo(40, 268); g.quadraticCurveTo(64, 150, 58, 18); g.closePath(); g.fill();
+  g.beginPath(); g.ellipse(0, -34, 40, 48, 0, 0, Math.PI*2); g.fill();
+  g.beginPath(); g.ellipse(4, -56, 43, 34, 0, Math.PI, Math.PI*2); g.fill();
+  /* 侧光轮廓 */
+  g.strokeStyle = 'rgba(178,206,206,.55)'; g.lineWidth = 5; g.lineCap = 'round';
+  g.beginPath(); g.ellipse(0, -34, 40, 48, 0, -1.5, 0.6); g.stroke();
+  g.beginPath(); g.moveTo(-56, 26); g.quadraticCurveTo(-62, 150, -40, 264); g.stroke();
+  g.restore();
+  g.fillStyle = '#151f1c';
+  g.beginPath();
+  g.moveTo(380, 1086); g.lineTo(1820, 1016); g.lineTo(1862, 1092); g.lineTo(402, 1150);
+  g.closePath(); g.fill();
+  g.fillStyle = 'rgba(150,160,140,.13)';
+  g.beginPath();
+  g.moveTo(410, 1088); g.lineTo(1810, 1020); g.lineTo(1814, 1034); g.lineTo(416, 1102);
+  g.closePath(); g.fill();
+}
+function drawArcNear(g){
+  const tg = g.createLinearGradient(2980, 0, 3360, 0);
+  tg.addColorStop(0, '#0a0e0f'); tg.addColorStop(.45, '#151c1c'); tg.addColorStop(1, '#070a0b');
+  g.fillStyle = tg;
+  g.beginPath();
+  g.moveTo(3040, -500); g.lineTo(3420, -500); g.lineTo(3340, 1600); g.lineTo(2940, 1600);
+  g.closePath(); g.fill();
+  g.fillStyle = 'rgba(140,152,146,.055)';
+  for (let i = 0; i < 30; i++){
+    g.fillRect(3050 + hash(i) * 340, -460 + i * 62, 2 + hash(i + 2) * 5, 54);
+  }
+  g.strokeStyle = 'rgba(10,16,16,.85)'; g.lineWidth = 9; g.lineCap = 'round';
+  for (let i = 0; i < 26; i++){
+    const x = -760 + i * 44 + hash(i) * 20;
+    const h = 150 + hash(i + 7) * 190;
+    g.beginPath(); g.moveTo(x, 1200);
+    g.quadraticCurveTo(x + 30, 1200 - h * 0.6, x + 10, 1200 - h);
+    g.stroke();
+  }
+}
+function drawS2(g, t){
+  const mt = clamp(t - ARC.m0, 0, ARC.move);
+  const z  = Math.pow(1 + ARC.grow, mt);
+  const rot = mt <= ARC.half ? ARC.rA * mt : ARC.rA * ARC.half + ARC.rB * (mt - ARC.half);
+  const tx = -ARC.v * mt * PX;
+
+  const sky = g.createLinearGradient(0, -200, 0, 800);
+  sky.addColorStop(0, '#101a21'); sky.addColorStop(.55, '#23323a'); sky.addColorStop(1, '#3a4a52');
+  g.fillStyle = sky; g.fillRect(-200, -200, W + 400, H + 400);
+
+  const layer = (f, fn) => {
+    g.save();
+    camT(g, { tx: tx * f, z: 1 + (z - 1) * f, rot: rot * f, py: H * 0.62 });
+    fn(g);
+    g.restore();
+  };
+  layer(0.45, drawRidge);
+  layer(0.80, drawForest);
+  layer(1.00, drawArcSubject);
+  layer(1.70, drawArcNear);
+
+  exposure(g, S2_EXPOSURE, S2_CONTRAST, '#8ea08a');
+  if (t < ARC.dis){
+    g.fillStyle = 'rgba(6,9,11,' + (1 - t / ARC.dis).toFixed(3) + ')';
+    g.fillRect(0, 0, W, H);
+  }
+
+  let a = 0;
+  if (t >= ARC.ti0 && t <= ARC.ti1){
+    a = Math.min(1, (t - ARC.ti0) / 0.4) * Math.min(1, (ARC.ti1 - t) / 0.4);
+  }
+  if (a > 0.001){
+    g.globalAlpha = a;
+    g.fillStyle = 'rgba(8,12,14,.34)'; g.fillRect(0, 0, W, H);
+    g.fillStyle = '#e2ecef';
+    g.font = '600 92px "PingFang SC","Microsoft YaHei",system-ui,sans-serif';
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText('慢 弧 移', W/2, H/2 - 18);
+    g.fillStyle = 'rgba(190,208,216,.72)';
+    g.font = '400 30px ui-monospace,Menlo,Consolas,monospace';
+    g.fillText('−110 px/s   ·   +1.8 %/s   ·   roll 0.39→1.33 °/s', W/2, H/2 + 76);
+    g.globalAlpha = 1;
+  }
+  return { z, rot, tx: -ARC.v * mt, mt };
+}
+
+/* ═══════════════ S3 · 拉开 ×0.30 ═══════════════ */
+const ROOM = { x0:-6200, x1:5200, y0:-620, y1:1700 };
+const WINX = [-5500, -4700, -3900, -3100, -2020, -1250, -70, 1110, 2290, 3470, 4250];
+
+function drawRoom(g){
+  const wall = g.createLinearGradient(0, ROOM.y0, 0, ROOM.y1);
+  wall.addColorStop(0, '#1d262b'); wall.addColorStop(.5, '#2b363b');
+  wall.addColorStop(.82, '#263034'); wall.addColorStop(1, '#182024');
+  g.fillStyle = wall;
+  g.fillRect(ROOM.x0, ROOM.y0, ROOM.x1 - ROOM.x0, ROOM.y1 - ROOM.y0);
+
+  /* 天花板与檐口 */
+  const ceil = g.createLinearGradient(0, ROOM.y0, 0, 150);
+  ceil.addColorStop(0, '#0a1013'); ceil.addColorStop(1, '#1b2429');
+  g.fillStyle = ceil; g.fillRect(ROOM.x0, ROOM.y0, ROOM.x1 - ROOM.x0, 150 - ROOM.y0);
+  /* 顶梁，把黑块切成几段 */
+  for (let i = 0; i < 9; i++){
+    const bx = -5600 + i * 1180;
+    g.fillStyle = '#141d21'; g.fillRect(bx, ROOM.y0, 90, 120 - ROOM.y0);
+    g.fillStyle = 'rgba(190,208,214,.05)'; g.fillRect(bx, 150, 90, 8);
+  }
+  g.fillStyle = '#1e282c'; g.fillRect(ROOM.x0, 126, ROOM.x1 - ROOM.x0, 26);
+  g.fillStyle = 'rgba(190,208,214,.09)'; g.fillRect(ROOM.x0, 150, ROOM.x1 - ROOM.x0, 3);
+  for (let i = 0; i < 10; i++){
+    const x = -5400 + i * 1120;
+    g.save(); g.filter = 'blur(28px)';
+    g.fillStyle = 'rgba(255,236,198,.15)';
+    g.beginPath(); g.ellipse(x, 214, 300, 56, 0, 0, Math.PI*2); g.fill();
+    g.restore();
+  }
+
+  /* 墙裙 */
+  g.fillStyle = '#1a2124'; g.fillRect(ROOM.x0, 830, ROOM.x1 - ROOM.x0, 90);
+  g.fillStyle = 'rgba(190,208,214,.10)'; g.fillRect(ROOM.x0, 828, ROOM.x1 - ROOM.x0, 3);
+  g.fillStyle = 'rgba(150,170,178,.06)'; g.fillRect(ROOM.x0, 916, ROOM.x1 - ROOM.x0, 22);
+
+  /* 窗：高度按序号错落，避免等距网格感 */
+  WINX.forEach((x, wi) => {
+    const top = 190 + (wi % 3) * 34;
+    const hgt = 450 - (wi % 3) * 30;
+    const wg = g.createLinearGradient(0, top, 0, top + hgt);
+    wg.addColorStop(0, '#a9c2cc'); wg.addColorStop(.6, '#7b939d'); wg.addColorStop(1, '#5d757f');
+    g.fillStyle = wg; g.fillRect(x, top, 380, hgt);
+    g.strokeStyle = '#0e1416'; g.lineWidth = 12; g.strokeRect(x, top, 380, hgt);
+    g.lineWidth = 10;
+    g.beginPath();
+    g.moveTo(x + 190, top); g.lineTo(x + 190, top + hgt);
+    g.moveTo(x, top + hgt * 0.5); g.lineTo(x + 380, top + hgt * 0.5);
+    g.stroke();
+    /* 窗光落地 */
+    g.save(); g.filter = 'blur(30px)';
+    g.fillStyle = 'rgba(190,214,224,.12)';
+    g.beginPath();
+    g.moveTo(x + 30, 920); g.lineTo(x + 356, 920);
+    g.lineTo(x + 600, 1500); g.lineTo(x - 210, 1500); g.closePath(); g.fill();
+    g.restore();
+  });
+
+  /* 书架 */
+  [2680, 3560].forEach(bx => {
+    g.fillStyle = '#20272a'; g.fillRect(bx, 300, 620, 530);
+    g.fillStyle = '#2b3437';
+    g.fillRect(bx, 430, 620, 14); g.fillRect(bx, 585, 620, 14); g.fillRect(bx, 740, 620, 14);
+    const jar = ['#73563a', '#5c6b6a', '#8a6b45', '#4e5f63', '#6a5540'];
+    for (let r = 0; r < 3; r++){
+      for (let i = 0; i < 11; i++){
+        const w = 34 + hash(i + r * 13 + bx) * 22;
+        const h = 58 + hash(i * 3 + r * 7 + bx) * 70;
+        g.fillStyle = jar[(i + r) % jar.length];
+        rr(g, bx + 16 + i * 54, 740 - r * 155 - h, w, h, 4); g.fill();
+      }
+    }
+  });
+
+  /* 主工作台 */
+  g.fillStyle = '#2a2118'; g.fillRect(760, 720, 900, 26);
+  g.fillStyle = '#191410'; g.fillRect(782, 746, 24, 300); g.fillRect(1614, 746, 24, 300);
+
+  /* 座椅：给广角一个尺度参照 */
+  const chair = (cx, sc) => {
+    g.save(); g.translate(cx, 940); g.scale(sc, sc);
+    g.fillStyle = '#20282b'; rr(g, -70, -120, 140, 26, 8); g.fill();
+    rr(g, -70, -300, 22, 200, 10); g.fill();
+    g.fillStyle = '#171e21';
+    g.fillRect(-62, -104, 16, 104); g.fillRect(46, -104, 16, 104);
+    g.restore();
+  };
+  chair(300, 1.00); chair(1960, 0.92); chair(-700, 0.86); chair(2760, 0.88);
+  chair(-3200, 0.80); chair(-4100, 0.74);
+
+  /* 侧柜（左） */
+  g.fillStyle = '#1e2528'; g.fillRect(-1480, 700, 760, 360);
+  g.fillStyle = '#283134'; g.fillRect(-1480, 700, 760, 14);
+  for (let i = 0; i < 4; i++){
+    g.strokeStyle = 'rgba(150,170,178,.16)'; g.lineWidth = 3;
+    g.strokeRect(-1450, 748 + i * 78, 700, 62);
+  }
+  for (let i = 0; i < 5; i++){
+    g.fillStyle = ['#6b5638', '#4d5f5e', '#7d6448'][i % 3];
+    g.fillRect(-1420 + i * 130, 636, 40, 66);
+    g.fillRect(-1412 + i * 130, 606, 24, 32);
+  }
+
+  /* 第二张工作台（左） */
+  g.fillStyle = '#241d16'; g.fillRect(-1180, 748, 620, 22);
+  g.fillStyle = '#15110d'; g.fillRect(-1160, 770, 20, 220); g.fillRect(-590, 770, 20, 220);
+
+  /* 窗边的植物、长凳与一个站立的人，填补中段空墙 */
+  const plant = (px, sc) => {
+    g.save(); g.translate(px, 830); g.scale(sc, sc);
+    g.fillStyle = '#2a2320'; rr(g, -34, -60, 68, 62, 8); g.fill();
+    g.strokeStyle = '#33452f'; g.lineWidth = 7; g.lineCap = 'round';
+    for (let i = 0; i < 7; i++){
+      const a = -1.2 + i * 0.42;
+      g.beginPath(); g.moveTo(0, -56);
+      g.quadraticCurveTo(Math.cos(a) * 50, -170, Math.cos(a) * 96, -250 - hash(i + px) * 60);
+      g.stroke();
+    }
+    g.restore();
+  };
+  plant(-260, 1.0); plant(1830, 0.9); plant(3180, 1.1);
+  g.fillStyle = '#1d2528'; rr(g, 2380, 700, 460, 60, 8); g.fill();
+  g.fillStyle = '#151c1f'; g.fillRect(2400, 760, 22, 90); g.fillRect(2798, 760, 22, 90);
+  /* 站立的人（远景剪影） */
+  g.save(); g.translate(2620, 690); g.scale(0.62, 0.62);
+  g.fillStyle = '#0f161a';
+  g.beginPath();
+  g.moveTo(-58, 18); g.quadraticCurveTo(-64, 150, -40, 268);
+  g.lineTo(40, 268); g.quadraticCurveTo(64, 150, 58, 18); g.closePath(); g.fill();
+  g.beginPath(); g.ellipse(0, -34, 40, 48, 0, 0, Math.PI*2); g.fill();
+  g.restore();
+
+  /* 台灯（右，暖光） */
+  g.save(); g.filter = 'blur(30px)';
+  const lamp = g.createRadialGradient(2260, 560, 10, 2260, 560, 300);
+  lamp.addColorStop(0, 'rgba(255,222,164,.50)'); lamp.addColorStop(1, 'rgba(255,222,164,0)');
+  g.fillStyle = lamp; g.beginPath(); g.arc(2260, 560, 300, 0, Math.PI*2); g.fill();
+  g.restore();
+  g.fillStyle = '#151b1e'; g.fillRect(2252, 560, 14, 176);
+  g.beginPath(); g.moveTo(2200, 560); g.lineTo(2320, 560); g.lineTo(2294, 612); g.lineTo(2226, 612);
+  g.closePath(); g.fill();
+
+  /* 被摄主体：环形机构，留在主工作台上 */
+  g.save(); g.translate(1120, 700);
+  g.fillStyle = '#10171a'; rr(g, -150, 8, 300, 22, 6); g.fill();
+  g.fillStyle = '#3d4a4f';
+  g.beginPath(); g.ellipse(0, 0, 96, 34, 0, 0, Math.PI*2); g.fill();
+  g.strokeStyle = '#c9b073'; g.lineWidth = 9;
+  g.beginPath(); g.ellipse(0, -8, 62, 24, 0, 0, Math.PI*2); g.stroke();
+  g.fillStyle = '#8e9ba0'; rr(g, -16, -120, 32, 116, 8); g.fill();
+  g.fillStyle = '#cbad5d'; g.beginPath(); g.arc(0, -134, 18, 0, Math.PI*2); g.fill();
+  g.restore();
+
+  /* 地面 */
+  const fg = g.createLinearGradient(0, 940, 0, ROOM.y1);
+  fg.addColorStop(0, '#1a2225'); fg.addColorStop(1, '#0f1416');
+  g.fillStyle = fg; g.fillRect(ROOM.x0, 940, ROOM.x1 - ROOM.x0, 1600);
+  g.strokeStyle = 'rgba(130,150,158,.13)';
+  for (let i = 0; i < 16; i++){
+    const y = 948 + Math.pow(i / 15, 2.1) * 520;
+    g.lineWidth = 1 + i * 0.16;
+    g.beginPath(); g.moveTo(ROOM.x0, y); g.lineTo(ROOM.x1, y); g.stroke();
+  }
+  g.strokeStyle = 'rgba(130,150,158,.09)'; g.lineWidth = 2;
+  for (let i = -12; i <= 14; i++){
+    const x = 960 + i * 470;
+    g.beginPath(); g.moveTo(x, 952); g.lineTo(960 + i * 700, ROOM.y1); g.stroke();
+  }
+  for (const x of WINX){
+    const gl = g.createRadialGradient(x + 190, 1120, 20, x + 190, 1120, 420);
+    gl.addColorStop(0, 'rgba(196,218,228,.10)'); gl.addColorStop(1, 'rgba(196,218,226,0)');
+    g.fillStyle = gl;
+    g.beginPath(); g.ellipse(x + 190, 1120, 420, 150, 0, 0, Math.PI*2); g.fill();
+  }
+}
+function pullAt(t){
+  const mt = clamp(t - S3.m0, 0, S3.move);
+  const fr = mt * FPS;
+  const i = Math.floor(fr), f = fr - i;
+  const a = PULL.z[clamp(i, 0, PULL.N)], b = PULL.z[clamp(i + 1, 0, PULL.N)];
+  return { z: lerp(a, b, f), prog: mt / S3.move, mt };
+}
+function drawS3(g, t){
+  const p = pullAt(t);
+  /* 横移是屏幕空间位移：camT 先把世界缩到 z 再平移，若直接塞 tx，画面位移会被 z 再缩一次，
+     在 z<1 时反而放大成 1/z。这里除以 z，让它落到"每帧固定几个 px"的屏幕口径上。 */
+  const tx = S3.tx * PX * p.prog;
+  camT(g, { tx, ty: 0, z: p.z, px: W * 0.5, py: H * 0.56 });
+  drawRoom(g);
+  resetT(g);
+
+  let a = 0;
+  if (t >= 0.96 && t <= 2.96) a = Math.min(1, (t - 0.96) / 0.3) * Math.min(1, (2.96 - t) / 0.3);
+  if (a > 0.001){
+    g.globalAlpha = a;
+    g.fillStyle = 'rgba(6,9,10,.42)'; g.fillRect(0, 0, W, H);
+    g.fillStyle = '#e4edf0';
+    g.font = '600 88px "PingFang SC","Microsoft YaHei",system-ui,sans-serif';
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText('平滑拉开', W/2, H/2 - 10);
+    g.fillStyle = 'rgba(190,208,216,.72)';
+    g.font = '400 28px ui-monospace,Menlo,Consolas,monospace';
+    g.fillText('静止 2.0 s  ·  运动 6.8 s  ·  ×0.30  ·  硬切收尾', W/2, H/2 + 76);
+    g.globalAlpha = 1;
+  }
+  return p;
+}
+
+
+/* ═══════════════ S4 · 飞跃推进 ═══════════════ */
+/* 几何约束：camT 把世界点映到 px + tx + (x − px)·z。z 最大 5.34、tx 最负 −1512，
+   主体必须放在 (1220, 620) 附近，才能在 0—7.2 秒全程留在画面内。 */
+const S4_CONTRAST = 1.95;
+const S4_EXPOSURE = 0.874;   // 原片 90.6 → 复现 121.6；同时压掉天空把 p90 拉回来
+const FLY_SUBJECT = { x: 1180, y: 690 };
+/* S4 ── 飞跃：−105 px/秒、+29.5 %/秒 → +20.1 %/秒、dy −0.56 px/帧、旋转 ≤1.84 °/秒 */
+const FLY = { m0:0.60, move:7.20, v:113, r1:0.295, r2:0.201, split:2.4, dy:0, rot:1.2 };
+
+function flyZ(mt){
+  return mt <= FLY.split
+    ? Math.exp(FLY.r1 * mt)
+    : Math.exp(FLY.r1 * FLY.split) * Math.exp(FLY.r2 * (mt - FLY.split));
+}
+function drawFarRange(g){
+  const gd = g.createLinearGradient(0, 200, 0, 560);
+  gd.addColorStop(0, '#7d8492'); gd.addColorStop(.5, '#9a8d79'); gd.addColorStop(1, '#c0a887');
+  g.fillStyle = gd;
+  g.beginPath(); g.moveTo(-9000, 700);
+  for (let x = -9000; x <= 12000; x += 120){
+    g.lineTo(x, 400 - 130 * Math.sin(x * 0.00047 + 0.6) - 58 * Math.sin(x * 0.0017 + 2.2) - 22 * Math.sin(x * 0.0041));
+  }
+  g.lineTo(12000, 2000); g.lineTo(-9000, 2000); g.closePath(); g.fill();
+  g.strokeStyle = 'rgba(108,102,96,.24)'; g.lineWidth = 3;
+  for (let i = 0; i < 26; i++){
+    const y = 420 + i * 14;
+    g.beginPath(); g.moveTo(-9000, y);
+    for (let x = -9000; x <= 12000; x += 200) g.lineTo(x, y + 10 * Math.sin(x * 0.003 + i));
+    g.stroke();
+  }
+  for (let i = 0; i < 9; i++){
+    const x = -3000 + i * 1500;
+    g.save(); g.filter = 'blur(40px)';
+    g.fillStyle = 'rgba(62,58,60,.16)';
+    g.beginPath(); g.ellipse(x, 350 + hash(i) * 60, 420, 70, 0, 0, Math.PI*2); g.fill();
+    g.restore();
+  }
+}
+function drawMidRidge(g){
+  const gd = g.createLinearGradient(0, 470, 0, 1400);
+  gd.addColorStop(0, '#9c7f57'); gd.addColorStop(.4, '#876c48'); gd.addColorStop(1, '#5f4a31');
+  g.fillStyle = gd;
+  g.beginPath(); g.moveTo(-9000, 1400);
+  for (let x = -9000; x <= 12000; x += 100){
+    g.lineTo(x, 560 - 70 * Math.sin(x * 0.0011 + 2.1) - 34 * Math.sin(x * 0.0028 + 0.4));
+  }
+  g.lineTo(12000, 2600); g.lineTo(-9000, 2600); g.closePath(); g.fill();
+
+  g.strokeStyle = 'rgba(88,68,44,.22)'; g.lineWidth = 3;
+  for (let i = 0; i < 54; i++){
+    const y = 590 + i * 15;
+    g.beginPath(); g.moveTo(-9000, y);
+    for (let x = -9000; x <= 12000; x += 180) g.lineTo(x, y + 8 * Math.sin(x * 0.0022 + i * 0.7));
+    g.stroke();
+  }
+  for (let pass = 0; pass < 2; pass++){
+    const n = pass ? 54 : 34;
+    for (let i = 0; i < n; i++){
+      const x = -5600 + i * (pass ? 230 : 360) + hash(i + pass * 71) * 110;
+      const base = (pass ? 645 : 612) - 50 * Math.sin(x * 0.0011 + 2.1) + hash(i + pass * 13) * 42;
+      const w = (pass ? 34 : 48) + hash(i + 2) * 22;
+      const h = (pass ? 20 : 26) + hash(i + 6) * 12;
+      g.fillStyle = pass ? 'rgba(226,212,184,.55)' : 'rgba(214,196,164,.78)';
+      rr(g, x, base - h, w, h, 2); g.fill();
+      g.fillStyle = pass ? 'rgba(160,108,74,.55)' : 'rgba(150,94,64,.82)';
+      g.beginPath();
+      g.moveTo(x - 4, base - h); g.lineTo(x + w * 0.5, base - h - 18); g.lineTo(x + w + 4, base - h);
+      g.closePath(); g.fill();
+    }
+  }
+  for (let i = 0; i < 300; i++){
+    const x = -7000 + i * 46 + hash(i + 31) * 30;
+    const y = 600 + hash(i + 17) * 620;
+    const sc = 0.4 + (y - 600) / 900;
+    g.fillStyle = i % 3 ? 'rgba(74,84,52,.62)' : 'rgba(92,98,60,.55)';
+    g.beginPath(); g.ellipse(x, y, 7 * sc, 11 * sc, 0, 0, Math.PI*2); g.fill();
+  }
+}
+function drawGround(g){
+  const grd = g.createLinearGradient(0, 560, 0, 2600);
+  grd.addColorStop(0, '#8a6d4a'); grd.addColorStop(.35, '#78603f'); grd.addColorStop(1, '#3a2d1e');
+  g.fillStyle = grd; g.fillRect(-9000, 560, 21000, 2400);
+
+  for (let i = 0; i < 190; i++){
+    const x = -7000 + hash(i * 1.7) * 12000;
+    const y = 585 + hash(i * 2.3) * 1400;
+    const w = 120 + hash(i * 3.1) * 340;
+    const h = 26 + hash(i * 4.7) * 70;
+    g.fillStyle = i % 4 === 0 ? 'rgba(122,116,66,.10)'
+                : i % 4 === 1 ? 'rgba(60,52,34,.13)'
+                : i % 4 === 2 ? 'rgba(150,124,80,.10)' : 'rgba(84,92,58,.10)';
+    g.beginPath();
+    g.moveTo(x, y); g.lineTo(x + w, y - h * 0.28);
+    g.lineTo(x + w + 30, y + h); g.lineTo(x + 30, y + h * 1.28);
+    g.closePath(); g.fill();
+  }
+
+  for (let i = 0; i < 700; i++){
+    const x = -7000 + i * 34 + hash(i) * 26;
+    const y = 580 + hash(i + 11) * 1200;
+    const sc = 0.35 + (y - 580) / 620;
+    g.strokeStyle = i % 3 ? 'rgba(52,62,40,.55)' : 'rgba(74,82,50,.55)';
+    g.lineWidth = Math.max(1, 1.6 * sc); g.lineCap = 'round';
+    g.beginPath(); g.moveTo(x, y); g.lineTo(x + 3 * sc, y - 18 * sc); g.stroke();
+    g.beginPath(); g.moveTo(x, y); g.lineTo(x - 4 * sc, y - 12 * sc); g.stroke();
+  }
+
+  g.strokeStyle = 'rgba(120,96,66,.42)'; g.lineWidth = 52; g.lineCap = 'round';
+  const road = () => {
+    g.beginPath(); g.moveTo(-900, 2600);
+    g.bezierCurveTo(200, 1600, 760, 1050, 1350, 700);
+    g.bezierCurveTo(1900, 520, 2500, 520, 3400, 470);
+  };
+  road(); g.stroke();
+  g.strokeStyle = 'rgba(212,192,156,.55)'; g.lineWidth = 30;
+  road(); g.stroke();
+
+  const sx = FLY_SUBJECT.x, sy = FLY_SUBJECT.y;
+  const shadow = g.createRadialGradient(sx, sy + 10, 4, sx, sy + 10, 110);
+  shadow.addColorStop(0, 'rgba(26,20,12,.42)'); shadow.addColorStop(1, 'rgba(26,20,12,0)');
+  g.fillStyle = shadow; g.beginPath(); g.ellipse(sx, sy + 10, 110, 26, 0, 0, Math.PI*2); g.fill();
+
+  g.save(); g.translate(sx, sy); g.scale(0.52, 0.52);
+  g.fillStyle = '#2b2118';
+  g.beginPath(); g.ellipse(0, -18, 46, 17, 0, 0, Math.PI*2); g.fill();
+  g.fillRect(-34, -14, 8, 34); g.fillRect(-14, -12, 8, 32);
+  g.fillRect(18, -14, 8, 34); g.fillRect(30, -12, 8, 32);
+  g.beginPath(); g.moveTo(-46, -22); g.quadraticCurveTo(-58, -44, -46, -56);
+  g.quadraticCurveTo(-38, -44, -44, -22); g.fill();
+  g.beginPath(); g.ellipse(-40, -60, 16, 12, -0.4, 0, Math.PI*2); g.fill();
+  g.fillStyle = '#1c1610';
+  g.beginPath(); g.ellipse(2, -50, 15, 20, 0, 0, Math.PI*2); g.fill();
+  g.beginPath(); g.arc(6, -78, 12, 0, Math.PI*2); g.fill();
+  g.fillStyle = '#43362a';
+  g.beginPath(); g.ellipse(6, -86, 15, 6, 0, 0, Math.PI*2); g.fill();
+  g.fillStyle = '#c9563f'; g.fillRect(-6, -68, 18, 6);
+  g.restore();
+}
+function drawS4(g, t){
+  const mt = clamp(t - FLY.m0, 0, FLY.move);
+  const z = flyZ(mt);
+  /* 2026-10-27：这里不再除以 z。实测显示除掉 z 会把横移中位从 −128 压到 −77 px/s，
+     而原片是 −113 px/s；camT 的 tx 本身就是屏幕像素口径。 */
+  const tx = -FLY.v * mt * PX;
+  const ty = -FLY.dy * FPS * mt * PX;
+  const rot = FLY.rot * mt;
+
+  const sky = g.createLinearGradient(0, -400, 0, 640);
+  sky.addColorStop(0, '#333c48'); sky.addColorStop(.45, '#6f6a63'); sky.addColorStop(1, '#c29468');
+  g.fillStyle = sky; g.fillRect(-600, -600, W + 1200, H + 1200);
+
+  const layer = (f, fn) => {
+    g.save();
+    camT(g, { tx: tx * f, ty: ty * f, z: 1 + (z - 1) * f, rot: rot * f, px: W * 0.52, py: H * 0.60 });
+    fn(g);
+    g.restore();
+  };
+  layer(0.35, drawFarRange);
+  layer(0.65, drawMidRidge);
+  layer(1.00, drawGround);
+
+  const mist = g.createLinearGradient(0, 180, 0, 700);
+  mist.addColorStop(0, 'rgba(216,190,156,0)'); mist.addColorStop(.7, 'rgba(216,190,156,.18)');
+  mist.addColorStop(1, 'rgba(216,190,156,0)');
+  g.fillStyle = mist; g.fillRect(0, 180, W, 560);
+
+  exposure(g, S4_EXPOSURE, S4_CONTRAST, '#b79a76');
+  if (t < 0.6){
+    g.fillStyle = 'rgba(8,10,12,' + (1 - t / 0.6).toFixed(3) + ')';
+    g.fillRect(0, 0, W, H);
+  }
+  return { z, rot, mt, tx: -FLY.v * mt };
+}
+
+/* ═══════════════ HUD ═══════════════ */
+const qs = new URLSearchParams(location.search);
+const SHOWHUD = qs.get('hud') !== '0';
+
+function drawHud(g, t, s, lt){
+  if (!SHOWHUD) return;
+  resetT(g);
+  const pad = 34;
+  g.globalAlpha = 0.92;
+  g.fillStyle = 'rgba(6,9,11,.55)';
+  rr(g, pad, H - 96, 660, 62, 8); g.fill();
+  g.globalAlpha = 1;
+  g.fillStyle = '#cfe0e7';
+  g.font = '500 24px ui-monospace,Menlo,Consolas,monospace';
+  g.textAlign = 'left'; g.textBaseline = 'middle';
+  g.fillText(s.id + ' · ' + s.name, pad + 18, H - 76);
+  g.fillStyle = 'rgba(154,176,186,.9)';
+  g.font = '400 20px ui-monospace,Menlo,Consolas,monospace';
+  g.fillText(lt.toFixed(2) + ' / ' + s.dur.toFixed(2) + ' s   f' + String(Math.round(t * FPS)).padStart(4, '0'), pad + 18, H - 46);
+
+  g.fillStyle = 'rgba(150,170,180,.45)';
+  g.font = '400 18px ui-monospace,Menlo,Consolas,monospace';
+  g.textAlign = 'right';
+  g.fillText('camera38 · 程序生成 · 无原片素材', W - pad, H - 40);
+}
+
+/* ═══════════════ 渲染入口 ═══════════════ */
+let lastInfo = null;
+function render(t){
+  t = clamp(t, 0, DUR);
+  resetT(ctx);
+  ctx.fillStyle = '#070a0c'; ctx.fillRect(0, 0, W, H);
+
+  let s = SHOT[SHOT.length - 1], lt = t - s.t0, info = {};
+  for (const sh of SHOT){
+    if (t < sh.t0 + sh.dur){ s = sh; lt = t - sh.t0; break; }
+  }
+  if (s.id === 'S1') info = drawS1(ctx, lt);
+  else if (s.id === 'S2') info = drawS2(ctx, lt);
+  else if (s.id === 'S3') info = drawS3(ctx, lt);
+  else info = drawS4(ctx, lt);
+
+  resetT(ctx);
+  drawHud(ctx, t, s, lt);
+  lastInfo = { t, shot: s, lt, info };
+  return lastInfo;
+}
+
+/* ═══════════════ 程序化音效 ═══════════════ */
+/* 起音密度按实测 5 onset/秒；每个切点前 3 ms 确保有一个起音（对应中位 +3 ms） */
+const ONSETS = (function(){
+  const out = [];
+  let t = 0.02, i = 0;
+  while (t < DUR){
+    out.push(+t.toFixed(3));
+    t += 0.16 + 0.09 * hash(i * 3.17 + 1.7);
+    i++;
+  }
+  for (const c of CUTS){
+    const target = +(c - 0.003).toFixed(3);
+    if (!out.some(v => Math.abs(v - target) < 0.02)) out.push(target);
+  }
+  out.sort((a, b) => a - b);
+  return out;
+})();
+
+const AUDIO = {
+  ctx: null, master: null, noise: null, timer: null, origin: 0, cursor: 0, on: false,
+  init(){
+    if (this.ctx) return;
+    const C = window.AudioContext || window.webkitAudioContext;
+    if (!C) return;
+    this.ctx = new C();
+    this.master = this.ctx.createGain();
+    this.master.gain.value = 0.13;
+    this.master.connect(this.ctx.destination);
+    const len = Math.floor(this.ctx.sampleRate * 0.5);
+    const buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    let seed = 20261027;
+    for (let i = 0; i < len; i++){
+      seed = (seed * 1664525 + 1013904223) >>> 0;
+      d[i] = (seed / 4294967296) * 2 - 1;
+    }
+    this.noise = buf;
+  },
+  start(t){
+    this.init();
+    if (!this.ctx) return;
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+    this.on = true;
+    this.master.gain.cancelScheduledValues(this.ctx.currentTime);
+    this.master.gain.setTargetAtTime(0.13, this.ctx.currentTime, 0.02);
+    this.origin = this.ctx.currentTime + 0.03 - t;
+    this.cursor = t;
+    if (this.timer) clearInterval(this.timer);
+    this.timer = setInterval(() => this.schedule(), 90);
+    this.schedule();
+  },
+  stop(){
+    this.on = false;
+    if (this.timer){ clearInterval(this.timer); this.timer = null; }
+    if (this.ctx && this.master){
+      this.master.gain.cancelScheduledValues(this.ctx.currentTime);
+      this.master.gain.setTargetAtTime(0.0, this.ctx.currentTime, 0.03);
+    }
+  },
+  schedule(){
+    if (!this.on || !this.ctx) return;
+    const horizon = this.pageTime() + 0.4;
+    while (this.cursor < horizon){
+      const idx = ONSETS.findIndex(v => v >= this.cursor);
+      if (idx < 0) break;
+      const o = ONSETS[idx];
+      this.voice(o, this.origin + o);
+      this.cursor = o + 0.001;
+    }
+  },
+  pageTime(){ return this.ctx.currentTime - this.origin; },
+  voice(onset, at){
+    if (at < this.ctx.currentTime) return;
+    const isCut = CUTS.some(c => Math.abs(c - onset - 0.003) < 0.01);
+    if (isCut) return this.thump(at);
+    if (hash(onset * 91.7) > 0.55) return this.tick(at, 0.5 + hash(onset * 13.1) * 0.6);
+    return this.pluck(at);
+  },
+  tick(at, gain){
+    const src = this.ctx.createBufferSource(); src.buffer = this.noise;
+    const bp = this.ctx.createBiquadFilter(); bp.type = 'bandpass';
+    bp.frequency.value = 1500 + hash(at * 7.3) * 1600; bp.Q.value = 1.2;
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(0.0001, at);
+    g.gain.exponentialRampToValueAtTime(0.22 * gain, at + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, at + 0.075);
+    src.connect(bp); bp.connect(g); g.connect(this.master);
+    src.start(at); src.stop(at + 0.1);
+  },
+  pluck(at){
+    const scale = [220, 261.63, 293.66, 349.23, 392, 440, 523.25];
+    const f = scale[Math.floor(hash(at * 31.3) * scale.length)];
+    const o = this.ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = f;
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(0.0001, at);
+    g.gain.exponentialRampToValueAtTime(0.14, at + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, at + 0.32);
+    o.connect(g); g.connect(this.master);
+    o.start(at); o.stop(at + 0.36);
+  },
+  thump(at){
+    const o = this.ctx.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(86, at);
+    o.frequency.exponentialRampToValueAtTime(52, at + 0.28);
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(0.0001, at);
+    g.gain.exponentialRampToValueAtTime(0.30, at + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, at + 0.42);
+    o.connect(g); g.connect(this.master);
+    o.start(at); o.stop(at + 0.46);
+  }
+};
+
+/* ═══════════════ 播放控制 ═══════════════ */
+const FROZEN = qs.has('t');
+const barEl = document.getElementById('seek');
+const tcEl  = document.getElementById('tc');
+const bplay = document.getElementById('play');
+const bsound = document.getElementById('sound');
+let playing = false, baseT = 0, clock0 = 0, lastT = -1;
+
+function nowT(){
+  if (FROZEN) return clamp(parseFloat(qs.get('t')) || 0, 0, DUR);
+  if (!playing) return baseT;
+  return clamp(baseT + (performance.now() / 1000 - clock0), 0, DUR);
+}
+function play(){
+  if (FROZEN) return;
+  if (baseT >= DUR - 0.001) baseT = 0;
+  clock0 = performance.now() / 1000;
+  playing = true;
+  bplay.textContent = '❚❚ 暂停';
+  bplay.setAttribute('aria-pressed', 'true');
+  if (bsound.getAttribute('data-on') === '1'){ try { AUDIO.start(baseT); } catch(e){} }
+}
+function pause(){
+  if (!playing) return;
+  baseT = nowT();
+  playing = false;
+  bplay.textContent = '播放';
+  bplay.setAttribute('aria-pressed', 'false');
+  AUDIO.stop();
+}
+function seek(t){
+  t = clamp(t, 0, DUR);
+  baseT = t;
+  clock0 = performance.now() / 1000;
+  barEl.value = t;
+  render(t); lastT = t;
+  tcEl.textContent = t.toFixed(3) + ' ／ ' + DUR.toFixed(3) + ' s';
+  updatePanel(t);
+  if (playing && AUDIO.on) { AUDIO.stop(); AUDIO.start(t); }
+}
+bplay.addEventListener('click', () => playing ? pause() : play());
+barEl.addEventListener('input', e => { pause(); seek(parseFloat(e.target.value)); });
+bsound.addEventListener('click', () => {
+  const on = bsound.getAttribute('data-on') === '1';
+  bsound.setAttribute('data-on', on ? '0' : '1');
+  bsound.setAttribute('aria-pressed', on ? 'false' : 'true');
+  if (on) AUDIO.stop(); else if (playing) AUDIO.start(nowT());
+});
+document.querySelectorAll('.row button[data-t]').forEach(b => {
+  b.addEventListener('click', () => { pause(); seek(parseFloat(b.dataset.t)); });
+});
+window.addEventListener('keydown', e => {
+  if (e.code === 'Space'){ e.preventDefault(); playing ? pause() : play(); }
+  if (e.code === 'ArrowRight'){ e.preventDefault(); pause(); seek(nowT() + 1 / FPS); }
+  if (e.code === 'ArrowLeft'){ e.preventDefault(); pause(); seek(nowT() - 1 / FPS); }
+  if (e.key === ']' || e.key === '['){
+    e.preventDefault();
+    const t = nowT();
+    const idx = SHOT.findIndex(s => t < s.t0 + s.dur);
+    const next = clamp((idx < 0 ? SHOT.length - 1 : idx) + (e.key === ']' ? 1 : -1), 0, SHOT.length - 1);
+    pause(); seek(SHOT[next].t0 + 0.04);
+  }
+});
+
+/* ═══════════════ 面板 ═══════════════ */
+const $ = id => document.getElementById(id);
+const vShot = $('vShot'), vTime = $('vTime'), vFrame = $('vFrame'), vScale = $('vScale');
+const vPan = $('vPan'), vRot = $('vRot'), vFocus = $('vFocus'), vNext = $('vNext');
+
+function updatePanel(t){
+  const s = lastInfo ? lastInfo.shot : SHOT[0];
+  const lt = clamp(t - s.t0, 0, s.dur);
+  const inf = lastInfo ? lastInfo.info : {};
+  vShot.textContent = s.id + ' ' + s.name;
+  vTime.textContent = lt.toFixed(2) + ' / ' + t.toFixed(2) + ' s';
+  vFrame.textContent = 'f' + String(Math.round(t * FPS)).padStart(4, '0') + '（' + s.win + '）';
+
+  let z = 1, pan = 0, rot = 0, focus = '—';
+  if (s.id === 'S1'){ z = 1; pan = 0; rot = 0; focus = sharpAt(lt).toFixed(3); }
+  if (s.id === 'S2'){ z = inf.z; pan = lt >= ARC.m0 ? -ARC.v : 0; rot = inf.rot; focus = '—'; }
+  if (s.id === 'S3'){ z = inf.z; pan = lt >= S3.m0 ? (S3.tx * PX * inf.prog) / Math.max(0.001, inf.mt) : 0; rot = 0; focus = '—'; }
+  if (s.id === 'S4'){ z = inf.z; pan = lt >= FLY.m0 ? -FLY.v : 0; rot = inf.rot; focus = '—'; }
+
+  vScale.textContent = (z === undefined ? 1 : z).toFixed(3);
+  vPan.textContent = (pan < 0 ? '−' : '') + Math.abs(pan).toFixed(0) + ' px/s（960 口径）';
+  vRot.textContent = (rot || 0).toFixed(2) + ' °';
+  vFocus.textContent = focus;
+  const nx = CUTS.find(c => c > t + 0.001);
+  vNext.textContent = nx ? nx.toFixed(3) + ' s（onset 在 −3 ms）' : '片尾';
+}
+
+/* 拉焦曲线图 */
+(function(){
+  const svg = document.getElementById('curveSvg');
+  const w = 300, h = 128, pad = 8;
+  let d = '';
+  for (let i = 0; i <= 100; i++){
+    const u = i / 100;
+    const x = pad + u * (w - pad * 2);
+    const y = h - pad - focusCurve(u) * (h - pad * 2);
+    d += (i ? ' L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1);
+  }
+  let grid = '';
+  [0, 0.25, 0.69, 1].forEach(u => {
+    const x = pad + u * (w - pad * 2);
+    grid += '<line x1="' + x.toFixed(1) + '" y1="' + pad + '" x2="' + x.toFixed(1) + '" y2="' + (h-pad) + '" stroke="#1d2a31" stroke-width="1"/>';
+  });
+  [0, 0.5, 1].forEach(p => {
+    const y = h - pad - p * (h - pad * 2);
+    grid += '<line x1="' + pad + '" y1="' + y.toFixed(1) + '" x2="' + (w-pad) + '" y2="' + y.toFixed(1) + '" stroke="#1d2a31" stroke-width="1"/>';
+  });
+  svg.innerHTML = grid +
+    '<path d="' + d + '" fill="none" stroke="#7dbdda" stroke-width="2"/>' +
+    '<text x="' + (pad + 0.25*(w-pad*2) + 3) + '" y="' + (h - 12) + '" fill="#8697a2" font-size="9" font-family="monospace">25%</text>' +
+    '<text x="' + (pad + 0.69*(w-pad*2) - 26) + '" y="' + (h - 12) + '" fill="#8697a2" font-size="9" font-family="monospace">69%</text>' +
+    '<text x="' + (w - 44) + '" y="' + (h - 12) + '" fill="#cbad5d" font-size="9" font-family="monospace">6/57/37</text>';
+})();
+
+/* 时间轴刻度：每 5.08 秒一条模板线 */
+(function(){
+  const el = $('marks');
+  let html = '';
+  SHOT.forEach(s => {
+    const p = ((s.t0 + s.dur / 2) / DUR) * 100;
+    html += '<span class="lbl" style="left:' + p.toFixed(2) + '%">' + s.id + '</span>';
+  });
+  CUTS.forEach(c => {
+    const p = (c / DUR) * 100;
+    html += '<span class="tick" style="left:' + p.toFixed(2) + '%"></span>';
+  });
+  el.innerHTML = html;
+})();
+
+/* 适配 */
+function fit(){
+  const wrap = canvas.parentElement;
+  const w = wrap.clientWidth - 2;
+  canvas.style.width = w + 'px';
+  canvas.style.height = (w * H / W) + 'px';
+}
+window.addEventListener('resize', fit);
+
+/* PNG 导出 */
+$('png').addEventListener('click', () => {
+  render(nowT());
+  const a = document.createElement('a');
+  a.download = 'camera38-f' + String(Math.round(nowT() * FPS)).padStart(4, '0') + '.png';
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+});
+
+/* ═══════════════ 启动 ═══════════════ */
+fit();
+const t0 = FROZEN ? clamp(parseFloat(qs.get('t')) || 0, 0, DUR) : 0;
+render(t0);
+seek(t0);
+if (!FROZEN && qs.get('play') === '1'){
+  const go = () => { window.removeEventListener('pointerdown', go); play(); };
+  window.addEventListener('pointerdown', go, { once: true });
+}
+
+function loop(){
+  if (!FROZEN && playing){
+    const t = nowT();
+    if (Math.abs(t - lastT) > 0.0005){
+      render(t); lastT = t;
+      barEl.value = t;
+      tcEl.textContent = t.toFixed(3) + ' ／ ' + DUR.toFixed(3) + ' s';
+      updatePanel(t);
+      if (t >= DUR - 0.001) pause();
+    }
+  }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* ═══════════════ 验证钩子 ═══════════════ */
+window.__api = {
+  dur: DUR, fps: FPS, w: W, h: H,
+  shots: SHOT.map(s => ({ id: s.id, name: s.name, t0: s.t0, dur: s.dur })),
+  cuts: CUTS,
+  onsets: ONSETS.length,
+  pull: { meanPerFrame: PULL.meanPerFrame, meanPerSec: PULL.meanPerSec, peakPerSec: PULL.peakPerSec, finalZ: PULL.finalZ },
+  s3: S3, fly: FLY, arc: ARC,
+  focusCurve, focusAt, sharpAt, flyZ,
+  renderAt(t){ render(clamp(t, 0, DUR)); updatePanel(clamp(t, 0, DUR)); },
+  info(t){
+    const r = render(clamp(t, 0, DUR));
+    return { t: r.t, shot: r.shot.id, lt: +r.lt.toFixed(3), info: JSON.parse(JSON.stringify(r.info)) };
+  },
+  png(){ return canvas.toDataURL('image/png'); },
+  errors: window.__err
+};
+window.__ready = true;
+})();
+</script>
+</body>
+</html>

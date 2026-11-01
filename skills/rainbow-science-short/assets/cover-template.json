@@ -1,0 +1,14 @@
+{
+  "chapter": "每天5分钟·拓扑优化",
+  "title": ["支架怎么", "瘦成这样？"],
+  "minimal": true,
+  "colors": {"ink": "#193643", "paper": "#eae5d7", "accent": "#a57445"},
+  "font": "C:/Windows/Fonts/msyhbd.ttc",
+  "brand": {"left": 64, "top": 48, "height": 90, "gap": 20, "fontSize": 44, "text": "rainbow鱼", "baseShortEdge": 1080},
+  "formats": {
+    "16x9": {"size": [1920,1080], "layout": "landscape", "title": [96,335,134,166], "fadeWidth": 1220, "focus": [0.5,0.5]},
+    "3x4": {"size": [1440,1920], "layout": "portrait", "title": [88,215,128,155], "heroTop": 690, "heroCrop": [0.08,0.03,0.97,0.99]},
+    "4x3": {"size": [1920,1440], "layout": "landscape", "title": [78,278,112,140], "fadeWidth": 980, "focus": [0.45,0.5]},
+    "9x16": {"size": [1080,1920], "layout": "portrait", "title": [80,245,142,175], "heroTop": 700, "heroCrop": [0.08,0.03,0.97,0.99]}
+  }
+}

@@ -1,0 +1,465 @@
+{
+  "paper": {
+    "title": "Automating ML for Science: Can Frontier Agents Climb Scientific Hills in the Wild?",
+    "arxiv": "2610.28763v1",
+    "submitted": "2026-10-20",
+    "url": "https://arxiv.org/html/2610.28763v1",
+    "pdf_pages": 53
+  },
+  "read_on": "2026-10-29",
+  "mode": "original Chinese commentary, not full-text translation",
+  "sections": [
+    {
+      "id": "SRC002",
+      "heading": "1Introduction",
+      "anchor": "S1",
+      "url": "https://arxiv.org/html/2610.28763v1#S1"
+    },
+    {
+      "id": "SRC003",
+      "heading": "2Agent4Sci: A Testbed for Automated Scientific Hill-Climbing",
+      "anchor": "S2",
+      "url": "https://arxiv.org/html/2610.28763v1#S2"
+    },
+    {
+      "id": "SRC004",
+      "heading": "2.1Task and Benchmark Selection",
+      "anchor": "S2.SS1",
+      "url": "https://arxiv.org/html/2610.28763v1#S2.SS1"
+    },
+    {
+      "id": "SRC005",
+      "heading": "2.2Pilot Study: Evaluation Gaming on Raw Scientific Tasks",
+      "anchor": "S2.SS2",
+      "url": "https://arxiv.org/html/2610.28763v1#S2.SS2"
+    },
+    {
+      "id": "SRC006",
+      "heading": "2.3The Agent4Sci Evaluation Protocol",
+      "anchor": "S2.SS3",
+      "url": "https://arxiv.org/html/2610.28763v1#S2.SS3"
+    },
+    {
+      "id": "SRC007",
+      "heading": "Standardization.",
+      "anchor": "S2.SS3.SSS0.Px1",
+      "url": "https://arxiv.org/html/2610.28763v1#S2.SS3.SSS0.Px1"
+    },
+    {
+      "id": "SRC008",
+      "heading": "Three-Stage Evaluation.",
+      "anchor": "S2.SS3.SSS0.Px2",
+      "url": "https://arxiv.org/html/2610.28763v1#S2.SS3.SSS0.Px2"
+    },
+    {
+      "id": "SRC009",
+      "heading": "2.4Composition of Agent4Sci",
+      "anchor": "S2.SS4",
+      "url": "https://arxiv.org/html/2610.28763v1#S2.SS4"
+    },
+    {
+      "id": "SRC010",
+      "heading": "3Experiments",
+      "anchor": "S3",
+      "url": "https://arxiv.org/html/2610.28763v1#S3"
+    },
+    {
+      "id": "SRC011",
+      "heading": "3.1Experimental Setup",
+      "anchor": "S3.SS1",
+      "url": "https://arxiv.org/html/2610.28763v1#S3.SS1"
+    },
+    {
+      "id": "SRC012",
+      "heading": "3.2Main Results",
+      "anchor": "S3.SS2",
+      "url": "https://arxiv.org/html/2610.28763v1#S3.SS2"
+    },
+    {
+      "id": "SRC013",
+      "heading": "Every benchmark in Agent4Sci admits fully automated improvement.",
+      "anchor": "S3.SS2.SSS0.Px1",
+      "url": "https://arxiv.org/html/2610.28763v1#S3.SS2.SSS0.Px1"
+    },
+    {
+      "id": "SRC014",
+      "heading": "Across all runs, the auditing stage identifies no evaluation gaming or academic misconduct.",
+      "anchor": "S3.SS2.SSS0.Px2",
+      "url": "https://arxiv.org/html/2610.28763v1#S3.SS2.SSS0.Px2"
+    },
+    {
+      "id": "SRC015",
+      "heading": "Hill-climbing methods: auto-engineering, not auto-research.",
+      "anchor": "S3.SS2.SSS0.Px3",
+      "url": "https://arxiv.org/html/2610.28763v1#S3.SS2.SSS0.Px3"
+    },
+    {
+      "id": "SRC016",
+      "heading": "3.3Agent Behavior",
+      "anchor": "S3.SS3",
+      "url": "https://arxiv.org/html/2610.28763v1#S3.SS3"
+    },
+    {
+      "id": "SRC017",
+      "heading": "Frontier agents default to sharply different workflows on Agent4Sci.",
+      "anchor": "S3.SS3.SSS0.Px1",
+      "url": "https://arxiv.org/html/2610.28763v1#S3.SS3.SSS0.Px1"
+    },
+    {
+      "id": "SRC018",
+      "heading": "4Eliciting Research-like Behavior with Plug-in Skills",
+      "anchor": "S4",
+      "url": "https://arxiv.org/html/2610.28763v1#S4"
+    },
+    {
+      "id": "SRC019",
+      "heading": "4.1Recurring Issues in Default Agent Behavior",
+      "anchor": "S4.SS1",
+      "url": "https://arxiv.org/html/2610.28763v1#S4.SS1"
+    },
+    {
+      "id": "SRC020",
+      "heading": "4.2Skill Design",
+      "anchor": "S4.SS2",
+      "url": "https://arxiv.org/html/2610.28763v1#S4.SS2"
+    },
+    {
+      "id": "SRC021",
+      "heading": "4.3Effect of Plug-in Skills on Hill-Climbing",
+      "anchor": "S4.SS3",
+      "url": "https://arxiv.org/html/2610.28763v1#S4.SS3"
+    },
+    {
+      "id": "SRC022",
+      "heading": "Plug-in skills nearly double the mean improvement for both agents.",
+      "anchor": "S4.SS3.SSS0.Px1",
+      "url": "https://arxiv.org/html/2610.28763v1#S4.SS3.SSS0.Px1"
+    },
+    {
+      "id": "SRC023",
+      "heading": "Skill-driven gains surface real domain-specific insights.",
+      "anchor": "S4.SS3.SSS0.Px2",
+      "url": "https://arxiv.org/html/2610.28763v1#S4.SS3.SSS0.Px2"
+    },
+    {
+      "id": "SRC024",
+      "heading": "5Related Work",
+      "anchor": "S5",
+      "url": "https://arxiv.org/html/2610.28763v1#S5"
+    },
+    {
+      "id": "SRC025",
+      "heading": "Automated ML R&D.",
+      "anchor": "S5.SS0.SSS0.Px1",
+      "url": "https://arxiv.org/html/2610.28763v1#S5.SS0.SSS0.Px1"
+    },
+    {
+      "id": "SRC026",
+      "heading": "Agents for Science.",
+      "anchor": "S5.SS0.SSS0.Px2",
+      "url": "https://arxiv.org/html/2610.28763v1#S5.SS0.SSS0.Px2"
+    },
+    {
+      "id": "SRC027",
+      "heading": "6Conclusion",
+      "anchor": "S6",
+      "url": "https://arxiv.org/html/2610.28763v1#S6"
+    },
+    {
+      "id": "SRC028",
+      "heading": "Acknowledgments and Disclosure of Funding",
+      "anchor": "Sx1",
+      "url": "https://arxiv.org/html/2610.28763v1#Sx1"
+    },
+    {
+      "id": "SRC029",
+      "heading": "References",
+      "anchor": "bib",
+      "url": "https://arxiv.org/html/2610.28763v1#bib"
+    },
+    {
+      "id": "SRC030",
+      "heading": "Appendix ALimitations",
+      "anchor": "A1",
+      "url": "https://arxiv.org/html/2610.28763v1#A1"
+    },
+    {
+      "id": "SRC031",
+      "heading": "A.1Non-Leaderboard Benchmark Scope",
+      "anchor": "A1.SS1",
+      "url": "https://arxiv.org/html/2610.28763v1#A1.SS1"
+    },
+    {
+      "id": "SRC032",
+      "heading": "A.2Single-Agent Harness Coverage",
+      "anchor": "A1.SS2",
+      "url": "https://arxiv.org/html/2610.28763v1#A1.SS2"
+    },
+    {
+      "id": "SRC033",
+      "heading": "A.3Imperfect Held-Out Verification",
+      "anchor": "A1.SS3",
+      "url": "https://arxiv.org/html/2610.28763v1#A1.SS3"
+    },
+    {
+      "id": "SRC034",
+      "heading": "A.4Limited Scope of Hill-Climbing",
+      "anchor": "A1.SS4",
+      "url": "https://arxiv.org/html/2610.28763v1#A1.SS4"
+    },
+    {
+      "id": "SRC035",
+      "heading": "A.5Potential Overfitting of Plug-in Skills",
+      "anchor": "A1.SS5",
+      "url": "https://arxiv.org/html/2610.28763v1#A1.SS5"
+    },
+    {
+      "id": "SRC036",
+      "heading": "A.6Absence of a Human-Researcher Baseline",
+      "anchor": "A1.SS6",
+      "url": "https://arxiv.org/html/2610.28763v1#A1.SS6"
+    },
+    {
+      "id": "SRC037",
+      "heading": "Appendix BBenchmark Construction",
+      "anchor": "A2",
+      "url": "https://arxiv.org/html/2610.28763v1#A2"
+    },
+    {
+      "id": "SRC038",
+      "heading": "B.1Benchmark Sources",
+      "anchor": "A2.SS1",
+      "url": "https://arxiv.org/html/2610.28763v1#A2.SS1"
+    },
+    {
+      "id": "SRC039",
+      "heading": "B.2Selection Criteria",
+      "anchor": "A2.SS2",
+      "url": "https://arxiv.org/html/2610.28763v1#A2.SS2"
+    },
+    {
+      "id": "SRC040",
+      "heading": "B.3Benchmark Filtering: A Case Study on NeurIPS 2025 D&B",
+      "anchor": "A2.SS3",
+      "url": "https://arxiv.org/html/2610.28763v1#A2.SS3"
+    },
+    {
+      "id": "SRC041",
+      "heading": "B.4Standardization Details",
+      "anchor": "A2.SS4",
+      "url": "https://arxiv.org/html/2610.28763v1#A2.SS4"
+    },
+    {
+      "id": "SRC042",
+      "heading": "Reproduction Workflow.",
+      "anchor": "A2.SS4.SSS0.Px1",
+      "url": "https://arxiv.org/html/2610.28763v1#A2.SS4.SSS0.Px1"
+    },
+    {
+      "id": "SRC043",
+      "heading": "Standardization Moves Beyond Reproduction.",
+      "anchor": "A2.SS4.SSS0.Px2",
+      "url": "https://arxiv.org/html/2610.28763v1#A2.SS4.SSS0.Px2"
+    },
+    {
+      "id": "SRC044",
+      "heading": "Comparison with Paper-Reported Numbers.",
+      "anchor": "A2.SS4.SSS0.Px3",
+      "url": "https://arxiv.org/html/2610.28763v1#A2.SS4.SSS0.Px3"
+    },
+    {
+      "id": "SRC045",
+      "heading": "B.5Evaluation Protocol Prompts",
+      "anchor": "A2.SS5",
+      "url": "https://arxiv.org/html/2610.28763v1#A2.SS5"
+    },
+    {
+      "id": "SRC046",
+      "heading": "B.6Auditor Reliability",
+      "anchor": "A2.SS6",
+      "url": "https://arxiv.org/html/2610.28763v1#A2.SS6"
+    },
+    {
+      "id": "SRC047",
+      "heading": "B.7Agentic Benchmark Checklist",
+      "anchor": "A2.SS7",
+      "url": "https://arxiv.org/html/2610.28763v1#A2.SS7"
+    },
+    {
+      "id": "SRC048",
+      "heading": "Appendix CAdditional Experimental Results and Analysis",
+      "anchor": "A3",
+      "url": "https://arxiv.org/html/2610.28763v1#A3"
+    },
+    {
+      "id": "SRC049",
+      "heading": "C.1Per-Agent Performance on Agent4Sci",
+      "anchor": "A3.SS1",
+      "url": "https://arxiv.org/html/2610.28763v1#A3.SS1"
+    },
+    {
+      "id": "SRC050",
+      "heading": "All four agents improve on average, with Claude Opus leading the mean at 10.4%.",
+      "anchor": "A3.SS1.SSS0.Px1",
+      "url": "https://arxiv.org/html/2610.28763v1#A3.SS1.SSS0.Px1"
+    },
+    {
+      "id": "SRC051",
+      "heading": "C.2Performance and Runtime Trade-offs",
+      "anchor": "A3.SS2",
+      "url": "https://arxiv.org/html/2610.28763v1#A3.SS2"
+    },
+    {
+      "id": "SRC052",
+      "heading": "Training Compute.",
+      "anchor": "A3.SS2.SSS0.Px1",
+      "url": "https://arxiv.org/html/2610.28763v1#A3.SS2.SSS0.Px1"
+    },
+    {
+      "id": "SRC053",
+      "heading": "Inference Compute.",
+      "anchor": "A3.SS2.SSS0.Px2",
+      "url": "https://arxiv.org/html/2610.28763v1#A3.SS2.SSS0.Px2"
+    },
+    {
+      "id": "SRC054",
+      "heading": "C.3Run-to-Run Variance",
+      "anchor": "A3.SS3",
+      "url": "https://arxiv.org/html/2610.28763v1#A3.SS3"
+    },
+    {
+      "id": "SRC055",
+      "heading": "Engineering-driven gains are stable across runs.",
+      "anchor": "A3.SS3.SSS0.Px1",
+      "url": "https://arxiv.org/html/2610.28763v1#A3.SS3.SSS0.Px1"
+    },
+    {
+      "id": "SRC056",
+      "heading": "Insight-driven gains vary more.",
+      "anchor": "A3.SS3.SSS0.Px2",
+      "url": "https://arxiv.org/html/2610.28763v1#A3.SS3.SSS0.Px2"
+    },
+    {
+      "id": "SRC057",
+      "heading": "C.4Comparison with Hyperparameter Optimization",
+      "anchor": "A3.SS4",
+      "url": "https://arxiv.org/html/2610.28763v1#A3.SS4"
+    },
+    {
+      "id": "SRC058",
+      "heading": "Half of the reproduced baselines are already tuned in their source papers.",
+      "anchor": "A3.SS4.SSS0.Px1",
+      "url": "https://arxiv.org/html/2610.28763v1#A3.SS4.SSS0.Px1"
+    },
+    {
+      "id": "SRC059",
+      "heading": "HPO alone recovers only a small fraction of the agent’s gain.",
+      "anchor": "A3.SS4.SSS0.Px2",
+      "url": "https://arxiv.org/html/2610.28763v1#A3.SS4.SSS0.Px2"
+    },
+    {
+      "id": "SRC060",
+      "heading": "Appendix DPlug-in Skills",
+      "anchor": "A4",
+      "url": "https://arxiv.org/html/2610.28763v1#A4"
+    },
+    {
+      "id": "SRC061",
+      "heading": "D.1Skill Details",
+      "anchor": "A4.SS1",
+      "url": "https://arxiv.org/html/2610.28763v1#A4.SS1"
+    },
+    {
+      "id": "SRC062",
+      "heading": "D.2Hill-Climbing Trajectories with and without Skills",
+      "anchor": "A4.SS2",
+      "url": "https://arxiv.org/html/2610.28763v1#A4.SS2"
+    },
+    {
+      "id": "SRC063",
+      "heading": "D.3Three-Day Long-Running Experiments",
+      "anchor": "A4.SS3",
+      "url": "https://arxiv.org/html/2610.28763v1#A4.SS3"
+    },
+    {
+      "id": "SRC064",
+      "heading": "Results for PFDelta 2000.",
+      "anchor": "A4.SS3.SSS0.Px1",
+      "url": "https://arxiv.org/html/2610.28763v1#A4.SS3.SSS0.Px1"
+    },
+    {
+      "id": "SRC065",
+      "heading": "Results for CarbonGlobe.",
+      "anchor": "A4.SS3.SSS0.Px2",
+      "url": "https://arxiv.org/html/2610.28763v1#A4.SS3.SSS0.Px2"
+    },
+    {
+      "id": "SRC066",
+      "heading": "Appendix EExtended Related Work",
+      "anchor": "A5",
+      "url": "https://arxiv.org/html/2610.28763v1#A5"
+    },
+    {
+      "id": "SRC067",
+      "heading": "Long-Horizon Agent Evaluation.",
+      "anchor": "A5.SS0.SSS0.Px1",
+      "url": "https://arxiv.org/html/2610.28763v1#A5.SS0.SSS0.Px1"
+    },
+    {
+      "id": "SRC068",
+      "heading": "Reward Hacking, Specification Gaming, and Other Misalignment.",
+      "anchor": "A5.SS0.SSS0.Px2",
+      "url": "https://arxiv.org/html/2610.28763v1#A5.SS0.SSS0.Px2"
+    },
+    {
+      "id": "SRC069",
+      "heading": "Appendix FBroader Impacts",
+      "anchor": "A6",
+      "url": "https://arxiv.org/html/2610.28763v1#A6"
+    },
+    {
+      "id": "SRC070",
+      "heading": "NeurIPS Paper Checklist",
+      "anchor": "Ax1",
+      "url": "https://arxiv.org/html/2610.28763v1#Ax1"
+    }
+  ],
+  "code": {
+    "url": "https://github.com/maszhongming/agent4sci",
+    "commit": "74b0e8c4dc55610072bed4326b6bfac24dc77377",
+    "license": "Apache-2.0",
+    "executed": false
+  },
+  "pdf_visual_checks": [
+    {
+      "page": 4,
+      "content": "Figure 2 evaluation protocol"
+    },
+    {
+      "page": 9,
+      "content": "Table 2 skill comparison"
+    },
+    {
+      "page": 35,
+      "content": "Figure 12 research skill"
+    },
+    {
+      "page": 36,
+      "content": "Figure 13 experiment skill"
+    },
+    {
+      "page": 37,
+      "content": "Figure 14 checklist skill"
+    },
+    {
+      "page": 44,
+      "content": "Tables 8 and 9 long runs"
+    }
+  ],
+  "not_verified": [
+    "benchmark reproduction",
+    "container isolation",
+    "local research quality improvement",
+    "single skill causal effect"
+  ]
+}

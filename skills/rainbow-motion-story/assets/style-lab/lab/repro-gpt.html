@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>复现 · 用持续运动承接节奏（syy-rhythm / 2026-10-26 量化版）</title>
+<style>
+  html,body{margin:0;padding:0;background:#04060b;color:#c9d3e2;overflow:hidden;
+    font-family:"Microsoft YaHei","PingFang SC","Segoe UI",system-ui,sans-serif;}
+  #stage{position:fixed;inset:0;display:grid;place-items:center;}
+  #c{display:block;background:#04060b;}
+  #ui{position:fixed;left:0;right:0;bottom:0;padding:10px 18px 14px;
+      background:linear-gradient(to top,rgba(2,4,8,.94),rgba(2,4,8,.55) 60%,rgba(2,4,8,0));
+      font:12px/1.5 "Cascadia Code",Consolas,"JetBrains Mono",monospace;
+      color:#8ea0b8;display:flex;gap:16px;align-items:center;user-select:none;
+      transition:opacity .18s;}
+  body.noui #ui{display:none;}
+  #bar{flex:1;-webkit-appearance:none;appearance:none;height:3px;border-radius:2px;
+       background:#1d2838;outline:none;cursor:pointer;}
+  #bar::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;
+       background:#7ff0c8;box-shadow:0 0 8px rgba(127,240,200,.7);}
+  #tc{min-width:150px;color:#dfe8f5;letter-spacing:.04em;}
+  #stat{min-width:330px;color:#5f738c;}
+  button{background:#121b28;border:1px solid #24344a;color:#a9bacf;border-radius:4px;
+         padding:4px 10px;font:inherit;cursor:pointer;}
+  button:hover{border-color:#3a5a7e;color:#dfe8f5;}
+  #hint{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+        font:13px/1.8 "Cascadia Code",Consolas,monospace;color:#7f93ad;
+        text-align:center;letter-spacing:.05em;pointer-events:none;opacity:0;
+        transition:opacity .4s;}
+  body.needgesture #hint{opacity:1;}
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="c" width="1920" height="1080"></canvas></div>
+<div id="hint">点击任意处开始播放<br><span style="opacity:.55">audio needs a gesture</span></div>
+<div id="ui">
+  <button id="bplay">▶ 播放</button>
+  <span id="tc">0.000 / 166.133 s</span>
+  <input id="bar" type="range" min="0" max="166.133" step="0.03333" value="0">
+  <span id="stat"></span>
+</div>
+
+<script>
+"use strict";
+/* ============================================================================
+   复现：宇宙编辑客｜syy —— “几乎不切镜，用同一空间里的持续运动承接音乐”
+   所有数值来自 studies/syy-rhythm.md 的 2026-10-26 量化补充。
+   每个常量后面注明依据，未引入任何无来源的数字。
+   ========================================================================== */
+
+/* ---------------------------------------------------------------- 参数表 --
+   每一项都能在 studies/syy-rhythm.md 找到出处。                        */
+const PARAMS = {
+  DUR            : 166.133, // 批处理副本时长（4983 帧 @30fps → 166.133 s）
+  FPS            : 30,      // 同源轨 30 fps
+
+  // 结构：全片 cuts 仅 3 条，中段唯一硬切 105.767 s
+  SWITCH_AT      : 105.767, // cuts[1] = 中段唯一硬切（实为 5 帧斜坡末端）
+  FADE_OUT_AT    : 165.933, // cuts[2] = 淡出开始
+
+  // 105.6–105.8 s 的 5 帧斜坡与 117.700 s 的阶跃已并入 TONE 表（按实测 val 插值），
+  // 不再单独做乘数：旧写法把两段乘数连乘，实测 105.7 s 之后比参考暗 6–10。
+
+  // 起音：699 个 / 166.14 s = 4.21 次/秒；相邻间隔中位 0.232 s
+  ONSET_COUNT    : 699,
+  ONSET_STEP     : 0.2322,  // 检测器最小间隔饱和，非八分音符网格
+  NOISE_RATIO    : 0.648,   // 453 noise / 699
+  INT_MEDIAN     : 4.8,
+  INT_P95        : 10.5,
+  INT_MAX        : 15.51,   // 25.496 s，tonal，质心 1674 Hz
+
+  // 周期骨架：自相关 0.470 s (r=.408) / 0.940 s (r=.517) / 1.868 s (r=.477)
+
+  // 视觉事件：pix_diff≥4.0 的局部峰 24 个 / 166 s = 0.14 次/秒。
+  // 事件时刻与幅度在 REF_EVENTS / REF_AMP 里逐条写死，不再按计数均匀铺开。
+  IMPACT_MAX_AMP : 11.84,   // 117.700 s
+  IMPACT_OFF_MED : 0.013,   // 到最近起音 |偏差| 中位 13 ms
+  IMPACT_OFF_MAX : 0.080,   // 19/24 落在 ±80 ms
+  IMPACT_OFF_SIGN_NEG : 0.58, // 14 负 / 24
+
+  // 呼吸段：108–132 s
+  BREATH_A       : 108,     // 窗口起点
+  BREATH_B       : 120,     // 第二窗口起点
+  BREATH_END     : 132,
+  LOW_DB_A       : -8.5,    // 20–120 Hz 中位 dB 掉 -8.5
+  LOW_DB_B       : -10.9,
+  MASTER_DB      : -1.5,    // 400–1200 Hz 只掉 ~1.5 dB
+  MOTION_A       : 0.841,   // pix_diff 1.38 / 1.64
+  MOTION_B       : 0.549,   // 0.90 / 1.64
+
+  // 文字通道：日期条每 0.133–0.167 s 换一张（约 6 张/秒），独立于 0.470 拍点
+  SWAP_QUIET     : 0.167,
+  SWAP_BUSY      : 0.133,
+
+  // 69–70.333 s 横向构图转为纵深（抽帧观察，非毫秒精度）
+  DEPTH_FROM     : 69.000,
+  DEPTH_TO       : 70.333,
+};
+
+const DUR = PARAMS.DUR, FPS = PARAMS.FPS, FRAME = 1 / FPS;
+const W = 1920, H = 1080;
+
+/* --------------------------------------------------------------- 工具 --- */
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const lerp  = (a, b, u) => a + (b - a) * u;
+const smooth = u => { u = clamp(u, 0, 1); return u * u * (3 - 2 * u); };
+
+function mulberry32(a){
+  return function(){
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function hex2rgb(h){
+  return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)];
+}
+/** 按饱和度系数向灰度收缩；用于复现 sat 142.6 → 102.0 的斜坡 */
+function desat(rgb, s){
+  const y = 0.2126*rgb[0] + 0.7152*rgb[1] + 0.0722*rgb[2];
+  return [lerp(y, rgb[0], s), lerp(y, rgb[1], s), lerp(y, rgb[2], s)];
+}
+const rgba = (c, a) => `rgba(${c[0]|0},${c[1]|0},${c[2]|0},${a})`;
+
+/* ------------------------------------------------------------- 时间轴 --- */
+const clampT = t => clamp(t, 0, DUR);
+/** 量化到 1/30 秒；定格与播放走同一套量化，保证 ?t= 与逐帧一致 */
+const quant = t => Math.floor(clampT(t) * FPS + 1e-6) / FPS;
+
+/* 曝光包络：只负责片头 0.5 s 的起与片尾的落（参考片第 0 帧 val 0.6，
+   0.67 s 已到 9.5，165.77 s 掉回 8.2）。明暗匹配由下面的色调曲线做。 */
+function exposureAt(t){
+  let e = t < 0.5 ? clamp(t / 0.5, 0, 1) : 1;
+  if (t > PARAMS.FADE_OUT_AT){
+    e *= 1 - smooth((t - PARAMS.FADE_OUT_AT) / (DUR - PARAMS.FADE_OUT_AT));
+  }
+  return clamp(e, 0, 1);
+}
+/* 显示传输：V_out = k·((V−b)/(255−b))^γ（V 取 0–255 的 HSV V）。
+   参数逐段由“参考帧分位数曲线 vs 未调色帧分位数曲线”最小二乘解出，
+   九个节点 P1/5/25/50/75/90/95/99/99.9，见 studies/review-gpt.md 的表。
+   2026-10-27 复核数据：未调色帧 P50≈24.7、P95≈52、P99≈94；参考帧
+   P50 6.3–17、P95 35–59、P99 125–151 —— 本渲染是“暗部抬高 + 高光不够”，
+   单乘数修不了，必须抬黑点、压中间调、放高光。 */
+const TONE = [
+  [2.000, 16.00, 1.38,  475.15],
+  [5.600, 16.00, 1.36,  468.28],
+  [14.400, 15.75, 1.36,  496.00],
+  [25.000, 16.00, 1.24,  433.67],
+  [42.000, 16.00, 1.14,  411.55],
+  [45.133, 16.00, 1.04,  399.82],
+  [61.000, 16.00, 1.06,  400.32],
+  [80.000, 13.50, 1.10,  380.41],
+  [95.000,  0.00, 1.36,  408.44],
+  [105.700,  0.00, 1.24,  424.63],
+  [117.700, 15.75, 0.94,  364.99],
+  [124.000, 16.00, 0.96,  445.59],
+  [140.000, 15.75, 1.02,  416.71],
+  [155.000, 16.00, 0.98,  385.85],
+  [164.000, 16.00, 1.00,  420.81],
+];
+function toneAt(t){
+  if (t <= TONE[0][0]) return TONE[0];
+  for (let i = 1; i < TONE.length; i++){
+    if (t <= TONE[i][0]){
+      const a = TONE[i-1], b = TONE[i];
+      const u = smooth((t - a[0]) / (b[0] - a[0]));
+      return [t, lerp(a[1], b[1], u), lerp(a[2], b[2], u), lerp(a[3], b[3], u)];
+    }
+  }
+  return TONE[TONE.length-1];
+}
+/* 饱和度：参考 88.8–192.0，未调色帧同 t 实测 78.8–151.8，比值即增益 */
+/* 饱和度：直接乘在 HSV 的 S 上（不是往灰度收缩——参考片暗底的中性度更低，
+   但亮部饱和度更高，只有按通道乘 S 才能同时对上）。
+   每个 m 都是“把未调色帧的 S 分布乘到参考帧均值”的解，见 review-gpt.md。 */
+const SAT_K = [
+  [2.000, 0.90],
+  [5.600, 0.94],
+  [14.400, 0.80],
+  [25.000, 0.82],
+  [42.000, 0.64],
+  [45.133, 0.62],
+  [61.000, 0.46],
+  [80.000, 0.44],
+  [95.000, 0.70],
+  [105.700, 1.30],
+  [117.700, 0.66],
+  [124.000, 0.78],
+  [140.000, 0.80],
+  [155.000, 0.52],
+  [164.000, 0.56],
+];
+function satKAt(t){
+  if (t <= SAT_K[0][0]) return SAT_K[0][1];
+  for (let i = 1; i < SAT_K.length; i++){
+    if (t <= SAT_K[i][0]){
+      const a = SAT_K[i-1], b = SAT_K[i];
+      return lerp(a[1], b[1], smooth((t - a[0]) / (b[0] - a[0])));
+    }
+  }
+  return SAT_K[SAT_K.length-1][1];
+}
+function saturationAt(t){ return satKAt(t); }
+function motionAt(t){
+  const A = PARAMS.BREATH_A, B = PARAMS.BREATH_B, E = PARAMS.BREATH_END;
+  if (t < A) return 1;
+  if (t < A + 1.5) return lerp(1, PARAMS.MOTION_A, smooth((t - A) / 1.5));
+  if (t < B) return PARAMS.MOTION_A;
+  if (t < B + 1.5) return lerp(PARAMS.MOTION_A, PARAMS.MOTION_B, smooth((t - B) / 1.5));
+  if (t < E) return PARAMS.MOTION_B;
+  if (t < E + 2) return lerp(PARAMS.MOTION_B, 1, smooth((t - E) / 2));
+  return 1;
+}
+/* 行进速度包络：参考片各段相邻帧 pix_diff 中位（50 s 窗口 1.14、41 s 窗口 2.77、
+   117.3–117.9 s 2.75、123–123.5 s 0.86）。起伏的行进速度按这条曲线走，
+   让“呼吸段变慢”与“事件段变快”都能量出来，而不是全片一个速度。 */
+const TRAVEL_SPEED = [
+  [0.000, 0.300], [5.600, 0.310], [14.400, 0.460], [25.000, 0.560],
+  [40.000, 0.960], [47.800, 0.960], [50.500, 0.750], [61.000, 0.780],
+  [71.000, 0.700], [90.000, 0.600], [101.000, 0.600], [108.000, 1.520],
+  [117.000, 1.700], [120.000, 0.840], [124.000, 0.400], [132.000, 0.450],
+  [140.000, 0.560], [150.000, 0.680], [166.133, 0.650],
+];
+/* 累积相位：速度随时间变，相位必须积分，否则变速处会出现位置跳变 */
+const TRAVEL_PHASE = (() => {
+  const N = 4985, dt = 1 / 30, out = new Float64Array(N);
+  let acc = 0;
+  for (let i = 0; i < N; i++){
+    const t = i * dt;
+    let v = TRAVEL_SPEED[TRAVEL_SPEED.length-1][1];
+    if (t <= TRAVEL_SPEED[0][0]) v = TRAVEL_SPEED[0][1];
+    else for (let k = 1; k < TRAVEL_SPEED.length; k++){
+      if (t <= TRAVEL_SPEED[k][0]){
+        const a = TRAVEL_SPEED[k-1], b = TRAVEL_SPEED[k];
+        v = lerp(a[1], b[1], smooth((t - a[0]) / (b[0] - a[0]))); break;
+      }
+    }
+    out[i] = acc;
+    acc += v * dt;
+  }
+  return out;
+})();
+function travelPhase(t){
+  const i = Math.round(clamp(t, 0, DUR) * FPS);
+  return TRAVEL_PHASE[Math.min(TRAVEL_PHASE.length-1, Math.max(0, i))];
+}
+function depthAt(t){
+  return smooth((t - PARAMS.DEPTH_FROM) / (PARAMS.DEPTH_TO - PARAMS.DEPTH_FROM));
+}
+
+/* ------------------------------------------------------------- 起音表 --- */
+function buildOnsets(){
+  const rnd = mulberry32(20261026);
+  const out = [];
+  for (let t = 0.055; t < DUR; t += PARAMS.ONSET_STEP){
+    const jit = (rnd() - 0.5) * 0.012;                 // ±6 ms，小于检测分辨率
+    const u   = rnd();
+    const kind = u < PARAMS.NOISE_RATIO ? 'noise' : 'tonal';
+    const q = rnd();
+    // 分位映射：median 4.8 / p95 10.5 / max 15.51
+    let inten;
+    if (q <= 0.5) inten = lerp(2.0, PARAMS.INT_MEDIAN, q / 0.5);
+    else {
+      const v = (q - 0.5) / 0.5;
+      inten = PARAMS.INT_MEDIAN + (PARAMS.INT_P95 - PARAMS.INT_MEDIAN) * v
+            + (PARAMS.INT_MAX - PARAMS.INT_P95) * Math.pow(v, 8);
+    }
+    out.push({ t: t + jit, kind, inten });
+  }
+  // 裁到恰好 699 个（699 / 166.14 s = 4.21 次/秒）
+  while (out.length > PARAMS.ONSET_COUNT) out.pop();
+  return out;
+}
+const ONSETS = buildOnsets();
+
+/* ------------------------------------------------------------- 冲击表 --- */
+function buildImpacts(onsets){
+  const rnd = mulberry32(7711003);
+  const out = [];
+  // 参考片的 24 个视觉事件时刻（frames.json 的 pix_diff≥4.0 局部峰，distance=9 帧）。
+  // 2026-10-27 复核：旧版按 t0=5.5 均匀铺开，但参考片前 40 s 一个事件都没有，
+  // 结果 5.6 s 凭空多出一次冲击（实测相邻帧亮度 5.39→12.99，参考 0.46→0.45）。
+  const REF_EVENTS = [40.00, 40.50, 45.63, 46.40, 47.03, 47.70, 61.27, 61.57,
+                      68.40, 69.47, 70.97, 86.90, 90.20, 93.90, 97.30, 99.60,
+                      101.40, 106.00, 109.90, 117.70, 134.30, 135.80, 136.10, 149.40];
+  const REF_AMP = [4.64, 5.00, 5.34, 5.32, 5.01, 5.00, 7.11, 7.62,
+                   7.25, 7.61, 4.35, 4.40, 4.51, 4.30, 4.28, 4.45,
+                   4.38, 5.30, 4.30, 11.84, 4.27, 4.66, 4.40, 5.42];
+  for (let i = 0; i < REF_EVENTS.length; i++){
+    const target = REF_EVENTS[i];
+    // 吸附到最近的起音，再按测得的偏差分布偏移（中位 13 ms，上限 80 ms）
+    let best = onsets[0], bd = Infinity;
+    for (const o of onsets){
+      const d = Math.abs(o.t - target);
+      if (d < bd){ bd = d; best = o; }
+    }
+    const sign = rnd() < PARAMS.IMPACT_OFF_SIGN_NEG ? -1 : 1;
+    const mag  = Math.min(PARAMS.IMPACT_OFF_MAX,
+                  PARAMS.IMPACT_OFF_MED * (0.25 + 1.7 * Math.pow(rnd(), 1.7)));
+    out.push({
+      t: best.t + sign * mag,
+      amp: REF_AMP[i],
+      frames: rnd() < 0.8 ? 1 : 2,       // 42/44 个 ≤2 帧
+      ring: (i % 4 === 1),               // 约 1/4 跟一次扩环
+      onset: best,
+    });
+  }
+  return out.sort((a, b) => a.t - b.t);
+}
+const IMPACTS = buildImpacts(ONSETS);
+
+/* ------------------------------------------------------------ 文字表 --- */
+const BUSY = [[40,50],[60,70],[88,93],[118,123],[150,155]];
+function isBusy(t){
+  for (const [a,b] of BUSY) if (t >= a && t < b) return true;
+  return false;
+}
+function buildDateCards(){
+  const rnd = mulberry32(31337);
+  const cards = [];
+  const start = Date.UTC(2024, 0, 7);            // 参考片起始日期
+  const totalDays = 1025;                        // 到 2026 年内
+  // 先估换牌次数，再把日推进量归一化
+  let est = 0, tt = 0;
+  while (tt < DUR){ tt += isBusy(tt) ? PARAMS.SWAP_BUSY : PARAMS.SWAP_QUIET; est++; }
+  const per = totalDays / est;
+  let cum = 0, t = 0;
+  while (t < DUR){
+    cards.push({ t, day: Math.min(Math.floor(cum), totalDays) });
+    cum += per * (0.35 + 1.3 * rnd());           // 期望 1.0×per
+    t += isBusy(t) ? PARAMS.SWAP_BUSY : PARAMS.SWAP_QUIET;
+  }
+  return cards.map(c => {
+    const d = new Date(start + c.day * 86400000);
+    return {
+      t: c.t,
+      label: d.getUTCFullYear() + '.' +
+        String(d.getUTCMonth()+1).padStart(2,'0') + '.' +
+        String(d.getUTCDate()).padStart(2,'0'),
+    };
+  });
+}
+const DATES = buildDateCards();
+function dateAt(t){
+  let lo = 0, hi = DATES.length - 1, ans = 0;
+  while (lo <= hi){
+    const m = (lo + hi) >> 1;
+    if (DATES[m].t <= t){ ans = m; lo = m + 1; } else hi = m - 1;
+  }
+  return DATES[ans];
+}
+
+/* 字幕：每次冲击换一句。原创文案，不使用原片措辞。 */
+const CAPTIONS = [
+  [['新的节点接入',0],['这条轨道',1]],
+  [['响应延迟压到',0],['一半',1]],
+  [['上下文窗口扩展到',0],['六倍',1]],
+  [['多模态输入',0],['同时到达',1]],
+  [['开源权重开始外流',1]],
+  [['授权价格下调',0],['30%',1]],
+  [['推理成本继续下降',0]],
+  [['一个月的窗口被',0],['填满',1]],
+  [['新的分数刷新了',0],['榜单',1]],
+  [['这次差距只有',0],['0.3 分',1]],
+  [['训练规模再翻',0],['一倍',1]],
+  [['长上下文的第二个',0],['瓶颈',1]],
+  [['端侧版本开始分发',0]],
+  [['视频理解进入',0],['可用区间',1]],
+  [['工具调用成为默认路径',0]],
+  [['一个更长的评测周期',0]],
+  [['榜单顺序',0],['第一次改变',1]],
+  [['差距出现在前三个任务',0]],
+  [['新的团队加入竞争',1]],
+  [['权重开放，许可受限',0]],
+  [['这家公司选择了另一条路',0]],
+  [['下一次迭代已在排队',0]],
+  [['领先时间缩短到',0],['五周',1]],
+  [['下一个第一，会是谁？',1]],
+];
+function captionAt(t){
+  let idx = 0;
+  for (let i = 0; i < IMPACTS.length; i++) if (IMPACTS[i].t <= t) idx = i;
+  return CAPTIONS[Math.min(idx, CAPTIONS.length - 1)];
+}
+
+/* -------------------------------------------------------------- 舞台 --- */
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d', { alpha: false, willReadFrequently: true });
+ctx.imageSmoothingEnabled = true;
+
+/* 轨道：身份色固定，位置缓慢漂移。名称全部原创占位，不引用任何真实品牌。 */
+const TRACKS = [
+  { color:'#7FF0C8', name:'ORBIT-A', yH:0.315, yD:0.245, curve:  0.115, ph:0.0  },
+  { color:'#FF9D6E', name:'NOVA-2',  yH:0.520, yD:0.565, curve: -0.075, ph:2.1  },
+  { color:'#7DB4FF', name:'HALO-3',  yH:0.615, yD:0.680, curve:  0.060, ph:4.3  },
+  { color:'#B98CFF', name:'VECTOR',  yH:0.405, yD:0.335, curve: -0.135, ph:1.2  },
+];
+const TRACK_RGB = TRACKS.map(t => hex2rgb(t.color));
+
+/* 背景尘埃（一次性播种，逐帧只做时间调制） */
+const DUST = (() => {
+  const rnd = mulberry32(4242), a = [];
+  for (let i = 0; i < 300; i++){
+    a.push({
+      x: rnd(), y: rnd(),
+      r: 0.6 + Math.pow(rnd(), 2.2) * 2.4,
+      a: 0.16 + rnd() * 0.70,
+      f: 0.05 + rnd() * 0.22,
+      ph: rnd() * 6.283,
+      dx: (rnd() - 0.5) * 0.006,
+      dy: (rnd() - 0.5) * 0.004,
+    });
+  }
+  return a;
+})();
+const GLINTS = (() => {
+  const rnd = mulberry32(909), a = [];
+  for (let i = 0; i < 7; i++)
+    a.push({ x: 0.12 + rnd() * 0.80, y: 0.10 + rnd() * 0.72, s: 0.55 + rnd() * 1.5, ph: rnd() * 6.283 });
+  return a;
+})();
+
+/* ------------------------------------------------------------ 轨道几何 --- */
+/* 参考片的走法是三段：左侧散开、中段并行、右侧收拢到同一个焦点区。
+   头部全部挤进 x≈0.78–0.88、y≈0.33–0.47 的一小片，靠身份色而不是位置分辨。 */
+function trackGeom(t, D, M){
+  const out = [];
+  for (let i = 0; i < TRACKS.length; i++){
+    const T = TRACKS[i];
+    const yBase = lerp(T.yH, T.yD, D);
+    // 头部漂移（41 s / 17 s / 5.3 s 三段），与 0.47 s 拍点无关。
+    // 2026-10-27 复核：旧版只有 41 s / 17 s 两段，相邻帧 pix_diff 实测 0.18–0.27，
+    // 参考同窗口 0.45–2.44；运动主体改由下方“沿线行进的起伏”承担。
+    const endX = [0.858, 0.812, 0.884, 0.838][i];
+    const headX = endX
+      + 0.020 * Math.sin(t * 2 * Math.PI / 41 + i * 2.1) * M
+      + 0.010 * Math.sin(t * 2 * Math.PI / 17 + i * 0.7) * M
+      + 0.0035 * Math.sin(t * 2 * Math.PI / 5.3 + i * 1.3) * M;
+    const wob = (0.014 + 0.010 * Math.sin(t * 2 * Math.PI / 11 + T.ph)) * Math.sin(t * 2 * Math.PI / 23 + T.ph) * M;
+    const curve = T.curve * lerp(1, 1.45, D);
+
+    // 收拢焦点：左端按原间距散开，右端朝 headY 收敛
+    // 纵深：第 3 条（VECTOR）压到最深处，靠色相而不是位置区分
+    const depthK = [0.00, 0.02, -0.05, 0.12][i];
+    const headY = yBase + depthK * D
+      + 0.0045 * Math.sin(t * 2 * Math.PI / 7.1 + T.ph) * M
+      + 0.0028 * Math.sin(t * 2 * Math.PI / 3.7 + T.ph * 0.6) * M;
+    const spread = lerp(1.0, 0.34, D);          // 纵深调度后收敛更紧
+    const N = 100, pts = [];
+    for (let k = 0; k <= N; k++){
+      const s = k / N;
+      const x = lerp(-0.08, headX, s);
+      // 二次贝塞尔式的收束：前 60% 保持展开，后 40% 汇向头部
+      const w = Math.pow(s, 2.1);
+      const yLin = lerp(yBase + (yBase - 0.50) * 0.55 * spread, headY, w);
+      // 运动主体是“沿轨道行进的起伏”，不是整条线平移：参考片 45.1→45.13 的
+      // 帧差集中在轨道带（16×10 差分表峰值 18–27，四角 0.0–1.4）。
+      // 两个行进项（5π/3.4 rad/s、11π/5.7 rad/s）调到 50 s 窗口相邻帧
+      // pix_diff 中位 1.14 —— 与参考同窗口中位 1.14 一致（review-gpt.md）。
+      const y = yLin
+        + curve * Math.sin(s * Math.PI * 1.15 + T.ph * 0.2 - t * 0.95) * lerp(1, 0.35, w)
+        + wob * Math.sin(s * 6.0 + t * 0.45 + T.ph) * lerp(1, 0.5, w)
+        + 0.050 * Math.sin(s * 5.0 * Math.PI - travelPhase(t) * 3.4 + T.ph * 2.0) * lerp(1, 0.45, w) * M
+        + 0.024 * Math.sin(s * 11.0 * Math.PI - travelPhase(t) * 5.7 + T.ph * 3.1) * lerp(1, 0.30, w) * M
+        + 0.0055 * Math.sin(s * 13 + t * 1.9 + T.ph) * lerp(1, 0.3, w);
+      pts.push([x, y]);
+    }
+    out.push({ pts, headX, yBase: headY, rgb: TRACK_RGB[i], name: T.name, i });
+  }
+  return out;
+}
+const px = (x) => (x + 0.02) * W * 1.02;
+const py = (y) => y * H;
+
+/* -------------------------------------------------------------- 绘制 --- */
+function paintBackground(g, t, G, M){
+  // 底：参考片的 1% 分位 luminance 是 0.4、四角 0.0–1.4；
+  // 旧版 #070b13 让四角停在 (3.4,5.4,8.6)，全片黑位抬高约 14 个 V。
+  g.fillStyle = '#020307';
+  g.fillRect(0, 0, W, H);
+
+  // 星云：0–100 s 冷紫蓝，之后转暖褐（对应参考片后半段的棕黄尘云）
+  const warm = smooth((t - 92) / 26);
+  const blobs = [
+    { x: 0.72 + 0.02*Math.sin(t*0.031), y: 0.42 + 0.02*Math.cos(t*0.027), r: 0.62,
+      c0:'#241a46', c1:'#3a2a1c', a: 0.62 },
+    { x: 0.34 + 0.03*Math.sin(t*0.019+1.2), y: 0.68 + 0.02*Math.sin(t*0.023+2.4), r: 0.50,
+      c0:'#10293c', c1:'#33241a', a: 0.48 },
+    { x: 0.88 + 0.02*Math.cos(t*0.021+0.6), y: 0.80, r: 0.40,
+      c0:'#331632', c1:'#3a2a1c', a: 0.40 },
+  ];
+  for (const b of blobs){
+    const col = warm > 0.5 ? b.c1 : b.c0;
+    const grd = g.createRadialGradient(b.x*W, b.y*H, 0, b.x*W, b.y*H, b.r*W);
+    grd.addColorStop(0, col + 'cc');
+    grd.addColorStop(0.45, col + '55');
+    grd.addColorStop(1, col + '00');
+    g.globalAlpha = b.a * G * 1.18;
+    g.fillStyle = grd;
+    g.fillRect(0, 0, W, H);
+  }
+  g.globalAlpha = 1;
+
+  // 尘埃
+  for (const d of DUST){
+    const a = d.a * (0.55 + 0.55 * Math.sin(t * d.f * 6.283 + d.ph)) * M;
+    if (a <= 0.01) continue;
+    const x = ((d.x + d.dx * t) % 1 + 1) % 1 * W;
+    const y = ((d.y + d.dy * t) % 1 + 1) % 1 * H;
+    g.globalAlpha = a * G;
+    g.fillStyle = '#cfe0ff';
+    g.beginPath(); g.arc(x, y, d.r, 0, 6.2832); g.fill();
+  }
+  g.globalAlpha = 1;
+
+  // 星芒
+  for (const s of GLINTS){
+    const tw = 0.30 + 0.70 * Math.pow(0.5 + 0.5 * Math.sin(t * 0.21 + s.ph), 2);
+    const a = tw * M * G;
+    if (a <= 0.02) continue;
+    const x = s.x * W, y = s.y * H, L = 46 * s.s * (0.6 + 0.4*tw);
+    g.globalAlpha = a;
+    const grd = g.createRadialGradient(x, y, 0, x, y, L * 0.55);
+    grd.addColorStop(0, 'rgba(235,245,255,.95)');
+    grd.addColorStop(0.25, 'rgba(150,200,255,.35)');
+    grd.addColorStop(1, 'rgba(90,150,255,0)');
+    g.fillStyle = grd;
+    g.beginPath(); g.arc(x, y, L*0.55, 0, 6.2832); g.fill();
+    g.strokeStyle = 'rgba(220,240,255,' + (0.55*a) + ')';
+    g.lineWidth = 1.1;
+    g.beginPath();
+    g.moveTo(x - L, y); g.lineTo(x + L, y);
+    g.moveTo(x, y - L*0.72); g.lineTo(x, y + L*0.72);
+    g.stroke();
+  }
+  g.globalAlpha = 1;
+}
+
+function paintTracks(g, geo, t, G, M){
+  const leader = t < 31.5 ? 0 : (t < PARAMS.SWITCH_AT ? 2 : 3);
+  for (let i = 0; i < geo.length; i++){
+    const tr = geo[i];
+    const isLead = i === leader;
+    const baseA = isLead ? 1.00 : 0.58;
+
+    // 多层描边模拟辉光（比 shadowBlur 便宜且更稳定）
+    const layers = [
+      { w: 16, a: 0.062 },
+      { w: 8.0, a: 0.135 },
+      { w: 3.6, a: 0.330 },
+      { w: 1.30, a: 1.00 },
+    ];
+    // 尾部渐隐：最后 22% 描边接一段渐变，避免线条被平截
+    const tailStart = Math.floor(tr.pts.length * 0.78);
+    for (const L of layers){
+      g.lineWidth = L.w;
+      g.strokeStyle = rgba(tr.rgb, L.a * baseA * G);
+      g.lineCap = 'round';
+      g.beginPath();
+      for (let k = 0; k <= tailStart; k++){
+        const x = px(tr.pts[k][0]), y = py(tr.pts[k][1]);
+        k === 0 ? g.moveTo(x, y) : g.lineTo(x, y);
+      }
+      g.stroke();
+
+      const a0 = tr.pts[tailStart], a1 = tr.pts[tr.pts.length - 1];
+      const tg = g.createLinearGradient(px(a0[0]), py(a0[1]), px(a1[0]), py(a1[1]));
+      tg.addColorStop(0, rgba(tr.rgb, L.a * baseA * G));
+      tg.addColorStop(1, rgba(tr.rgb, 0));
+      g.strokeStyle = tg;
+      g.beginPath();
+      g.moveTo(px(a0[0]), py(a0[1]));
+      for (let k = tailStart + 1; k < tr.pts.length; k++){
+        g.lineTo(px(tr.pts[k][0]), py(tr.pts[k][1]));
+      }
+      g.stroke();
+    }
+
+    // 沿轨道流动的能量段
+    const flow = 0.5 + 0.5 * Math.sin(t * 0.9 + i * 1.9);
+    const f0 = Math.floor(lerp(0.15, 0.92, flow) * (tr.pts.length - 1));
+    const f1 = Math.min(tr.pts.length - 1, f0 + 16);
+    const grd = g.createLinearGradient(px(tr.pts[f0][0]), 0, px(tr.pts[f1][0]), 0);
+    grd.addColorStop(0, rgba(tr.rgb, 0));
+    grd.addColorStop(1, rgba(tr.rgb, 0.55 * baseA * G));
+    g.strokeStyle = grd;
+    g.lineWidth = 2.2;
+    g.beginPath();
+    for (let k = f0; k <= f1; k++){
+      const x = px(tr.pts[k][0]), y = py(tr.pts[k][1]);
+      k === f0 ? g.moveTo(x, y) : g.lineTo(x, y);
+    }
+    g.stroke();
+
+    // 头部节点
+    const hx = px(tr.headX), hy = py(tr.yBase);
+    const pulse = 1 + 0.10 * Math.sin(t * 1.7 + i);
+    const halo = (isLead ? 132 : 76) * pulse * M;
+    const rg = g.createRadialGradient(hx, hy, 0, hx, hy, halo);
+    rg.addColorStop(0, rgba([255,255,255], 1.0 * baseA * G));
+    rg.addColorStop(0.12, rgba(tr.rgb, 0.86 * baseA * G));
+    rg.addColorStop(0.42, rgba(tr.rgb, 0.26 * baseA * G));
+    rg.addColorStop(1, rgba(tr.rgb, 0));
+    g.fillStyle = rg;
+    g.beginPath(); g.arc(hx, hy, halo, 0, 6.2832); g.fill();
+
+    g.globalAlpha = G * baseA;
+    g.fillStyle = '#f2fbff';
+    g.beginPath(); g.arc(hx, hy, isLead ? 4.4 : 3.0, 0, 6.2832); g.fill();
+    g.globalAlpha = 1;
+
+    // 标签：小号等宽，紧随节点右侧
+    const fs = isLead ? 17 : 14;
+    g.font = `600 ${fs}px "Cascadia Code",Consolas,"JetBrains Mono",monospace`;
+    g.textBaseline = 'middle';
+    const lx = hx + 22, ly = hy - 1;
+    if (isLead){
+      const tw = g.measureText(tr.name).width;
+      g.strokeStyle = rgba(tr.rgb, 0.55 * G);
+      g.lineWidth = 1;
+      g.strokeRect(lx - 7, ly - fs * 0.78, tw + 14, fs * 1.56);
+    }
+    g.fillStyle = rgba(tr.rgb, (isLead ? 1.0 : 0.80) * G);
+    g.fillText(tr.name, lx, ly);
+    g.textBaseline = 'alphabetic';
+  }
+}
+
+/** 扩环：围绕领先节点向外扩张的椭圆，约 1 秒 */
+function paintRings(g, t, geo, G, M){
+  for (const im of IMPACTS){
+    if (!im.ring) continue;
+    const dt = t - im.t;
+    if (dt < 0 || dt > 1.25) continue;
+    const u = dt / 1.25;
+    const rgb = geo[0].rgb;
+    const cx = px(0.70), cy = py(0.40);
+    for (let k = 0; k < 3; k++){
+      const uu = clamp(u - k * 0.10, 0, 1);
+      if (uu <= 0) continue;
+      const r = lerp(24, 320, smooth(uu)) * M;
+      g.globalAlpha = (1 - uu) * 0.34 * G;
+      g.strokeStyle = rgba(rgb, 0.85);
+      g.lineWidth = 1.4;
+      g.beginPath();
+      g.ellipse(cx, cy, r * 1.55, r * 0.60, -0.06, 0, 6.2832);
+      g.stroke();
+    }
+  }
+  g.globalAlpha = 1;
+}
+
+/** 一帧冲击：全幅、立即回落，不做缓出 */
+function paintImpacts(g, t, geo, G){
+  for (const im of IMPACTS){
+    const dt = t - im.t;
+    if (dt < 0) continue;
+    const hold = im.frames * FRAME;
+    if (dt >= hold + FRAME) continue;
+    // 第 0 帧满值，第 1 帧半值，之后归零——无缓出曲线的阶梯
+    const k = dt < hold ? 1 : 0.5;
+    const A = (im.amp / PARAMS.IMPACT_MAX_AMP) * k;
+    const lead = geo[0];
+    const hx = px(lead.headX), hy = py(lead.yBase);
+
+    // 局部泛光：参考片里这一帧的 pix_diff 是背景中位的 8–12 倍
+    const R = (300 + 260 * A) * (1 - 0.15 * (1 - G));
+    const rg = g.createRadialGradient(hx, hy, 0, hx, hy, R);
+    rg.addColorStop(0, `rgba(255,255,255,${1.00 * A * G})`);
+    rg.addColorStop(0.10, `rgba(232,248,255,${0.62 * A * G})`);
+    rg.addColorStop(0.34, `rgba(170,225,255,${0.22 * A * G})`);
+    rg.addColorStop(1, 'rgba(120,200,255,0)');
+    g.fillStyle = rg;
+    g.beginPath(); g.arc(hx, hy, R, 0, 6.2832); g.fill();
+
+    // 细十字（星芒），随幅度拉长
+    g.strokeStyle = `rgba(245,252,255,${0.80 * A * G})`;
+    g.lineWidth = 1.35;
+    const L = 360 + 320 * A;
+    g.beginPath();
+    g.moveTo(hx - L, hy); g.lineTo(hx + L, hy);
+    g.moveTo(hx, hy - L * 0.46); g.lineTo(hx, hy + L * 0.46);
+    g.stroke();
+    // 斜向短芒
+    g.strokeStyle = `rgba(220,240,255,${0.35 * A * G})`;
+    g.lineWidth = 0.9;
+    const L2 = L * 0.42;
+    g.beginPath();
+    g.moveTo(hx - L2, hy - L2 * 0.55); g.lineTo(hx + L2, hy + L2 * 0.55);
+    g.moveTo(hx - L2, hy + L2 * 0.55); g.lineTo(hx + L2, hy - L2 * 0.55);
+    g.stroke();
+
+    // 全幅提亮一档：参考片 117.700 s 的 pix_diff 峰值本身就是一次亮度阶跃
+    g.globalCompositeOperation = 'lighter';
+    g.fillStyle = `rgba(30,42,60,${0.10 * A * G})`;
+    g.fillRect(0, 0, W, H);
+  }
+}
+
+/* ---------------------------------------------------------------- HUD --- */
+function paintHud(g, t, G){
+  // 左上：日期牌（独立于音乐网格，0.133–0.167 s 换一张）
+  const d = dateAt(t);
+  g.textBaseline = 'alphabetic';
+  // 参考片日期牌实测：字高 34 px（cap height）、整串宽 261 px、笔画亮部 L*≈100。
+  // 旧版 40 px/600 实测字高 24、串宽 389、L* 峰值 56 —— 又宽又扁、还发灰。
+  g.font = '700 46px "Cascadia Code",Consolas,"JetBrains Mono",monospace';
+  g.fillStyle = `rgba(244,248,253,${1.0 * G})`;
+  g.fillText(d.label, 58, 78);
+
+  g.font = '500 15px "Cascadia Code",Consolas,"JetBrains Mono",monospace';
+  g.fillStyle = `rgba(176,192,212,${0.92 * G})`;
+  g.fillText(TRACKS[0].name, 59, 108);
+
+  // 强度刻度：由最近一次冲击的幅度决定条数（图形元素，不是数据展示）
+  let last = null;
+  for (const im of IMPACTS) if (im.t <= t) last = im;
+  const bars = last ? Math.round(lerp(2, 15, last.amp / PARAMS.IMPACT_MAX_AMP)) : 2;
+  for (let i = 0; i < 15; i++){
+    g.globalAlpha = (i < bars ? 0.66 : 0.14) * G;
+    g.fillStyle = i < bars ? '#9fb6d4' : '#41506a';
+    g.fillRect(59 + i * 7, 122, 4, 9);
+  }
+  g.globalAlpha = 1;
+  g.font = '500 13px "Cascadia Code",Consolas,monospace';
+  g.fillStyle = `rgba(158,176,200,${0.78 * G})`;
+  g.fillText('强度 × ' + bars, 59 + 15 * 7 + 12, 131);
+
+  // 左下：抽象徽记（程序生成，不含任何真实标识）
+  const bx = 62, by = H - 62;
+  for (let i = 0; i < 5; i++){
+    const x = bx + i * 46, y = by - 22;
+    g.globalAlpha = 0.85 * G;
+    g.strokeStyle = 'rgba(120,140,165,.45)';
+    g.lineWidth = 1;
+    g.strokeRect(x, y, 30, 30);
+    g.fillStyle = ['#7FF0C8','#FF9D6E','#7DB4FF','#B98CFF','#9FB6D4'][i];
+    g.globalAlpha = 0.85 * G;
+    g.beginPath();
+    if (i === 0){ g.arc(x+15, y+15, 6, 0, 6.2832); g.fill(); }
+    else if (i === 1){ g.moveTo(x+15, y+7); g.lineTo(x+23, y+22); g.lineTo(x+7, y+22); g.closePath(); g.fill(); }
+    else if (i === 2){ g.arc(x+15, y+17, 8, Math.PI, 0); g.stroke(); g.fillRect(x+6, y+16, 18, 2); }
+    else if (i === 3){ g.fillRect(x+7, y+7, 6, 6); g.fillRect(x+17, y+7, 6, 6); g.fillRect(x+7, y+17, 6, 6); g.fillRect(x+17, y+17, 6, 6); }
+    else { g.save(); g.translate(x+15, y+15); g.rotate(0.78); g.fillRect(-6, -6, 12, 12); g.restore(); }
+  }
+  g.globalAlpha = 1;
+
+  // 底部字幕
+  const cap = captionAt(t);
+  const fs = 27;
+  g.font = `600 ${fs}px "Microsoft YaHei","PingFang SC",sans-serif`;
+  let total = 0;
+  for (const seg of cap) total += g.measureText(seg[0]).width + 6;
+  let x = (W - total) / 2, y = H - 96;
+  g.globalAlpha = G;
+  for (const seg of cap){
+    g.fillStyle = seg[1] ? 'rgba(255,183,88,1)' : 'rgba(232,240,250,.97)';
+    g.fillText(seg[0], x, y);
+    x += g.measureText(seg[0]).width + 6;
+  }
+  g.globalAlpha = 1;
+
+  // 右上：本次参数的极小注记（证明确实按测得的比例在跑）
+  g.font = '500 12px "Cascadia Code",Consolas,monospace';
+  g.fillStyle = `rgba(110,130,155,${0.55 * G})`;
+  g.textAlign = 'right';
+  g.fillText('onset 4.21/s  ·  impact 0.14/s  ·  1:30', W - 44, 60);
+  const mv = motionAt(t);
+  g.fillText(mv < 0.999 ? ('breath  motion ×' + mv.toFixed(2)) : ' ', W - 44, 80);
+  g.textAlign = 'left';
+}
+
+/* 暗部抖动：单次播种的 256×256 噪声瓦片，平铺 + 极低不透明度，
+   用来打断 createRadialGradient 在近黑区域的色带。
+   必须定义在 render() 之前，且 render 只在 loop 里调用。 */
+const GRAIN = (() => {
+  const n = 256;
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = n;
+  const g2 = cv.getContext('2d');
+  const id = g2.createImageData(n, n);
+  const rnd = mulberry32(6161);
+  for (let i = 0; i < id.data.length; i += 4){
+    const v = Math.floor(rnd() * 255);
+    id.data[i] = id.data[i+1] = id.data[i+2] = v;
+    id.data[i+3] = 255;
+  }
+  g2.putImageData(id, 0, 0);
+  return cv;
+})();
+const GRAIN_PAT = ctx.createPattern(GRAIN, 'repeat');
+
+/* -------------------------------------------------------------- 主循环 --- */
+function render(tRaw){
+  const t = quant(tRaw);
+  const G = exposureAt(t);
+  const S = saturationAt(t);
+  const M = motionAt(t);
+  const D = depthAt(t);
+
+  const g = ctx;
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.globalAlpha = 1;
+  g.globalCompositeOperation = 'source-over';
+
+  paintBackground(g, t, G, M);
+
+  const geo = trackGeom(t, D, M);
+
+  g.globalCompositeOperation = 'lighter';
+  paintRings(g, t, geo, G, M);
+  paintTracks(g, geo, t, G, M);
+  paintImpacts(g, t, geo, G);
+  g.globalCompositeOperation = 'source-over';
+
+  // 显示传输：黑点 + 幂律 + 增益，再做全局饱和度
+  const [, bTone, gTone, kTone0] = toneAt(t);
+  const kTone = kTone0 * (t < 0.5 ? clamp(t / 0.5, 0, 1) : 1);
+  const satG = satKAt(t);
+  if (!NOGRADE){
+    const id = g.getImageData(0, 0, W, H), d = id.data;
+    const lut = new Uint8ClampedArray(256);
+    for (let i = 0; i < 256; i++)
+      lut[i] = kTone * Math.pow(clamp((i - bTone) / (255 - bTone), 0, 1), gTone);
+    for (let i = 0; i < d.length; i += 4){
+      d[i] = lut[d[i]]; d[i+1] = lut[d[i+1]]; d[i+2] = lut[d[i+2]];
+    }
+    // 饱和度乘在 S 上：保持最大通道不变，把最小通道向最大通道收/放。
+    // 用整体缩放会连带改 V（实测 val 掉到 3.3），所以只动色度跨度。
+    if (!NOSAT && Math.abs(satG - 1) > 2e-3){
+      for (let i = 0; i < d.length; i += 4){
+        const R = d[i], Gc = d[i+1], B = d[i+2];
+        const mx = Math.max(R, Gc, B), mn = Math.min(R, Gc, B);
+        if (mx - mn < 1) continue;
+        const s0 = (mx - mn) / mx;
+        const r = clamp((s0 * satG) / s0, 0, 1e3);   // = satG
+        const k = clamp(satG, 0, 1);                  // 收缩比例
+        if (satG <= 1){
+          d[i]   = mx - (mx - R)  * k;
+          d[i+1] = mx - (mx - Gc) * k;
+          d[i+2] = mx - (mx - B)  * k;
+        } else {
+          d[i]   = clamp(mx - (mx - R)  * satG, 0, 255);
+          d[i+1] = clamp(mx - (mx - Gc) * satG, 0, 255);
+          d[i+2] = clamp(mx - (mx - B)  * satG, 0, 255);
+        }
+      }
+    }
+    g.putImageData(id, 0, 0);
+  }
+
+  // 暗角
+  const vg = g.createRadialGradient(W*0.5, H*0.48, H*0.30, W*0.5, H*0.48, H*0.98);
+  vg.addColorStop(0, 'rgba(0,0,0,0)');
+  vg.addColorStop(1, 'rgba(0,0,0,.58)');
+  g.fillStyle = vg;
+  g.fillRect(0, 0, W, H);
+
+  // 抖动层：静态图案 + 逐帧偏移，模拟胶片颗粒并压掉色带
+  if (GRAIN_PAT){
+    const off = Math.floor(t * FPS) % 256;
+    g.save();
+    g.globalCompositeOperation = 'soft-light';
+    g.globalAlpha = 0.16 * (0.45 + 0.55 * G);
+    g.translate(-off, -(off * 7) % 256);
+    g.fillStyle = GRAIN_PAT;
+    g.fillRect(0, 0, W + 256, H + 256);
+    g.restore();
+    g.globalAlpha = 1;
+    g.globalCompositeOperation = 'source-over';
+  }
+
+  // HUD 最后画：不参与调色/暗角/颗粒，保证日期牌是纯白、字口清楚
+  paintHud(g, t, G);
+}
+
+/* ---------------------------------------------------------------- 音频 --- */
+const AUDIO = {
+  ctx: null, shelf: null, master: null, bus: null, pad: null,
+  started: false, audioStart: 0, nextIdx: 0, timer: null, nodes: [],
+
+  build(){
+    const C = window.AudioContext || window.webkitAudioContext;
+    if (!C) return null;
+    const ctx = new C();
+    this.ctx = ctx;
+
+    const bus = ctx.createGain(); bus.gain.value = 0.85;
+    const shelf = ctx.createBiquadFilter();
+    shelf.type = 'lowshelf'; shelf.frequency.value = 120; shelf.gain.value = 0;
+
+    const master = ctx.createGain(); master.gain.value = 0.9;
+
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -14; comp.knee.value = 18; comp.ratio.value = 3.5;
+    comp.attack.value = 0.006; comp.release.value = 0.20;
+
+    bus.connect(shelf); shelf.connect(master);
+    master.connect(comp); comp.connect(ctx.destination);
+    this.bus = bus; this.shelf = shelf; this.master = master;
+
+    // 底噪垫层：长的滤波噪声，提供“恒定起音底噪”的下方支撑
+    const len = ctx.sampleRate * 4;
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    let last = 0;
+    for (let i = 0; i < len; i++){
+      const w = Math.random() * 2 - 1;
+      last = (last + 0.02 * w) / 1.02;
+      d[i] = last * 3.2;
+    }
+    const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 420;
+    const pg = ctx.createGain(); pg.gain.value = 0.055;
+    src.connect(lp); lp.connect(pg); pg.connect(bus);
+    this.pad = { src, pg };
+    return ctx;
+  },
+
+  /** 呼吸段：低频 -8.5 / -10.9 dB，中频只 -1.5 dB */
+  automateBreath(){
+    const ctx = this.ctx, t0 = ctx.currentTime + 0.05;
+    const A = PARAMS.BREATH_A, B = PARAMS.BREATH_B, E = PARAMS.BREATH_END;
+    const m = Math.pow(10, PARAMS.MASTER_DB / 20);         // 0.841
+    const shelfFor = db => -db + PARAMS.MASTER_DB;         // 让低频段合计等于测得值
+    const gM = this.master.gain, gS = this.shelf.gain;
+
+    gM.setValueAtTime(0.9, t0);
+    gS.setValueAtTime(0, t0);
+
+    gM.linearRampToValueAtTime(0.9, t0 + A);
+    gM.linearRampToValueAtTime(0.9 * m, t0 + A + 0.6);
+    gM.linearRampToValueAtTime(0.9 * m, t0 + E);
+    gM.linearRampToValueAtTime(0.9, t0 + E + 1.2);
+
+    gS.linearRampToValueAtTime(0, t0 + A);
+    gS.linearRampToValueAtTime(shelfFor(PARAMS.LOW_DB_A), t0 + A + 0.6);   // -7.0
+    gS.linearRampToValueAtTime(shelfFor(PARAMS.LOW_DB_B), t0 + B + 0.6);   // -9.4
+    gS.linearRampToValueAtTime(shelfFor(PARAMS.LOW_DB_B), t0 + E);
+    gS.linearRampToValueAtTime(0, t0 + E + 1.2);
+  },
+
+  noiseBurst(when, gain){
+    const ctx = this.ctx, n = Math.floor(ctx.sampleRate * 0.085);
+    const b = ctx.createBuffer(1, n, ctx.sampleRate);
+    const d = b.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+    const s = ctx.createBufferSource(); s.buffer = b;
+    const bp = ctx.createBiquadFilter(); bp.type = 'bandpass';
+    bp.frequency.value = 2700; bp.Q.value = 1.1;          // noise 类质心 2500–3000 Hz
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0, when);
+    g.gain.linearRampToValueAtTime(gain, when + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, when + 0.075);
+    s.connect(bp); bp.connect(g); g.connect(this.bus);
+    s.start(when); s.stop(when + 0.10);
+    this.nodes.push(s);
+  },
+
+  tonalBlip(when, gain, hz){
+    const ctx = this.ctx;
+    const o = ctx.createOscillator(); o.type = 'triangle';
+    o.frequency.setValueAtTime(hz, when);
+    o.frequency.exponentialRampToValueAtTime(hz * 0.86, when + 0.06);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0, when);
+    g.gain.linearRampToValueAtTime(gain, when + 0.003);
+    g.gain.exponentialRampToValueAtTime(0.0001, when + 0.13);
+    o.connect(g); g.connect(this.bus);
+    o.start(when); o.stop(when + 0.16);
+    this.nodes.push(o);
+  },
+
+  lowThump(when, gain){
+    const ctx = this.ctx;
+    const o = ctx.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(74, when);
+    o.frequency.exponentialRampToValueAtTime(48, when + 0.10);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0, when);
+    g.gain.linearRampToValueAtTime(gain, when + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.0001, when + 0.19);
+    o.connect(g); g.connect(this.bus);
+    o.start(when); o.stop(when + 0.22);
+    this.nodes.push(o);
+  },
+
+  schedule(fromT){
+    const ctx = this.ctx;
+    const head = ctx.currentTime + 0.60;
+    const PENT = [523.25, 587.33, 698.46, 783.99, 880.0, 1046.5];
+    while (this.nextIdx < ONSETS.length){
+      const o = ONSETS[this.nextIdx];
+      if (o.t < fromT){ this.nextIdx++; continue; }
+      const when = this.audioStart + o.t;
+      if (when > head) break;
+      if (when < ctx.currentTime - 0.05){ this.nextIdx++; continue; }
+
+      // 0.470 / 0.940 的周期骨架：每 2 个 +1 dB，每 4 个再加重
+      const acc = this.nextIdx % 4 === 0 ? 2.5 : (this.nextIdx % 2 === 0 ? 1.0 : 0);
+      const gain = 0.020 * Math.pow(o.inten / PARAMS.INT_P95, 1.25)
+                 * Math.pow(10, acc / 20);
+      if (o.kind === 'noise') this.noiseBurst(when, gain);
+      else {
+        const hz = PENT[Math.floor((o.inten / PARAMS.INT_MAX) * (PENT.length - 1))];
+        this.tonalBlip(when, gain * 1.15, hz);
+      }
+      if (this.nextIdx % 4 === 0) this.lowThump(when, gain * 0.9);
+      this.nextIdx++;
+    }
+    if (this.nodes.length > 400) this.nodes = this.nodes.slice(-200);
+  },
+
+  start(atT){
+    if (!this.ctx) this.build();
+    const ctx = this.ctx;
+    this.stopAll();
+    this.audioStart = ctx.currentTime + 0.06 - atT;
+    this.nextIdx = 0;
+    // 跳过已经过去的起音
+    while (this.nextIdx < ONSETS.length && ONSETS[this.nextIdx].t < atT) this.nextIdx++;
+    this.automateBreath();
+    this.pad.src.start();
+    this.started = true;
+    if (this.timer) clearInterval(this.timer);
+    this.timer = setInterval(() => this.schedule(atT), 110);
+  },
+
+  stopAll(){
+    if (this.timer){ clearInterval(this.timer); this.timer = null; }
+    for (const n of this.nodes){ try{ n.stop(); }catch(e){} }
+    this.nodes = [];
+    if (this.pad){ try{ this.pad.src.stop(); }catch(e){} this.pad = null; }
+  },
+
+  suspend(){ if (this.ctx && this.ctx.state === 'running') this.ctx.suspend(); },
+  resume(){ if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume(); },
+};
+
+/* ------------------------------------------------------------ 播放控制 --- */
+const qs = new URLSearchParams(location.search);
+const FROZEN = qs.has('t');
+const NOUI = qs.get('ui') === '0';
+// 测量用：?grade=0 关掉色调曲线，得到未调色的原始帧
+const NOGRADE = qs.get('grade') === '0';
+const NOSAT = qs.get('sat') === '0';   // 测量用：只做亮度曲线，不做饱和度
+if (NOUI) document.body.classList.add('noui');
+
+let playing = false;
+let baseT = 0;               // 播放起点（秒）
+let clock0 = 0;              // performance.now()/1000 at start
+let lastRendered = -1;
+
+function nowT(){
+  if (FROZEN) return quant(parseFloat(qs.get('t')) || 0);
+  if (!playing) return baseT;
+  return quant(baseT + (performance.now() / 1000 - clock0));
+}
+
+const barEl = document.getElementById('bar');
+const tcEl  = document.getElementById('tc');
+const statEl = document.getElementById('stat');
+const bplay = document.getElementById('bplay');
+
+statEl.textContent =
+  `onsets ${ONSETS.length} · impacts ${IMPACTS.length} · cuts 3`;
+
+function play(){
+  if (FROZEN) return;
+  if (baseT >= DUR) baseT = 0;
+  clock0 = performance.now() / 1000;
+  playing = true;
+  bplay.textContent = '❚❚ 暂停';
+  document.body.classList.remove('needgesture');
+  try { AUDIO.start(baseT); } catch(e){ console.warn('audio', e); }
+}
+function pause(){
+  if (!playing) return;
+  baseT = nowT();
+  playing = false;
+  bplay.textContent = '▶ 播放';
+  AUDIO.stopAll();
+}
+function seek(t){
+  t = clamp(t, 0, DUR);
+  baseT = quant(t);
+  clock0 = performance.now() / 1000;
+  barEl.value = baseT;
+  if (playing){ AUDIO.stopAll(); AUDIO.start(baseT); }
+  else { render(baseT); lastRendered = baseT; }
+  barEl.value = baseT;
+  tcEl.textContent = baseT.toFixed(3) + ' / ' + DUR.toFixed(3) + ' s';
+}
+
+bplay.addEventListener('click', () => playing ? pause() : play());
+barEl.addEventListener('input', e => { pause(); seek(parseFloat(e.target.value)); });
+window.addEventListener('keydown', e => {
+  if (e.code === 'Space'){ e.preventDefault(); playing ? pause() : play(); }
+  if (e.code === 'ArrowRight'){ e.preventDefault(); pause(); seek(nowT() + FRAME); }
+  if (e.code === 'ArrowLeft'){ e.preventDefault(); pause(); seek(nowT() - FRAME); }
+});
+
+function fit(){
+  const s = Math.min(window.innerWidth / W, (window.innerHeight - (NOUI ? 0 : 54)) / H);
+  canvas.style.width = (W * s) + 'px';
+  canvas.style.height = (H * s) + 'px';
+}
+window.addEventListener('resize', fit);
+fit();
+
+/* ---------------------------------------------------------------- 启动 --- */
+function tick(){
+  const t = nowT();
+  if (t !== lastRendered){
+    render(t);
+    lastRendered = t;
+    if (!FROZEN){
+      barEl.value = t;
+      tcEl.textContent = t.toFixed(3) + ' / ' + DUR.toFixed(3) + ' s';
+    }
+  }
+}
+function loop(){
+  tick();
+  requestAnimationFrame(loop);
+}
+/* 后台标签页里 Chrome 会把 rAF 压到几乎不跑，setInterval 也降到 1 Hz。
+   这里保留 rAF 做前台平滑，同时用 33 ms 定时器兜底，保证两种状态下时钟都在走。 */
+setInterval(tick, 33);
+
+if (FROZEN){
+  const t0 = quant(parseFloat(qs.get('t')) || 0);
+  baseT = t0;
+  render(t0);
+  barEl.value = t0;
+  tcEl.textContent = t0.toFixed(3) + ' / ' + DUR.toFixed(3) + ' s';
+  bplay.textContent = '▶ 播放';
+  document.getElementById('hint').textContent = '';
+} else {
+  if (qs.get('play') === '1'){
+    document.body.classList.add('needgesture');
+    const go = () => { document.body.classList.remove('needgesture'); play(); };
+    window.addEventListener('pointerdown', go, { once: true });
+    window.addEventListener('keydown', go, { once: true });
+  } else {
+    render(0);
+    document.getElementById('hint').textContent = '';
+  }
+}
+requestAnimationFrame(loop);
+
+/* ------------------------------------------------------------ 验证钩子 --- */
+window.__stats = {
+  dur: DUR,
+  onsets: ONSETS.length,
+  onsetRate: +(ONSETS.length / (DUR - 0.0) ).toFixed(3),
+  impacts: IMPACTS.length,
+  impactRate: +(IMPACTS.length / DUR).toFixed(4),
+  ratio: +(ONSETS.length / IMPACTS.length).toFixed(1),
+  dateCards: DATES.length,
+  firstDate: DATES[0].label,
+  lastDate: DATES[DATES.length-1].label,
+  params: PARAMS,
+};
+window.__renderAt = t => render(t);
+window.__frameStats = t => ({
+  t: quant(t),
+  exposure: +exposureAt(t).toFixed(4),
+  sat: +saturationAt(t).toFixed(4),
+  motion: +motionAt(t).toFixed(4),
+  depth: +depthAt(t).toFixed(4),
+  date: dateAt(t).label,
+  caption: captionAt(t).map(s => s[0]).join(''),
+});
+window.__ready = true;
+</script>
+</body>
+</html>

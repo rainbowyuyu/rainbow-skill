@@ -1,0 +1,44 @@
+{
+  "report": [
+    {
+      "t": 3.1,
+      "name": "01-braid-plateau",
+      "bytes": 1716428,
+      "mean": 25.7,
+      "max": 215,
+      "nonBlackPct": 100,
+      "phase": "B 交织 平台 1.467 s",
+      "tc": "f093 ／ 3.100 s"
+    },
+    {
+      "t": 3.933,
+      "name": "02-compress",
+      "bytes": 1741029,
+      "mean": 25.4,
+      "max": 215,
+      "nonBlackPct": 100,
+      "phase": "C 压合 0.167 s",
+      "tc": "f118 ／ 3.933 s"
+    },
+    {
+      "t": 5.067,
+      "name": "03-impact-peak",
+      "bytes": 2769962,
+      "mean": 47.4,
+      "max": 217,
+      "nonBlackPct": 100,
+      "phase": "G 冲击",
+      "tc": "f152 ／ 5.067 s"
+    },
+    {
+      "t": 7.2,
+      "name": "04-cold-window",
+      "bytes": 1496720,
+      "mean": 25.3,
+      "max": 215,
+      "nonBlackPct": 100,
+      "phase": "H 冷场 2.767 s",
+      "tc": "f216 ／ 7.200 s"
+    }
+  ]
+}

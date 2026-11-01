@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN" data-palette="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>文字，也有呼吸 · Motionface 动效研究</title>
+  <link rel="stylesheet" href="./motionface.css">
+  <link rel="stylesheet" href="./document-reader.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./index.html"><img src="./brand.png" alt="rainbow鱼"><span>视觉方法库<small>TYPE / VISUALIZATION</small></span></a>
+    <nav aria-label="研究文档"><a href="../studies/motionface.md">参考观察 ↗</a><a href="../guides/motionface-type.md">选用方法 ↗</a><a class="source-link" href="https://motionface.cc/" target="_blank" rel="noopener">Motionface ↗</a></nav>
+  </header>
+
+  <main>
+    <section class="masthead" aria-labelledby="pageTitle">
+      <div><p class="eyebrow">TYPE / OBJECT / ATTENTION</p><h1 id="pageTitle">文字，也有呼吸<span>。</span></h1></div>
+      <div class="masthead-note"><p>让形状交出信息，让文字接住注意力。</p><span><i></i><span id="candidateSummary">正在加载原创方法 · 静音动效研究</span></span></div>
+    </section>
+
+    <div class="workspace">
+      <aside class="candidate-rail" aria-label="选择动效方法">
+        <div class="section-label"><span>动作候选</span><span id="candidateCount">—</span></div>
+        <div id="candidates" class="candidate-list" role="group" aria-label="动效候选"></div>
+        <div class="rail-foot"><span>先让人看懂，<br>再给画面惊喜。</span><a href="../examples/motionface-type/API.md">复用接口 ↗</a></div>
+      </aside>
+
+      <section class="preview-column" aria-label="当前动效预览">
+        <div class="screen">
+          <div class="screen-bar"><span id="activeName">正在加载方法…</span><div><span id="readingFlag" class="reading-flag">准备</span><span class="format-label">16:9 / 30 FPS</span></div></div>
+          <canvas id="scene" width="1600" height="900" tabindex="0" role="img" aria-label="原创动效预览；空格播放或暂停，左右方向键逐帧，Home 和 End 定位首尾"></canvas>
+          <div id="errorState" class="error-state" hidden><strong>动效模块暂时未加载</strong><p>请检查本地服务是否正常，再刷新此页。</p></div>
+          <div class="transport">
+            <div class="transport-buttons"><button id="play" class="play-button" type="button" aria-label="播放">▶ <span>播放</span></button><button id="restart" class="icon-button" type="button" title="重播" aria-label="从头重播">↺</button><span class="transport-divider"></span><button id="prev" class="icon-button frame-button" type="button" title="上一帧" aria-label="上一帧">‹</button><button id="next" class="icon-button frame-button" type="button" title="下一帧" aria-label="下一帧">›</button></div>
+            <div class="transport-readout"><output id="time">00.00 / 14.00</output><label class="speed-label"><span>播放</span><select id="tempo" aria-label="播放速度"><option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label></div>
+          </div>
+          <div class="timeline-row"><input id="timeline" type="range" min="0" max="14" value="0" step="0.001" aria-label="动效时间"><label class="seek-label"><input id="seekSeconds" type="number" min="0" max="14" value="0" step="0.1" aria-label="定位秒数"><span>s</span></label></div>
+          <div id="stages" class="stage-row" role="group" aria-label="定位动作阶段"></div>
+        </div>
+        <div class="method-note"><div><span class="section-label">这一段怎么用</span><p id="methodUse">正在加载…</p></div><div class="method-status"><span class="status-dot"></span><span id="phaseText">建立对象</span></div></div>
+        <p class="keyboard-note">画布快捷键 <kbd>空格</kbd> 播放 / 暂停 <kbd>←</kbd><kbd>→</kbd> 逐帧 <span>固定时间采样，可反向检查每次交接。</span></p>
+      </section>
+
+      <aside class="inspector" aria-label="动效与文字设置">
+        <section class="control-section palette-section"><div class="section-label"><span>画面气质</span><span id="paletteName">奶油纸墨</span></div><div id="palettes" class="palette-options" role="group" aria-label="配色方案"><button type="button" data-palette="paper" class="palette-choice paper" aria-pressed="true" aria-label="奶油纸墨配色"><i></i><span>奶油纸墨</span></button><button type="button" data-palette="lime" class="palette-choice lime" aria-pressed="false" aria-label="黑白酸柠配色"><i></i><span>黑白酸柠</span></button><button type="button" data-palette="coral" class="palette-choice coral" aria-pressed="false" aria-label="深靛珊瑚配色"><i></i><span>深靛珊瑚</span></button></div></section>
+        <section class="control-section"><div class="section-label"><label for="intensity">动作幅度</label><output id="intensityValue">65%</output></div><input id="intensity" class="intensity-range" type="range" min="0" max="100" step="1" value="65"><div class="range-captions"><span>克制</span><span>舒展</span></div></section>
+        <section class="control-section text-controls"><div class="section-label"><span>换成你的内容</span><button type="button" id="resetText" class="text-button">还原</button></div><label for="headline">主标题</label><input id="headline" type="text" maxlength="48" autocomplete="off" placeholder="用一句话抓住主题"><label for="kicker">引导词</label><input id="kicker" type="text" maxlength="64" autocomplete="off" placeholder="把注意力交给谁"><label for="result">落定文字</label><input id="result" type="text" maxlength="64" autocomplete="off" placeholder="留给观众的结果"><p class="field-note">切换方法保留你输入的文字。</p></section>
+        <section class="control-section compact-section"><label class="toggle-label"><input id="reducedMotion" type="checkbox"><span>减少动态效果<small>暂停自动播放，保留手动逐帧</small></span><i aria-hidden="true"></i></label></section>
+        <section class="export-section"><button id="saveSelection" type="button" class="export-primary">导出选用方案 <span>↓</span></button><button id="showCode" type="button" class="export-secondary">复制代码调用 <span>↗</span></button><a id="moduleSource" href="./modules/motionface-type.js" target="_blank" rel="noopener">查看当前模块源码 ↗</a></section>
+      </aside>
+    </div>
+
+    <div class="study-footer"><p><strong>观察边界</strong> 基于公开首页，以及经用户授权登录后两部作品片段的静态研究。付费源码未解锁；这里是原创方法延展，不代表完整素材库复刻。</p><p id="status" class="status-message" role="status" aria-live="polite">选择一个方法，替换文字，再逐帧比较信息如何交接。</p></div>
+  </main>
+  <footer><span>MOTIONFACE STUDY / ORIGINAL IMPLEMENTATION</span><span>让变化有因果，让停顿有分量。</span></footer>
+
+  <dialog id="codeDialog" aria-labelledby="codeTitle"><div class="dialog-head"><div><p class="eyebrow">USE THE MOTION</p><h2 id="codeTitle">把这一段带到你的画面里</h2></div><button id="closeCode" type="button" class="close-button" aria-label="关闭代码窗口">×</button></div><p class="dialog-note">确定性时间采样：传入秒数即可绘制。播放速度只改变时钟推进，不改变动作曲线。</p><textarea id="codeText" readonly spellcheck="false" aria-label="可复制的代码调用"></textarea><div class="dialog-actions"><button id="copyCode" type="button" class="export-primary">复制代码</button><button id="downloadCode" type="button">下载调用示例</button><a href="../examples/motionface-type/API.md">阅读完整接口 ↗</a></div><p id="copyStatus" role="status" aria-live="polite"></p></dialog>
+  <script type="module" src="./motionface-studio.js"></script>
+  <script type="module" src="./document-reader.js"></script>
+</body>
+</html>

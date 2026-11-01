@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Optional role recipes, not changes to runtime palette list",
+  "contrastMethod": "WCAG sRGB relative luminance and (L1+.05)/(L2+.05). Exact opaque foreground/background pairs only; not a video-frame or overall conformance certification.",
+  "recipes": [
+    {
+      "id": "graphite",
+      "title": "石墨暖金",
+      "intendedMood": "深色机械、精密结构，暖色指向当前解释对象",
+      "avoid": "不适合把所有金属表面和数据同时涂金；标注会失去突出度",
+      "roles": {
+        "background": "#101722",
+        "ink": "#F4EFE5",
+        "muted": "#A9BAC4",
+        "accent": "#E8B56B",
+        "compare": "#75D9D7",
+        "warning": "#ED8774"
+      },
+      "dataRoles": {
+        "target": "accent",
+        "measurement": "compare",
+        "residual": "warning",
+        "context": "muted"
+      },
+      "contrastToFlatBackground": {
+        "ink": 15.693,
+        "muted": 8.999,
+        "accent": 9.637,
+        "compare": 10.844,
+        "warning": 7.124
+      },
+      "minimumTextPairRatio": 7.124
+    },
+    {
+      "id": "porcelain",
+      "title": "瓷白蓝墨",
+      "intendedMood": "数学推导、论文式演示、结构对照",
+      "avoid": "强亮实景或白色浪花后方不可直接用；需要稳定留白",
+      "roles": {
+        "background": "#F1EEE7",
+        "ink": "#20343D",
+        "muted": "#596C73",
+        "accent": "#8C4F26",
+        "compare": "#1D6873",
+        "warning": "#9B4149"
+      },
+      "dataRoles": {
+        "target": "accent",
+        "measurement": "compare",
+        "residual": "warning",
+        "context": "muted"
+      },
+      "contrastToFlatBackground": {
+        "ink": 11.188,
+        "muted": 4.748,
+        "accent": 5.557,
+        "compare": 5.526,
+        "warning": 5.583
+      },
+      "minimumTextPairRatio": 4.748
+    },
+    {
+      "id": "night-plum",
+      "title": "夜紫杏金",
+      "intendedMood": "夜景、个体到世界的尺度展开、浪漫收束",
+      "avoid": "不宜把紫色自动等同负值；量化颜色须另行定义",
+      "roles": {
+        "background": "#1C1425",
+        "ink": "#F6EEE8",
+        "muted": "#BCAFBE",
+        "accent": "#EFB78B",
+        "compare": "#B6B2ED",
+        "warning": "#ED8D97"
+      },
+      "dataRoles": {
+        "target": "accent",
+        "measurement": "compare",
+        "residual": "warning",
+        "context": "muted"
+      },
+      "contrastToFlatBackground": {
+        "ink": 15.571,
+        "muted": 8.514,
+        "accent": 10.047,
+        "compare": 8.995,
+        "warning": 7.531
+      },
+      "minimumTextPairRatio": 7.531
+    },
+    {
+      "id": "tidal-jade",
+      "title": "深海青玉",
+      "intendedMood": "流体、海洋、传感与环境主题",
+      "avoid": "水本身大面积青绿时，数据线优先暖金并加文字标识",
+      "roles": {
+        "background": "#08252B",
+        "ink": "#E8F3EF",
+        "muted": "#9BBABB",
+        "accent": "#E8B77B",
+        "compare": "#6FD3BD",
+        "warning": "#E7A094"
+      },
+      "dataRoles": {
+        "target": "accent",
+        "measurement": "compare",
+        "residual": "warning",
+        "context": "muted"
+      },
+      "contrastToFlatBackground": {
+        "ink": 14.122,
+        "muted": 7.737,
+        "accent": 8.773,
+        "compare": 8.954,
+        "warning": 7.523
+      },
+      "minimumTextPairRatio": 7.523
+    },
+    {
+      "id": "theatre-amber",
+      "title": "暖幕琥珀",
+      "intendedMood": "音乐驱动段、历史机制、暖色实物故事",
+      "avoid": "红橙实景后方避免暖色小字；不要用作唯一报警编码",
+      "roles": {
+        "background": "#241719",
+        "ink": "#F7EEE7",
+        "muted": "#C5B4AD",
+        "accent": "#E9B466",
+        "compare": "#A9C9CA",
+        "warning": "#F49B93"
+      },
+      "dataRoles": {
+        "target": "accent",
+        "measurement": "compare",
+        "residual": "warning",
+        "context": "muted"
+      },
+      "contrastToFlatBackground": {
+        "ink": 15.136,
+        "muted": 8.671,
+        "accent": 9.232,
+        "compare": 9.817,
+        "warning": 8.218
+      },
+      "minimumTextPairRatio": 8.218
+    },
+    {
+      "id": "cobalt-editorial",
+      "title": "钴蓝编辑",
+      "intendedMood": "明亮科普、较多数字与图表、技术说明",
+      "avoid": "不宜直接盖在深海夜景上；适合作为有空间来源的纸面/说明面",
+      "roles": {
+        "background": "#F4F2EB",
+        "ink": "#172E55",
+        "muted": "#526579",
+        "accent": "#294E9A",
+        "compare": "#8B4D24",
+        "warning": "#A33C48"
+      },
+      "dataRoles": {
+        "target": "accent",
+        "measurement": "compare",
+        "residual": "warning",
+        "context": "muted"
+      },
+      "contrastToFlatBackground": {
+        "ink": 12.03,
+        "muted": 5.362,
+        "accent": 7.073,
+        "compare": 5.886,
+        "warning": 5.686
+      },
+      "minimumTextPairRatio": 5.362
+    }
+  ],
+  "quantitativeEncoding": {
+    "categorical": "Stable hue plus label/shape per category; palette order cannot silently reassign meaning",
+    "sequential": "Monotonic perceived lightness for magnitude, fixed domain and units; verify exported gradient",
+    "diverging": "Explicit meaningful midpoint such as zero; show signed endpoints and midpoint; match both branches perceptually"
+  }
+}

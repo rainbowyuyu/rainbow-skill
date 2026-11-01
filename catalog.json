@@ -1,0 +1,4068 @@
+{
+  "schema_version": 1,
+  "snapshot_date": "2026-11-02",
+  "counts": {
+    "environment_entries": 259,
+    "unique_content_groups": 180,
+    "bundled": 31,
+    "catalog_only": 149,
+    "plugin_entries": 121
+  },
+  "skills": [
+    {
+      "id": "RuiC-card-skill",
+      "name": "RuiC-card-skill",
+      "description": "Generate interactive 3D holographic collectible-card websites from a user description or reference image, using layered artwork, Blender and Three.js. Includes project-local Blender installation, reusable parallax materials and browser verification.",
+      "category": "video-design",
+      "environments": [
+        "agents",
+        "codex",
+        "cursor"
+      ],
+      "status": "bundled",
+      "origin": "third-party",
+      "licenses": [
+        {
+          "file": "LICENSE",
+          "detected": "MIT"
+        }
+      ],
+      "sources": [],
+      "path": "skills/RuiC-card-skill/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 31,
+      "bytes": 3496286
+    },
+    {
+      "id": "ablation-planner",
+      "name": "ablation-planner",
+      "description": "Use when main results pass result-to-claim (`claim_supported = yes` or `partial`) and ablation studies are needed for paper submission. A secondary Codex agent designs ablations from a reviewer's perspective; the local executor reviews feasibility and implements.",
+      "category": "research",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/ablation-planner.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "advanced-presentation",
+      "name": "advanced-presentation",
+      "description": "高级演示制作：在共享依赖的 Remotion 工作区创建、编辑和验收组会报告或动态演示。每份报告独立目录，统一复用根目录 Node 依赖，成功迭代后清理受管理的旧临时文件。适用于用户要求高级演示制作、Remotion 组会报告或维护这套演示工作区。",
+      "category": "design-documents",
+      "environments": [
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/advanced-presentation/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 3,
+      "bytes": 9685
+    },
+    {
+      "id": "analyze-results",
+      "name": "analyze-results",
+      "description": "Analyze ML experiment results, compute statistics, generate comparison tables and insights. Use when user says \\\"analyze results\\\", \\\"compare\\\", or needs to interpret experimental data.",
+      "category": "research",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/analyze-results.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "auto-review-loop",
+      "name": "auto-review-loop",
+      "description": "Autonomous multi-round research review loop. Uses a fresh Codex agent or selected Gemini, Grok, or Claude Code reviewer, implements fixes, and re-reviews until positive assessment or max rounds reached. Use when user says \\\"auto review loop\\\", \\\"review until it passes\\\", or wants autonomous iterative improvement.",
+      "category": "research",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/auto-review-loop.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "dudu-talkvideo",
+      "name": "dudu-talkvideo",
+      "description": "DuDu-talkvideo：用已定版D蓝白点阵纸感、左下角说话IP和真实素材制作AI教程、新闻与观点视频。先交语义分镜HTML，用户同意后做真实关键帧HTML；继承“做视频”项目增强工作台。用于用户提到DuDu-talkvideo、当前蓝白IP视频或调用本Skill时。",
+      "category": "video-design",
+      "environments": [
+        "agents",
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/dudu-talkvideo/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 5,
+      "bytes": 14808
+    },
+    {
+      "id": "experiment-audit",
+      "name": "experiment-audit",
+      "description": "Audit experiment integrity before claiming results. Uses fresh-agent GPT-6-Astra review (same-family provisional in the base Codex mirror) to check for fake ground truth, score normalization fraud, phantom results, and insufficient scope. Use when user says \\\"审计实验\\\", \\\"check experiment integrity\\\", \\\"audit results\\\", \\\"实验诚实度\\\", or after experiments complete before writing claims.",
+      "category": "research",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/experiment-audit.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "experiment-bridge",
+      "name": "experiment-bridge",
+      "description": "Workflow 1.5: Bridge between idea discovery and auto review. Reads EXPERIMENT_PLAN.md, implements experiment code, deploys to GPU, collects initial results. Use when user says \\\"实现实验\\\", \\\"implement experiments\\\", \\\"bridge\\\", \\\"从计划到跑实验\\\", \\\"deploy the plan\\\", or has an experiment plan ready to execute.",
+      "category": "video-design",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [
+        "https://github.com/org/project"
+      ],
+      "path": "catalog/experiment-bridge.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "experiment-plan",
+      "name": "experiment-plan",
+      "description": "Turn a refined research proposal or method idea into a detailed, claim-driven experiment roadmap. Use after `research-refine`, or when the user asks for a detailed experiment plan, ablation matrix, evaluation protocol, run order, compute budget, or paper-ready validation that supports the core problem, novelty, simplicity, and any LLM / VLM / Diffusion / RL-based contribution.",
+      "category": "research",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/experiment-plan.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "experiment-queue",
+      "name": "experiment-queue",
+      "description": "SSH job queue for multi-seed/multi-config ML experiments with OOM-aware retry, stale-screen cleanup, and wave-transition race prevention. Use when user says \"batch experiments\", \"队列实验\", \"run grid\", \"multi-seed sweep\", \"auto-chain experiments\", or when /run-experiment is insufficient for 10+ jobs that need orchestration.",
+      "category": "research",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/experiment-queue.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "formula-derivation",
+      "name": "formula-derivation",
+      "description": "Structures and derives research formulas when the user wants to 推导公式, build a theory line, organize assumptions, turn scattered equations into a coherent derivation, or rewrite theory notes into a paper-ready formula document. Use when the derivation target is not yet fully fixed, the main object still needs to be chosen, or the user needs a coherent derivation package rather than a finished theorem proof.",
+      "category": "research",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/formula-derivation.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "huashu-design",
+      "name": "huashu-design",
+      "description": "花叔Design——用HTML做高保真原型、幻灯片、动画、可视化与专家评审。任何新设计100%先出三个方向初稿给用户选（指定风格/品牌也不豁免），选定后才执行。触发词：做原型、PPT、幻灯片、动画、设计风格、评审、做个HTML页面、UI mockup、导出MP4/GIF、做个好看的。生产级Web App/需后端的系统不适用。",
+      "category": "video-design",
+      "environments": [
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "third-party",
+      "licenses": [
+        {
+          "file": "LICENSE",
+          "detected": "MIT"
+        }
+      ],
+      "sources": [
+        "https://github.com/alchaincyf",
+        "https://github.com/alchaincyf/huashu-design",
+        "https://github.com/alchaincyf/huashu-design/releases"
+      ],
+      "path": "skills/huashu-design/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 398,
+      "bytes": 15237332
+    },
+    {
+      "id": "idea-creator",
+      "name": "idea-creator",
+      "description": "Generate and rank research ideas given a broad direction. Use when user says \\\"\\u627eidea\\\", \\\"brainstorm ideas\\\", \\\"generate research ideas\\\", \\\"what can we work on\\\", or wants to explore a research area for publishable directions.",
+      "category": "research",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/idea-creator.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "idea-discovery",
+      "name": "idea-discovery",
+      "description": "Workflow 1: Full idea discovery pipeline to go from a broad research direction to validated, pilot-tested ideas. Use when user says \\\"找idea全流程\\\", \\\"idea discovery pipeline\\\", \\\"从零开始找方向\\\", or wants the complete idea exploration workflow.",
+      "category": "video-design",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/idea-discovery.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "imagegen",
+      "name": "imagegen",
+      "description": "Generate or edit raster images when the task benefits from AI-created bitmap visuals such as photos, illustrations, textures, sprites, mockups, or transparent-background cutouts. Use when Codex should create a brand-new image, transform an existing image, or derive visual variants from references, and the output should be a bitmap asset rather than repo-native code or vector. Do not use when the task is better handled by editing existing SVG/vector/code-native assets, extending an established icon or logo system, or building the visual directly in HTML/CSS/canvas.",
+      "category": "design-documents",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [
+        {
+          "file": "LICENSE.txt",
+          "detected": "Apache-2.0"
+        }
+      ],
+      "sources": [],
+      "path": "catalog/imagegen.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "impasto-miniature-landscape",
+      "name": "impasto-miniature-landscape",
+      "description": "把照片主体重构为厚涂微缩景观(impasto miniature landscape)——颜料堆积、刮刀纹理、雕塑体积，把真实场景变成一座可以捧在手心的油画微缩世界。当用户想要厚涂油画风、油画微缩景观、刮刀颜料质感、把风景/城市/建筑照片做成明亮温暖富有生命力的艺术海报时使用。",
+      "category": "design-documents",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/impasto-miniature-landscape.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "integrity-forensics",
+      "name": "integrity-forensics",
+      "description": "Run the Anti-Autoresearch integrity-forensics DETERMINISTIC slice (numeric core + rules-only reporter) against a paper via a SHA-pinned thin launcher, then convert the verdict into a typed policy gate (BLOCK/WARN/NO_NEW_BLOCKER) and an append-only obligations ledger. Codex-native limitation: upstream ships no Codex-native auditor pack, so the full nine-dimension semantic sweep requires a Claude Code session — this pack runs the honestly-scoped deterministic-only mode (it can flag, it can never say CLEAN). Use when user says \\\"integrity forensics\\\", \\\"forensic audit this paper\\\", \\\"投稿前自查诚信\\\".",
+      "category": "research",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [
+        "https://github.com/wanshuiyin/Anti-Autoresearch.git`**",
+        "https://github.com/wanshuiyin/Anti-Autoresearch.git"
+      ],
+      "path": "catalog/integrity-forensics.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "isometric-healing-blocks",
+      "name": "isometric-healing-blocks",
+      "description": "把照片重构为等距治愈积木(isometric healing blocks)——分析主体结构和空间关系，重新组合为圆润、柔和的等距积木雕塑，童趣但不幼稚，呈现现代设计感的微缩积木世界。当用户想要3D等距积木风、积木微缩景观、圆润柔和积木雕塑、把城市/建筑/风景照片做成童趣但高级的现代设计作品时使用。",
+      "category": "design-documents",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/isometric-healing-blocks.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "lieflat-less-ai-tone",
+      "name": "lieflat-less-ai-tone",
+      "description": "按 SKILL.md 明确列出的规则识别并改写写作中的 AI 痕迹。只能处理清单内的问题；未命中规则的文字必须原样保留，也不能改变文章框架。适用于写作完成后的成稿清理。 Remove AI writing tells using an explicit whitelist of rules; leaves unmatched text untouched.",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents",
+        "claude",
+        "codex",
+        "cursor"
+      ],
+      "status": "bundled",
+      "origin": "third-party",
+      "licenses": [
+        {
+          "file": "LICENSE",
+          "detected": "MIT"
+        }
+      ],
+      "sources": [
+        "https://github.com/KKKKhazix/human-writing"
+      ],
+      "path": "skills/lieflat-less-ai-tone/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 13,
+      "bytes": 267520
+    },
+    {
+      "id": "monitor-experiment",
+      "name": "monitor-experiment",
+      "description": "Monitor running experiments, check progress, collect results. Use when user says \\\"check results\\\", \\\"is it done\\\", \\\"monitor\\\", or wants experiment output.",
+      "category": "research",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/monitor-experiment.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "novelty-check",
+      "name": "novelty-check",
+      "description": "Verify research idea novelty against recent literature. Use when user says \\\"\\u67e5\\u65b0\\\", \\\"novelty check\\\", \\\"\\u6709\\u6ca1\\u6709\\u4eba\\u505a\\u8fc7\\\", \\\"check novelty\\\", or wants to verify a research idea is novel before implementing.",
+      "category": "research",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/novelty-check.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "observational-pen-wash",
+      "name": "observational-pen-wash",
+      "description": "把照片变成观察式钢笔淡彩(observational pen wash)——极简钢笔线稿与少量透明淡彩，断续线条、观察痕迹、大胆留白，呈现私人旅行手记般的艺术感。当用户想要钢笔淡彩、手绘速写、旅行手账、极简线稿、观察式手绘、私人旅行手记风格、把照片做成有呼吸感的手绘作品时使用。",
+      "category": "design-documents",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/observational-pen-wash.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "openai-docs",
+      "name": "openai-docs",
+      "description": "Use for Codex models/pricing, scheduled tasks, skills, settings, setup, troubleshooting, customization, automations, and self-knowledge—including 'you,' 'your,' 'this app,' or 'this coding agent' when they refer to Codex—and for OpenAI APIs/products and ChatGPT Work. Also use for model choice/migration, prompting, SDKs, Responses, Realtime, agents, evals, and Chat/Work/Codex comparisons. Do not use for generic app/software tasks that merely mention Codex.",
+      "category": "engineering-workflow",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [
+        {
+          "file": "LICENSE.txt",
+          "detected": "Apache-2.0"
+        }
+      ],
+      "sources": [],
+      "path": "catalog/openai-docs.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "papercraft-travel-diorama",
+      "name": "papercraft-travel-diorama",
+      "description": "把照片变成纸艺旅行微缩场景(papercraft travel diorama)——主体和代表性环境元素制作成纸张、卡纸、软陶或薄木材质的3D微缩场景，精致、柔和、富有真实手工触感，呈现旅行明信片效果。当用户想要纸艺风、纸雕、微缩场景、手工质感、3D层叠纸艺、把旅行照片做成有手工触感的明信片时使用。",
+      "category": "research",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/papercraft-travel-diorama.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "pixel-dissolve-landscape",
+      "name": "pixel-dissolve-landscape",
+      "description": "把照片变成像素消隐景观(pixel dissolve landscape)——提炼最具辨识度的视觉锚点，用配色像素块重新构建，外围逐渐消失在大量留白中，形成旅行记忆缓慢消融的诗意效果。当用户想要像素风、像素艺术、像素消隐、记忆消融感、大量留白的极简像素海报、把旅行照片做成像素块重构的艺术作品时使用。",
+      "category": "engineering-workflow",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/pixel-dissolve-landscape.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "rainbow-atmospheric-scene",
+      "name": "rainbow-atmospheric-scene",
+      "description": "制作或修复 Three.js/WebGPU、WebGL 或 Blender 的大气、体积云、WaterPro 海面、城市江面反射、波谱浮标与连续穿云镜头；复用已有工程的抗闪烁、光照同步和物理采样方案，改善环境质感与时序稳定。",
+      "category": "video-design",
+      "environments": [
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/rainbow-atmospheric-scene/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 11,
+      "bytes": 36558
+    },
+    {
+      "id": "rainbow-breeze-narration",
+      "name": "rainbow-breeze-narration",
+      "description": "使用 H100 服务器上的 Breeze TTS 2 为视频生成本人音色的自然解说，按剧情指导情绪、语速和重音，并以真实音频重建字幕与动作时间线。仅用于明确选择 Breeze 的配音或服务检查；默认本地 Qwen 请用 rainbow-qwen-narration。",
+      "category": "audio",
+      "environments": [
+        "agents",
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/rainbow-breeze-narration/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 3,
+      "bytes": 8220
+    },
+    {
+      "id": "rainbow-cinematic-video",
+      "name": "rainbow-cinematic-video",
+      "description": "制作或修复 rainbow鱼风格的中文科技预告和长篇教学视频，以真实实验、逐句音画同步、Remotion 动态可视化、本地配音和连续镜头完成整章与预览。涵盖角色一致性、外部动画协作、转场修复，以及成片完成后的依赖保护与版本清理。",
+      "category": "video-design",
+      "environments": [
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/rainbow-cinematic-video/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 23,
+      "bytes": 131565
+    },
+    {
+      "id": "rainbow-clean",
+      "name": "rainbow-clean",
+      "description": "Safely clean Windows C:/D: caches, remove verified duplicate render files and independent dependencies, archive inactive versions, and move final videos, release copy and four-ratio covers into publish folders. Preserves recent projects, source and unique media.",
+      "category": "video-design",
+      "environments": [
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/rainbow-clean/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 18,
+      "bytes": 112543
+    },
+    {
+      "id": "rainbow-fish-audio",
+      "name": "rainbow-fish-audio",
+      "description": "Archived Fish Audio workflow. Disabled globally by the user on 2026-10-28; use the original personal TTS workflow in D:/projects/tts instead. Historical evidence only unless the user explicitly reverses this preference.",
+      "category": "audio",
+      "environments": [
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/rainbow-fish-audio/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 3,
+      "bytes": 8634
+    },
+    {
+      "id": "rainbow-jiaolong-director",
+      "name": "rainbow-jiaolong-director",
+      "description": "用于重新设计或制作蛟龙号、深海载人潜水器等科学科普片：把电影化叙事、真实结构与物理动作、深海光影水体、旁白音乐音效、动态可视化和逐段抽帧验收组织成一套完整导演流程。",
+      "category": "video-design",
+      "environments": [
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/rainbow-jiaolong-director/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 4,
+      "bytes": 35065
+    },
+    {
+      "id": "rainbow-motion-story",
+      "name": "rainbow-motion-story",
+      "description": "把视频参考、文案、情感配音、音乐音效、运镜、机械拆解、文字配色、网页审美、Motionface 动效、Lemo Opuscar 风格和 WaterPro 等成熟制作方案串成可执行流程与代码候选；用于技能研究、分镜试做、整片重构或科普视频制作。",
+      "category": "video-design",
+      "environments": [
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/rainbow-motion-story/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 467,
+      "bytes": 8086842
+    },
+    {
+      "id": "rainbow-publish",
+      "name": "rainbow-publish",
+      "description": "根据用户提供的视频发布文件夹，读取成片、文案和封面，通过 Ego Lite 向微信视频号、抖音、bilibili 和小红书填写并发布，选择已有相关合集，保存各平台回执并防止重复投稿。适用于“发布这个文件夹”“四平台发布”“把本期视频发到账号”等请求；仅整理本地发布材料时不上传。",
+      "category": "video-design",
+      "environments": [
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/rainbow-publish/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 7,
+      "bytes": 74041
+    },
+    {
+      "id": "rainbow-qwen-narration",
+      "name": "rainbow-qwen-narration",
+      "description": "使用用户已有的本地 Qwen3-TTS-0.6B Base 和原本人参考制作自然中文配音；按完整语义段生成、核对读音和句尾，并由真实音长安排字幕与画面。用于用户的新视频配音、Qwen重录及声音流程核对。",
+      "category": "audio",
+      "environments": [
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/rainbow-qwen-narration/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 2,
+      "bytes": 2715
+    },
+    {
+      "id": "rainbow-science-promo-copy",
+      "name": "rainbow-science-promo-copy",
+      "description": "为“每天5分钟知识”系列科普视频生成适配抖音、小红书、B站和微信视频号的标题、简介、话题、首评与封面短文案；适用于发布前的跨平台宣传文案，不负责视频脚本或画面制作。",
+      "category": "video-design",
+      "environments": [
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/rainbow-science-promo-copy/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 3,
+      "bytes": 6376
+    },
+    {
+      "id": "rainbow-science-short",
+      "name": "rainbow-science-short",
+      "description": "制作或升级约3—6分钟的中文科普短片，以真实生活或工程问题引入，通过真实仿真、Three.js、可操作网页和逐句音画叙述讲清机制；避免文字堆砌和PPT翻页感，并在验收后清理本片旧版无用产物。",
+      "category": "video-design",
+      "environments": [
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/rainbow-science-short/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 16,
+      "bytes": 81933
+    },
+    {
+      "id": "rainbow-suno-sound-effects",
+      "name": "rainbow-suno-sound-effects",
+      "description": "为视频剪辑按画面事件配置苏诺音乐性音效、氛围与转场声音，完成任务跟踪、同步混音和 TTS 音效库归档。用户要求视频配声、音效生成或苏诺配乐时使用；口播仍走已有 TTS 流程。",
+      "category": "audio",
+      "environments": [
+        "agents",
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/rainbow-suno-sound-effects/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 6,
+      "bytes": 14745
+    },
+    {
+      "id": "rainbow-video-cover",
+      "name": "rainbow-video-cover",
+      "description": "为 rainbow鱼 制作电影感视频与合集封面，以及微信视频号、公众号、抖音、B站的发布标题、正文和首评；支持多比例构图、品牌排版、平台研究与 GitHub 配套资料引导。适用于封面和发布文案，不负责渲染正片或自动发布。",
+      "category": "video-design",
+      "environments": [
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/rainbow-video-cover/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 21,
+      "bytes": 104492
+    },
+    {
+      "id": "rainbow-video-director",
+      "name": "rainbow-video-director",
+      "description": "把视频想法、参考片或旧稿写成可直接执行的完整成片提示词：先确定故事与视觉变化链，再写每段的动作、运镜、文字、声音、实现和交接，并用预演验证。适用于科普、产品、UI动效、角色、三维场景与整片重构；也能按明确要求继续制作。",
+      "category": "video-design",
+      "environments": [
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/rainbow-video-director/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 35,
+      "bytes": 218101
+    },
+    {
+      "id": "research-implement-feature",
+      "name": "research-implement-feature",
+      "description": "Build a working artifact from a plain \\\"implement X for me\\\" request: a running end-to-end spine first, then one feature per rung, with every under-determined decision written to an assumption ledger BEFORE the code that depends on it and a sweep for the ones that slipped through undeclared (same-family provisional in the base Codex mirror). Use when user says \\\"给我实现\\\", \\\"implement X\\\", \\\"帮我做一个能跑的\\\", \\\"先搭个原型再加功能\\\", \\\"build this feature\\\", \\\"prototype then extend\\\", or hands over a capability description rather than an experiment plan.",
+      "category": "research",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/research-implement-feature.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "research-lit",
+      "name": "research-lit",
+      "description": "Search and analyze research papers, find related work, summarize key ideas. Use when user says \\\"find papers\\\", \\\"related work\\\", \\\"literature review\\\", \\\"what does this paper say\\\", or needs to understand academic papers.",
+      "category": "research",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/research-lit.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "research-pipeline",
+      "name": "research-pipeline",
+      "description": "Full end-to-end research pipeline: from a broad research direction through idea discovery, experiments, and review all the way to a polished paper PDF. Use when user says \\\"全流程\\\", \\\"full pipeline\\\", \\\"从找idea到投稿\\\", \\\"end-to-end research\\\", or wants the complete autonomous research lifecycle.",
+      "category": "video-design",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [
+        "https://github.com/org/project"
+      ],
+      "path": "catalog/research-pipeline.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "research-refine",
+      "name": "research-refine",
+      "description": "Turn a vague research direction into a problem-anchored, elegant, frontier-aware, implementation-oriented method plan via iterative GPT-6-Astra review. Use when the user says \\\"refine my approach\\\", \\\"\\u5e2e\\u6211\\u7ec6\\u5316\\u65b9\\u6848\\\", \\\"decompose this problem\\\", \\\"\\u6253\\u78e8idea\\\", \\\"refine research plan\\\", \\\"\\u7ec6\\u5316\\u7814\\u7a76\\u65b9\\u6848\\\", or wants a concrete research method that stays simple, focused, and top-venue ready instead of a vague or overbuilt idea.",
+      "category": "research",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/research-refine.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "research-refine-pipeline",
+      "name": "research-refine-pipeline",
+      "description": "Run an end-to-end workflow that chains `research-refine` and `experiment-plan`. Use when the user wants a one-shot pipeline from vague research direction to focused final proposal plus detailed experiment roadmap, or asks to \\\"\\u4e32\\u8d77\\u6765\\\", build a pipeline, do it end-to-end, or generate both the method and experiment plan together.",
+      "category": "research",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/research-refine-pipeline.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "research-review",
+      "name": "research-review",
+      "description": "Get a deep critical review of research from a fresh Codex agent or a selected Gemini, Grok, or Claude Code reviewer. Use when user says \\\"review my research\\\", \\\"help me review\\\", \\\"get external review\\\", or wants critical feedback on research ideas, papers, or experimental results.",
+      "category": "research",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/research-review.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "result-to-claim",
+      "name": "result-to-claim",
+      "description": "Use when experiments complete to judge what claims the results support, what they don't, and what evidence is still missing. A secondary Codex agent evaluates results against intended claims and routes to next action (pivot, supplement, or confirm). Use after experiments finish — before writing the paper or running ablations.",
+      "category": "research",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/result-to-claim.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "review-agent",
+      "name": "review-agent",
+      "description": "Perform a read-only, defect-first review of a specified code change and return every actionable finding. Use when another agent delegates review of uncommitted changes, a base-branch diff, a commit, or custom review instructions.",
+      "category": "engineering-workflow",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/review-agent.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "run-experiment",
+      "name": "run-experiment",
+      "description": "Deploy and run ML experiments on local or remote GPU servers. Use when user says \\\"run experiment\\\", \\\"deploy to server\\\", \\\"\\u8dd1\\u5b9e\\u9a8c\\\", or needs to launch training jobs.",
+      "category": "research",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/run-experiment.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "science-ml-research",
+      "name": "science-ml-research",
+      "description": "把科学领域知识、可否证假设、实验反馈和策略复盘接入科学机器学习研究。用于 AI for Science、物理仿真与学习模型结合、科学ML方法改进，或明确要求按 Agent4Sci / Automating ML for Science 开展研究；与现有 research-pipeline、experiment-plan 和实验审计协同。",
+      "category": "research",
+      "environments": [
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/science-ml-research/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 11,
+      "bytes": 60875
+    },
+    {
+      "id": "science-video",
+      "name": "science-video",
+      "description": "制作或升级故事化中文科普视频及配套封面、字幕与文案；融合科学资料、公式手绘、连续三维运镜、生成视频和逐镜验收。适用于需要讲清机制并交付精致成片的任务，也支持只做其中一个环节。",
+      "category": "video-design",
+      "environments": [
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/science-video/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 23,
+      "bytes": 114272
+    },
+    {
+      "id": "scientific-figure-style",
+      "name": "scientific-figure-style",
+      "description": "为科研图表选择配色、统一多面板样式、改进论文图的字体与版式并导出可编辑文件。用户提及科研绘图、顶刊配色、蓝绿陶土色、漫长午后抖音配色参考，或要求美化已有实验图时使用。涵盖真实数据图与明确标注的概念示意图；不用于普通海报或替代统计分析。",
+      "category": "design-documents",
+      "environments": [
+        "agents",
+        "claude",
+        "codex",
+        "cursor"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/scientific-figure-style/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 9,
+      "bytes": 24266
+    },
+    {
+      "id": "skill-creator",
+      "name": "skill-creator",
+      "description": "Create or update a Codex skill with appropriately scoped instructions and any needed supporting resources.",
+      "category": "engineering-workflow",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [
+        {
+          "file": "license.txt",
+          "detected": "Apache-2.0"
+        }
+      ],
+      "sources": [],
+      "path": "catalog/skill-creator.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "skill-installer",
+      "name": "skill-installer",
+      "description": "Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos).",
+      "category": "tools-operations",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [
+        {
+          "file": "LICENSE.txt",
+          "detected": "Apache-2.0"
+        }
+      ],
+      "sources": [
+        "https://github.com/openai/skills/tree/main/skills/.curated",
+        "https://github.com/openai/skills/tree/main/skills/.experimental",
+        "https://github.com/",
+        "https://github.com/openai/skills/tree/main/skills/.system"
+      ],
+      "path": "catalog/skill-installer.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "sound",
+      "name": "sound",
+      "description": "为视频从 Freesound 搜索、比较并下载具体音效候选，保留来源、实际音频信息与同步锚点，供画面事件编排和中央音效库复用。适合拟音、机械、材质、短转场和环境声选材。",
+      "category": "audio",
+      "environments": [
+        "agents",
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [
+        "https://github.com/vibe-motion/sound"
+      ],
+      "path": "catalog/sound.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "suno-cn-music",
+      "name": "suno-cn-music",
+      "description": "当用户要用 Suno.cn 创作歌曲或歌词、处理参考音频、分离或编辑音轨、转换 MIDI/WAV/乐谱，或查询音乐任务与积分时使用。触发词：AI 作曲、写歌、翻唱、续写、BGM、人声分离、音频处理。",
+      "category": "audio",
+      "environments": [
+        "agents",
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [
+        "https://mcp.suno.cn/mcp/skill/setup.md"
+      ],
+      "path": "catalog/suno-cn-music.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "system-profile",
+      "name": "system-profile",
+      "description": "Profile a target (script, process, GPU, memory, interconnect) for performance analysis. Use when user says \\\"profile\\\", \\\"benchmark\\\", \\\"bottleneck\\\", or wants performance analysis.",
+      "category": "tools-operations",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/system-profile.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "taste-skill",
+      "name": "design-taste-frontend",
+      "description": ">-",
+      "category": "design-documents",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/taste-skill.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "training-check",
+      "name": "training-check",
+      "description": "Interactively monitor training metrics from the current Codex session, periodically checking WandB or fallback logs for NaN, divergence, plateaus, and broken runs.",
+      "category": "tools-operations",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/training-check.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "watercolor-travel-card",
+      "name": "watercolor-travel-card",
+      "description": "把照片变成清透的钢笔水彩旅行记忆卡(watercolor travel card)——保留主体特征的钢笔线稿+透明水彩晕染，四边做邮票齿孔，顶部英文城市名标题，底部旅行档案栏，整体呈现收藏票卡式旅行海报。当用户想要水彩旅行卡、钢笔淡彩明信片、旅行记忆邮票、水彩票卡式海报、把旅行照片做成有烟火气的水彩邮票风格时使用。",
+      "category": "design-documents",
+      "environments": [
+        "codex"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/watercolor-travel-card.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "zuhui",
+      "name": "zuhui",
+      "description": "制作或改进组会自我介绍、研究进展与方向规划演示：从内容收集和素材核实，到简洁排版、动态可视化、交互网页、讲稿，以及按需导出视频和离线启动包。适用于希望把已有研究素材讲清楚、做成可现场操控演示的请求。",
+      "category": "video-design",
+      "environments": [
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/zuhui/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 7,
+      "bytes": 38978
+    },
+    {
+      "id": "zuhui-inverse-physics",
+      "name": "zuhui-inverse-physics",
+      "description": "zuhui 的物理逆问题研究子版本：把扩散反演、PINN、结构识别等研究做成文献先行、证据明确、含动态三维场景和逐页讲稿的组会展示。用于解释已有工作、技术方法、实际试验与未来拓展，而不把原理动画当作实验结果。",
+      "category": "video-design",
+      "environments": [
+        "codex"
+      ],
+      "status": "bundled",
+      "origin": "personal-workflow",
+      "licenses": [],
+      "sources": [],
+      "path": "skills/zuhui-inverse-physics/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 8,
+      "bytes": 39537
+    },
+    {
+      "id": "adding-e2e-tests",
+      "name": "adding-e2e-tests",
+      "description": "Set up Playwright end-to-end testing in a project, including test configuration, example tests, and CI integration.",
+      "category": "tools-operations",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/adding-e2e-tests.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "auditing-performance",
+      "name": "auditing-performance",
+      "description": "Audit and optimize application performance, including bundle size, rendering, database queries, and Core Web Vitals.",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/auditing-performance.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "auditing-security",
+      "name": "auditing-security",
+      "description": "Perform a systematic security audit of a codebase, checking for OWASP Top 10 vulnerabilities, secrets exposure, and insecure patterns.",
+      "category": "tools-operations",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/auditing-security.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "automate",
+      "name": "automate",
+      "description": "Use this skill to create Codex Automations.",
+      "category": "tools-operations",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/automate.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "autopilot",
+      "name": "autopilot",
+      "description": ">-",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/autopilot.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "babysitting-pr",
+      "name": "babysitting-pr",
+      "description": "Monitor a pull request for CI failures, review comments, and merge conflicts — then fix them automatically. Use when a PR is open and you want the agent to keep it merge-ready.",
+      "category": "tools-operations",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/babysitting-pr.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "canvas",
+      "name": "canvas",
+      "description": ">-",
+      "category": "design-documents",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/canvas.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "citation-check-skill",
+      "name": "citation-check-skill",
+      "description": "Vision-enabled verification gate with web search. Use when users want to (1) verify slides/reports/PDFs/images against authoritative online sources, (2) validate that citations actually exist and say what's claimed, (3) check charts/graphs/tables for accuracy, (4) audit AI-generated content in doc-only mode (no external knowledge). Two modes - search mode validates against web, doc-only mode ensures everything traces to provided documents. Supports content in any language.",
+      "category": "research",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "bundled",
+      "origin": "third-party",
+      "licenses": [
+        {
+          "file": "LICENSE",
+          "detected": "MIT"
+        }
+      ],
+      "sources": [],
+      "path": "skills/citation-check-skill/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 5,
+      "bytes": 32148
+    },
+    {
+      "id": "codebase-onboarding",
+      "name": "codebase-onboarding",
+      "description": "Launch multiple explore subagents in parallel to investigate architecture, data models, auth, APIs, and deployment. Synthesize into an onboarding document.",
+      "category": "documents",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/codebase-onboarding.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "conversation-notes",
+      "name": "conversation-notes",
+      "description": "Save a note summarizing what was learned in the current conversation. Use when the user says \"make a note\", \"note that\", \"summarize what we learned\", or similar.",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/conversation-notes.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "create-hook",
+      "name": "create-hook",
+      "description": ">-",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/create-hook.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "create-rule",
+      "name": "create-rule",
+      "description": ">-",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/create-rule.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "create-skill",
+      "name": "create-skill",
+      "description": ">-",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/create-skill.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "create-subagent",
+      "name": "create-subagent",
+      "description": ">-",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/create-subagent.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "creating-pr",
+      "name": "creating-pr",
+      "description": "Create a clean, review-ready pull request with a good title, structured description, linked issues, and appropriate reviewers.",
+      "category": "tools-operations",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/creating-pr.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "cursor-best-practices",
+      "name": "cursor-best-practices",
+      "description": "Best practices for using Codex—rules, commands, skills, subagents, ignore files, Agent security, workflows, and community resources. Use when setting up Codex, initializing or creating the .cursor folder, writing .cursor/rules or AGENTS.md, creating commands or skills, configuring .cursorignore, working with Agent, discovering rules or MCPs (e.g. cursor.directory), making codebases cursor-compatible, or asking about Codex workflows, TDD, git commands, or large codebases.",
+      "category": "video-design",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/cursor-best-practices.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "customize-agent-hud",
+      "name": "customize-agent-hud",
+      "description": "Rearrange or restyle Agent HUD, the notch or dock HUD on the Mac and its hover panel, with Agent HUD's HUD tools (get_hud, draft_hud, get_hud_screenshot, discard_hud_draft, finish_hud_edit). Use it when the person asks to change, customize, tidy, simplify, reorder, hide or show anything in Agent HUD, such as quota or balance blocks, rows, accounts, widgets (bar, ring, number, chart), panel sections, the sessions or token lists, panel width or spacing, or the resting HUD's mode (notch, dynamic, simple), edge, position, size, glow, appearance or transparency. It also covers hover timing and other app settings when the person asks for them. Use it for \"make the HUD smaller\", \"show only Codex\", \"move the HUD to the left\", \"改一下 HUD\", \"刘海/动态/简约模式\", and to explain what the HUD shows now or why a change was refused. Your changes are drafts, and only the person can save them in the panel.",
+      "category": "video-design",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/customize-agent-hud.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "deploy-with-vercel",
+      "name": "deploy-with-vercel",
+      "description": ">-",
+      "category": "tools-operations",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/deploy-with-vercel.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "design-to-context",
+      "name": "design-to-context",
+      "description": "Analyzes design image files or Figma links (when Figma MCP is available) and generates a structured design context document. Handles three output formats: (1) User Flow Document — sequential multi-screen journeys with screen-by-screen breakdowns, state transitions, and error handling; (2) Design Description — screen/component documentation covering visual design, layout, and interaction behavior; (3) Context Summary — structured six-context analysis (Business/Product/UX) used as input for requirements generation. Use when given design images, Figma URLs, or asked to document a screen, flow, or feature from mockups.",
+      "category": "video-design",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/design-to-context.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "docker",
+      "name": "docker",
+      "description": "Dockerfile authoring, Docker Compose configuration, and containerization best practices. Use when creating Dockerfiles, optimizing builds, configuring Compose files, or implementing containerization patterns. For CLI commands, use docker-cli skill.",
+      "category": "tools-operations",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/docker.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "docker-cli",
+      "name": "docker-cli",
+      "description": "Comprehensive Docker CLI reference for agent control and orchestration. Use when executing Docker commands, building orchestration scripts, managing containers/images/networks/volumes, remote Docker management, or discovering Docker CLI syntax and patterns.",
+      "category": "video-design",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/docker-cli.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "docx",
+      "name": "docx",
+      "description": "Comprehensive document creation, editing, and analysis with support for tracked changes, comments, formatting preservation, and text extraction. When Claude needs to work with professional documents (.docx files) for: (1) Creating new documents, (2) Modifying or editing content, (3) Working with tracked changes, (4) Adding comments, or any other document tasks",
+      "category": "documents",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/docx.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "ego-browser",
+      "name": "ego-browser",
+      "description": "When you need a browser, read this Skill by default. Use it to open and operate websites, fill forms, click buttons, take screenshots, extract page data, sign in, and perform other browser automation tasks, as well as web app testing, dogfooding, QA, bug investigation, and app-quality review. ego-browser (ego-lite) is a Chromium browser designed for both human users and AI Agents. Agents can use the user's logged-in websites and personal context to complete tasks and collaborate smoothly with the user through the browser interface. Therefore, prefer ego-browser over built-in browsers or other web tools.",
+      "category": "design-documents",
+      "environments": [
+        "agents",
+        "claude"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/ego-browser.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "epics-and-user-stories-generate-epic",
+      "name": "generate-epic",
+      "description": "Creates structured epic documents from requirements documentation or verbal descriptions. Extracts business goals, success criteria, scope boundaries, and dependencies. Produces a single Epic-[Feature].md file ready for story decomposition. Use when asked to: create an epic, write an epic, generate an epic, or document a feature as an epic.",
+      "category": "documents",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/epics-and-user-stories-generate-epic.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "epics-and-user-stories-generate-uat",
+      "name": "generate-uat",
+      "description": "Generates a client-ready UAT test plan from a release-summary-by-feature report or a manual ticket list. Reads local GitHub issue files, extracts Acceptance Criteria, comments, and test steps, then produces a requirement-pure UAT document in table format. Use when asked to: create a UAT plan, generate UAT scenarios, build a test plan for client testing, prepare UAT from tickets, or create acceptance testing scripts.",
+      "category": "documents",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [
+        "https://github.com/DBDHub/{slug}/issues/NNN"
+      ],
+      "path": "catalog/epics-and-user-stories-generate-uat.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "epics-and-user-stories-generate-user-stories",
+      "name": "generate-user-stories",
+      "description": "Decomposes features into story concepts using the WAHZURT framework, then creates detailed INVEST-compliant user stories one-at-a-time with quality gates. Supports 4 modes: create (standard), create (quick/draft), modify existing stories, or decompose-only. Use when asked to: create user stories, write stories, generate stories, decompose an epic, break down a feature, plan stories, write acceptance criteria, modify a story, improve a story, enhance a story, or update a story.",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/epics-and-user-stories-generate-user-stories.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "epics-and-user-stories-validate-user-stories",
+      "name": "validate-user-stories",
+      "description": "Audits existing user stories against 12 validation categories (9 per-story + 2 cross-story + 1 practitioner readability) and fixes failures. Builds a fresh registry from actual story files — never trusts existing registries. Works on any story set regardless of how stories were created. Use when asked to: validate stories, check stories, review stories, audit stories, fix stories, or improve story quality.",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/epics-and-user-stories-validate-user-stories.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "figjam-diagram-generator",
+      "name": "figjam-diagram-generator",
+      "description": ">-",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/figjam-diagram-generator.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "file-change-tracker",
+      "name": "file-change-tracker",
+      "description": "Mandates providing organized list of changed files grouped by folder as links at end of responses. Always active when files are modified.",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/file-change-tracker.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "finding-dev-server-url",
+      "name": "finding-dev-server-url",
+      "description": "Scan running terminals for dev server URLs (localhost ports), report them, and optionally open the app in Codex's built-in browser.",
+      "category": "documents",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/finding-dev-server-url.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "github-cli",
+      "name": "github-cli",
+      "description": "GitHub CLI (gh) comprehensive reference for repositories, issues, pull requests, Actions, projects, releases, gists, codespaces, organizations, extensions, and all GitHub operations from the command line. Use for: (1) Repository management and cloning, (2) Issue and pull request workflows, (3) CI/CD pipeline management, (4) GitHub API automation, (5) Authentication and security setup, (6) Bulk operations and scripting. Triggers include requests for 'github', 'gh', 'git', 'repository', 'pull request', 'issue', 'ci/cd', 'workflow', 'release', 'clone', 'fork', 'merge', 'review', 'deploy', or GitHub-related development tasks.",
+      "category": "tools-operations",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [
+        "https://cli.github.com/manual/"
+      ],
+      "path": "catalog/github-cli.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "goal",
+      "name": "goal",
+      "description": "Set a goal that Codex will pursue to completion.",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/goal.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "grinding-until-pass",
+      "name": "grinding-until-pass",
+      "description": "Keep iterating on code changes until the tests pass, the build succeeds, or linting is clean. Runs in a tight loop of fix → run → check → repeat. Use when you want the agent to autonomously grind through test failures or build errors.",
+      "category": "tools-operations",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/grinding-until-pass.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "hello-skill",
+      "name": "hello-skill",
+      "description": ">-",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/hello-skill.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "loop",
+      "name": "loop",
+      "description": ">-",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/loop.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "markdown-exporter",
+      "name": "markdown-exporter",
+      "description": "Convert markdown files to DOCX, PPTX, XLSX, PDF, PNG, HTML, IPYNB, CSV, JSON, XML, LaTeX, and extract code blocks. Use when exporting or converting markdown to other document formats.",
+      "category": "design-documents",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/markdown-exporter.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "mermaid-diagrams",
+      "name": "mermaid-diagrams",
+      "description": "Create software diagrams using Mermaid syntax. Use when users need to create, visualize, or document software through diagrams including class diagrams (domain modeling, object-oriented design), sequence diagrams (application flows, API interactions, code execution), flowcharts (processes, algorithms, user journeys), entity relationship diagrams (database schemas), C4 architecture diagrams (system context, containers, components), state diagrams, git graphs, pie charts, gantt charts, or any other diagram type. Triggers include requests to \"diagram\", \"visualize\", \"model\", \"map out\", \"show the flow\", or when explaining system architecture, database design, code structure, or user/application flows.",
+      "category": "design-documents",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/mermaid-diagrams.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "migrate-to-skills",
+      "name": "migrate-to-skills",
+      "description": ">-",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/migrate-to-skills.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "nature-academic-search",
+      "name": "nature-academic-search",
+      "description": ">-",
+      "category": "research",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/nature-academic-search.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "nature-citation",
+      "name": "nature-citation",
+      "description": ">-",
+      "category": "research",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/nature-citation.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "nature-data",
+      "name": "nature-data",
+      "description": ">-",
+      "category": "research",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/nature-data.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "nature-downloader",
+      "name": "nature-downloader",
+      "description": "Use this skill whenever the user wants to configure school/library access, reuse a logged-in Chrome institutional session, search library databases, download legitimate open-access or institution-authorized academic full text/PDFs, handle missing library permission, organize papers, or read PDFs and supporting information.",
+      "category": "research",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "bundled",
+      "origin": "third-party",
+      "licenses": [
+        {
+          "file": "LICENSE",
+          "detected": "MIT"
+        }
+      ],
+      "sources": [],
+      "path": "skills/nature-downloader/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 31,
+      "bytes": 259429
+    },
+    {
+      "id": "nature-experiment-log",
+      "name": "nature-experiment-log",
+      "description": "标准化实验日志记录——接收原始材料（图/语音/文字），产出带 YAML frontmatter 的标准日志到 Obsidian vault。需配合飞书 CLI 或手动输入使用。",
+      "category": "research",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [
+        "https://github.com/blacksmithgu/obsidian-dataview"
+      ],
+      "path": "catalog/nature-experiment-log.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "nature-figure",
+      "name": "nature-figure",
+      "description": ">-",
+      "category": "research",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/nature-figure.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "nature-literature-pipeline",
+      "name": "nature-literature-pipeline",
+      "description": "Complete automated literature discovery pipeline: multi-source search → six-dimension scoring → fine reading → formatted delivery → archival. Combines a configurable engine with daily cron-driven application layer. Works with Feishu, Telegram, or any messaging platform.",
+      "category": "video-design",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/nature-literature-pipeline.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "nature-paper-to-patent",
+      "name": "nature-paper-to-patent",
+      "description": "Convert scientific papers, theses, technical reports, source code, figures, or research manuscripts into evidence-grounded Chinese invention patent drafts. Use when an AI agent must extract patentable technical contributions, map every claimed feature to source evidence, preserve core formulas as editable Office Math, generate claim-aligned flowcharts and methodology figures, compare a paper with an existing patent, audit support and consistency, or deliver separate Chinese DOCX files for claims, specification, abstract, and abstract figure.",
+      "category": "research",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/nature-paper-to-patent.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "nature-paper2ppt",
+      "name": "nature-paper2ppt",
+      "description": "Build a complete but efficient Nature-style Chinese PPTX presentation from a scientific paper, preprint, PDF, article text, abstract, figure legends, or reading notes. Use this skill whenever the user asks to make slides/PPT/PPTX for journal club, group meeting, paper sharing, thesis seminar, lab meeting, department report, or academic presentation from a research paper, not only medical papers. It identifies the paper type and argument, selects only the figures needed for the story, writes Chinese slide content and speaker notes, creates the actual .pptx deck, and runs an explicit self-review/corrective revision loop focused on figure quality, text overflow prevention, and non-template visual design before delivery. Also trigger on general academic-presentation requests even without the word \"Nature\", such as turning a paper into slides, building an academic talk deck, conference/defense presentations, and Chinese phrasings like 论文做PPT、论文汇报、组会PPT、文献汇报、学术汇报、做幻灯片、讲paper、读书报告PPT.",
+      "category": "research",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/nature-paper2ppt.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "nature-polishing",
+      "name": "nature-polishing",
+      "description": "Polish, restructure, or translate academic prose into Nature-leaning English using writing-strategy principles, curated Nature/Nature Communications article patterns, and phrase-level support from Academic Phrasebank. Use whenever the user asks to polish a manuscript paragraph, abstract, introduction, results, discussion, conclusion, title, methods section, or Chinese academic draft for publication-quality English. Also covers LaTeX layout/typesetting (排版) fixes — loose or sparse pages, stranded section headings, figures that don't fill the page or split across pages, \"Float too large\", multi-panel figure arrangement, and Supplementary Information that looks empty — via references/latex-layout.md. Also trigger on general academic/scientific writing requests even without the word \"Nature\", including academic writing, scientific writing, SCI/paper writing, English manuscript polishing, language editing, proofreading, and Chinese phrasings such as 学术写作、科研写作、论文润色、写paper、SCI写作、英文论文润色、语言润色、润色、改写、学术英语、英文写作.",
+      "category": "video-design",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/nature-polishing.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "nature-proposal-writer",
+      "name": "researchwrite",
+      "description": "Proposal-first scientific writing pipeline. Three modes (compose/revise/hybrid) with four-layer QA pipeline. Enforces evidence-before-prose, argument-before-sections, and contracts-before-paragraphs.",
+      "category": "research",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [
+        "https://github.com/Jiahao8595/research-pipeline/issues"
+      ],
+      "path": "catalog/nature-proposal-writer.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "nature-reader",
+      "name": "nature-reader",
+      "description": "Build full-paper Chinese-English side-by-side, figure/table-aware, source-grounded Markdown readers for journal or conference papers from PDF, DOI, arXiv, publisher HTML, or pasted text. Use whenever the user asks to translate or read a paper, make 中英文对照/原文对照/全文翻译解读, extract figures or tables into the right positions, preserve figure/table placement near relevant prose, or keep exact source anchors for every block. This skill must not degrade into a summary-only output unless the user explicitly asks for a summary. Also trigger on general paper-reading and translation requests even without the word \"Nature\", such as reading/translating an academic paper, literature reading, understanding a paper, and Chinese phrasings like 读论文、精读论文、论文翻译、文献翻译、文献阅读、学术阅读、帮我读这篇文章、翻译这篇paper.",
+      "category": "research",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/nature-reader.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "nature-response",
+      "name": "nature-response",
+      "description": ">-",
+      "category": "research",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/nature-response.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "nature-reviewer",
+      "name": "nature-reviewer",
+      "description": ">-",
+      "category": "research",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/nature-reviewer.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "nature-writing",
+      "name": "nature-writing",
+      "description": "Draft, restructure, or plan Nature-style manuscript sections from author-provided claims, results, figures, notes, or Chinese drafts. Use when the user wants to write or rebuild an abstract, introduction, related-work, method, experiments, discussion, conclusion, title, or full manuscript argument rather than only polish finished prose. Also trigger on general academic-writing requests even without the word \"Nature\", such as writing a paper from scratch, drafting a manuscript/section, structuring a paper, and Chinese phrasings like 学术写作、科研写作、论文写作、写论文、写paper、SCI写作、帮我写论文、搭论文框架、起草论文、写引言/摘要/讨论.",
+      "category": "research",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/nature-writing.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "new-repo",
+      "name": "new-repo",
+      "description": ">-",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/new-repo.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "notebook",
+      "name": "notebook",
+      "description": "Build and query document knowledge bases with indexed metadata and citations. Use when researching a topic, collecting sources, querying documents, or storing plans and options.",
+      "category": "research",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/notebook.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "oil-motion",
+      "name": "oil-motion",
+      "description": "Design, implement, optimize, and explain interactive web animations driven by scroll, pointer, drag, touch, device orientation, audio, data, or component state. Use when a webpage needs responsive visual motion for products, interfaces, diagrams, characters, or scene transitions.",
+      "category": "video-design",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "bundled",
+      "origin": "third-party",
+      "licenses": [
+        {
+          "file": "LICENSE",
+          "detected": "MIT"
+        }
+      ],
+      "sources": [],
+      "path": "skills/oil-motion/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 50,
+      "bytes": 2246736
+    },
+    {
+      "id": "onboard",
+      "name": "onboard",
+      "description": ">-",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/onboard.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "origin",
+      "name": "origin",
+      "description": ">-",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/origin.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "paper-writing",
+      "name": "paper-writing",
+      "description": "Generic-purpose writing guide for ML/NLP/DL papers targeting ACL/ICLR/ICML/AAAI/NeurIPS/EMNLP. Distills Widom, Shwartz, SNL-UCSB, and Pengsida into a four-stage pipeline. Use whenever drafting or revising any section. Always run a cohort-research pass against the target venue before drafting.",
+      "category": "research",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [
+        "https://github.com/SNL-UCSB/paper-writing-skill",
+        "https://github.com/Master-cai/Research-Paper-Writing-Skills"
+      ],
+      "path": "catalog/paper-writing.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "parallel-code-review",
+      "name": "parallel-code-review",
+      "description": "Run four parallel read-only subagents that each review the same diff from a different lens — security, performance, correctness, and readability — then merge findings into one report. Use before merging large or risky PRs.",
+      "category": "documents",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/parallel-code-review.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "plan",
+      "name": "plan",
+      "description": "Create restartable, session-spanning project plans with dependency-ordered tasks and verification criteria. Codex-adapted version of Getting Shit Done. Use when building a plan, creating a task breakdown, planning a feature, or resuming an existing plan.",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/plan.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "planning-meeting-to-plan-integrator",
+      "name": "meeting-to-plan-integrator",
+      "description": "Takes decisions from a meeting (sprint demo, retro, stakeholder call, team sync) and applies them to the release plan and related artifacts. The 'decisions become actions' bridge. Use when asked to: apply meeting decisions, update the plan from meeting notes, integrate feedback, or cascade changes from a meeting.",
+      "category": "documents",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/planning-meeting-to-plan-integrator.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "planning-release-sprint-planner",
+      "name": "release-sprint-planner",
+      "description": "Defines a release — its goal, scope, timeline, team, and constraints — then produces a formal Release Definition and multi-sprint plan. Assesses context across six dimensions, collaboratively builds each section, sizes features, maps dependencies, assigns work to sprints, and iterates until the plan is balanced and agreed. Use when asked to: create a release plan, plan the release, define the release, break this down into sprints, update the plan, rebalance sprints, or adjust scope/timeline.",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/planning-release-sprint-planner.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "planning-sprint-planning-session",
+      "name": "sprint-planning-session",
+      "description": "Takes a sprint's planned work (from a release plan, ticket board, or verbal list) and produces a structured Sprint Planning Session document. Normalizes any ticket format, groups work into logical areas, validates against the sprint goal, runs guardrails, and generates a document that gives the team clarity on what they're building, why, and what 'done' looks like. Use when asked to: create a sprint planning doc, plan a sprint, organize sprint tickets, write a sprint kickoff document, or prepare for sprint planning.",
+      "category": "documents",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/planning-sprint-planning-session.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "planning-sprint-progress-tracker",
+      "name": "sprint-progress-tracker",
+      "description": "Creates a snapshot of where the sprint stands — planned vs actual. Surfaces risks early. Feeds data into the sprint review and next sprint planning. Use when asked to: check sprint progress, mid-sprint check, close out the sprint, what's the sprint status, or generate a progress report.",
+      "category": "documents",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/planning-sprint-progress-tracker.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "planning-sprint-review-generator",
+      "name": "sprint-review-generator",
+      "description": "Creates a sprint review document for the sprint demo. Stakeholder-facing artifact answering: What did we build? Did we hit our goal? What did we learn? What's next? Serves two audiences: stakeholders (top sections, jargon-free) and team/PM (full detail). Use when asked to: create a sprint review, prepare the sprint demo doc, write the sprint review, or summarize what we shipped.",
+      "category": "documents",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/planning-sprint-review-generator.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "remotion-best-practices",
+      "name": "remotion-best-practices",
+      "description": "Best practices for Remotion - Video creation in React",
+      "category": "video-design",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/remotion-best-practices.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "rename-chat",
+      "name": "rename-chat",
+      "description": ">-",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/rename-chat.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "requirements-client-ready-requirements",
+      "name": "client-ready-requirements",
+      "description": "Transforms an internal feature requirements document into a client-ready version suitable for all stakeholder types — business, product, UX, technology, and executive — in a single shared document. Strips internal source citations (SRC codes), process metadata, pipeline stage references, and internal assumption codes. Reframes blocker/risk language, cleans change history, and adds a formatted Sources & Reference Materials section. Use when asked to: produce a client-ready requirements doc, prepare requirements for stakeholder review, create a clean version of a feature spec, strip internal references from a requirements document, or share requirements with a client.",
+      "category": "research",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/requirements-client-ready-requirements.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "requirements-document-audit",
+      "name": "document-audit",
+      "description": "Scans any document for stale content, contradictions, unresolved markers, and broken cross-references. Detects [PENDING], [TBD], and [UNKNOWN] markers that are already answered elsewhere in the document or conversation. Flags contradictions between sections, orphaned references, and notes left over from earlier drafts. Use after iterative editing rounds, after incorporating meeting feedback, or as a final quality gate before sharing a document.",
+      "category": "documents",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/requirements-document-audit.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "requirements-generate-requirements",
+      "name": "generate-requirements",
+      "description": "Generates Feature Requirements documentation from any combination of inputs -- PRDs, design files/Figma URLs, meeting transcripts, or verbal descriptions. Focuses exclusively on requirements; API contracts and system flows are generated separately after requirements are finalized. Runs in Quick mode (3 contexts, ~15 min) for MVPs/small features or Comprehensive mode (6 contexts, ~30 min) for production/complex features. Use when asked to: generate requirements, write a feature spec, create a PRD, or document a feature.",
+      "category": "design-documents",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/requirements-generate-requirements.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "requirements-identify-assumptions",
+      "name": "identify-assumptions",
+      "description": "Identify and structure risky assumptions for a feature using multi-perspective analysis (PM, Designer, Engineer) across four risk areas (Value, Usability, Viability, Feasibility). Outputs assumptions in structured format with STATUS, VALIDATE WITH, BY WHEN, and RISK IF WRONG — consistent with the transcript-to-meeting-notes assumption format. Use when stress-testing a feature idea, preparing for stakeholder review, or running assumptions analysis as part of a requirements pipeline.",
+      "category": "design-documents",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/requirements-identify-assumptions.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "requirements-requirements-pipeline",
+      "name": "requirements-pipeline",
+      "description": "A 9-stage discovery and analysis pipeline that takes messy, early-stage inputs — rough ideas, transcripts, designs, legal docs, hypotheses — and produces a production-ready requirements document. Handles brainstorming, scenario mapping, assumption analysis, user flows, and risk analysis with mandatory human checkpoints. Calls complementary skills at each stage. Use when asked to: run the requirements pipeline, build requirements from scratch, start from rough ideas or a transcript, or work through a feature from discovery to requirements.",
+      "category": "video-design",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/requirements-requirements-pipeline.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "requirements-review-findings",
+      "name": "review-findings",
+      "description": "Interactively walks users through findings from any audit or validation report (validate-requirements, document-audit, or future skills). Reads the report file, detects its format, presents findings via AskQuestion for user decisions, and produces a resolution summary. Use after any skill that generates a findings report, or standalone against any structured findings markdown file.",
+      "category": "documents",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/requirements-review-findings.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "requirements-securitas-client-ready-requirements",
+      "name": "securitas-client-ready-requirements",
+      "description": "Transforms an internal feature requirements document into a streamlined Securitas client-ready version. Produces an 8-section (or 7-section for net-new features) document by removing redundant context sections, merging scattered constraint/risk information, and stripping internal process scaffolding. Designed for a client who already knows the context and needs a focused, review-friendly document. Use when asked to: produce a Securitas client requirements doc, streamline requirements for Lauren/Securitas review, create a focused version of a feature spec, or prepare requirements for Securitas stakeholder review.",
+      "category": "design-documents",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/requirements-securitas-client-ready-requirements.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "requirements-update-documents",
+      "name": "update-documents",
+      "description": "Propagates corrections, new information, terminology changes, and scope changes across multiple related documents. Structures changes, verifies with user, performs impact analysis, presents a change manifest for approval, applies edits preserving each document's format and tone, and runs verification as a final consistency check (validate-requirements for requirements docs, document-audit for all others). Use when a fact, assumption, or decision changes and multiple documents need updating, or when new information (e.g., from a design review, stakeholder feedback, or discovery session) must be reflected across a document set.",
+      "category": "video-design",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/requirements-update-documents.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "requirements-validate-requirements",
+      "name": "validate-requirements",
+      "description": "Validates requirements documents using 15 checks across 2 dimensions: semantic accuracy (11 checks — source truth, inference detection, requirement purity, over-generalization, scope boundaries, testability, ambiguity, assumption dependencies, negative paths, actor capability, intra-document consistency) and structural integrity (4 checks — staleness, contradictions, cross-references, completeness). Supports incremental mode: when a prior validation report is provided, only re-runs checks whose inputs have changed, carries forward findings that remain valid, and detects resolved findings — cutting re-validation effort by 40-60%. Produces a unified report with clear Semantic vs Structural grouping. Use after generating requirements, before sharing with stakeholders, when suspecting inaccuracies, or as a periodic quality sweep.",
+      "category": "research",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/requirements-validate-requirements.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "review",
+      "name": "review",
+      "description": "Review code changes with the Bugbot or Security Review subagent.",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/review.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "review-bugbot",
+      "name": "review-bugbot",
+      "description": "Review code changes with Bugbot subagent.",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/review-bugbot.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "review-security",
+      "name": "review-security",
+      "description": "Review code changes with Security Review subagent.",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/review-security.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "reviewing-code",
+      "name": "reviewing-code",
+      "description": "Perform a thorough code review focused on correctness, maintainability, performance, and best practices.",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/reviewing-code.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "saving-workspace-context",
+      "name": "saving-workspace-context",
+      "description": "Automatically persist useful context — research, decisions, learnings, templates — to workspace files so knowledge survives across conversations.",
+      "category": "research",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/saving-workspace-context.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "scroll-world",
+      "name": "scroll-world",
+      "description": "Build an immersive scroll-scrubbed \"fly through the world\" landing page for any industry or brand using Higgsfield. As the visitor scrolls, a pre-rendered camera flies from outside each scene into its interior, then flows on to the next scene with NO cuts — one continuous connected flight (Emons-style isometric diorama world, or any art direction you pick). The skill interviews the user for the topic, the story beats/sections, and brand kit, then generates cohesive scenes + seamless camera clips with Higgsfield and wires a portable, framework-agnostic scroll-scrub engine. The video chain renders through Monid by default (Seedance 2.0, pay-per-clip USD — capability re-checked each build, see Step 4) with Higgsfield credits as the fallback biller. Use when the user wants a \"3D world\" / \"browse-through-the-industry\" hero, a scroll cinematic, a diorama landing, or to turn a business into a scrollable world.",
+      "category": "video-design",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/scroll-world.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "sdk",
+      "name": "sdk",
+      "description": ">-",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/sdk.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "setting-up-ci",
+      "name": "setting-up-ci",
+      "description": "Set up a GitHub Actions CI/CD pipeline with linting, testing, type-checking, and deployment steps.",
+      "category": "tools-operations",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [
+        "https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg"
+      ],
+      "path": "catalog/setting-up-ci.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "share",
+      "name": "share",
+      "description": ">-",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/share.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "shell",
+      "name": "shell",
+      "description": ">-",
+      "category": "tools-operations",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/shell.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "skill-authoring",
+      "name": "skill-authoring",
+      "description": "Write and refactor agent skills using published best practices (Anthropic and others), emphasizing token efficiency and progressive disclosure. Use when authoring new skills, merging learning from other skills into one organized skill, or restructuring skills sensibly.",
+      "category": "tools-operations",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/skill-authoring.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "split-to-prs",
+      "name": "split-to-prs",
+      "description": ">-",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/split-to-prs.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "statusline",
+      "name": "statusline",
+      "description": ">-",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/statusline.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "suggesting-cursor-hooks",
+      "name": "suggesting-cursor-hooks",
+      "description": "When the user keeps asking for the same check to run (lint, tests, type-check), suggest a Codex hook to automate it.",
+      "category": "tools-operations",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/suggesting-cursor-hooks.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "suggesting-cursor-rules",
+      "name": "suggesting-cursor-rules",
+      "description": "When the user repeats the same correction or convention multiple times, suggest a Codex rule to encode it permanently.",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/suggesting-cursor-rules.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "systematic-debugging",
+      "name": "systematic-debugging",
+      "description": "Structured debugging methodology — reproduce, isolate, hypothesize, verify. Covers git bisect, binary search, logging, and minimal reproduction.",
+      "category": "video-design",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/systematic-debugging.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "transcript-to-meeting-notes",
+      "name": "transcript-to-meeting-notes",
+      "description": "Converts meeting transcripts (.vtt, .docx, .md, .txt) into structured meeting summaries. Uses a single unified template for all meeting types (discovery, engineering, technical). Outputs a Discovery Summary with decisions table, topic-by-topic findings with traceability, know/don't-know analysis, assumptions, open questions, and next steps. Topic internal structure adapts based on meeting type. Use when given a transcript file or asked to summarize a meeting, call, sync, or session.",
+      "category": "video-design",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/transcript-to-meeting-notes.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "update-cli-config",
+      "name": "update-cli-config",
+      "description": ">-",
+      "category": "tools-operations",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/update-cli-config.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "update-cursor-settings",
+      "name": "update-cursor-settings",
+      "description": ">-",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/update-cursor-settings.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "visual-qa-testing",
+      "name": "visual-qa-testing",
+      "description": "Visually QA a web application by launching it in Codex's built-in browser, taking screenshots, checking console errors, and auditing network requests. Use after making UI changes to verify they look correct.",
+      "category": "design-documents",
+      "environments": [
+        "agents"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/visual-qa-testing.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "workspace-context",
+      "name": "workspace-context",
+      "description": "Organize workspace context files in tmp/ subfolders. Use when saving plans, results, notes, or docs.",
+      "category": "tools-operations",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/workspace-context.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "writing-commit-messages",
+      "name": "writing-commit-messages",
+      "description": "Write clear, conventional commit messages with proper type prefixes, scopes, and body content.",
+      "category": "engineering-workflow",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/writing-commit-messages.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "writing-tests",
+      "name": "writing-tests",
+      "description": "Analyze existing code and write comprehensive unit and integration tests for it. Detects the test framework, identifies untested code paths, and generates tests with proper mocking, edge cases, and assertions. Use when the user asks to add tests, improve coverage, or test a specific module.",
+      "category": "video-design",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/writing-tests.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "xlsx",
+      "name": "xlsx",
+      "description": "Comprehensive spreadsheet creation, editing, and analysis with support for formulas, formatting, data analysis, and visualization. When Claude needs to work with spreadsheets (.xlsx, .xlsm, .csv, .tsv, etc) for: (1) Creating new spreadsheets with formulas and formatting, (2) Reading or analyzing data, (3) Modify existing spreadsheets while preserving formulas, (4) Data analysis and visualization in spreadsheets, or (5) Recalculating formulas",
+      "category": "research",
+      "environments": [
+        "agents",
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [
+        {
+          "file": "LICENSE.txt",
+          "detected": "custom-or-unrecognized"
+        }
+      ],
+      "sources": [],
+      "path": "catalog/xlsx.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "dashi-animationstyle",
+      "name": "dashi-animationstyle",
+      "description": "把一段 15–60 秒的中文口播做成某种画风的动画视频（1920×1080、30 帧/秒的 mp4，带口播和字幕，能直接拖进剪映）。画面全部由 Claude 用 HTML/Canvas 代码画、无头 Chrome 逐帧截图合成，不用生图模型。自带 7 套风格：扁平流程图、手绘笔记、复古报刊、复古剪纸、超现实拼贴、立体卡通、黑底科技。也能照用户给的一张参考图（或一段视频）做一套新风格（用法二），或按一段文字描述先出 2–3 个方向的静帧给用户挑、再定风格（用法三），附风格词典、讲解动画通用规则和动效知识（转场、次要动作、丰富度检查）。用户说「把这段口播做成动画」「用手绘笔记风格做」「有哪些风格」「照这张图的画风做」「我想要黑板报那样的感觉」「检查风格动画的环境」「先渲个例子看看」时使用。",
+      "category": "video-design",
+      "environments": [
+        "claude"
+      ],
+      "status": "bundled",
+      "origin": "third-party",
+      "licenses": [
+        {
+          "file": "LICENSE",
+          "detected": "MIT"
+        }
+      ],
+      "sources": [],
+      "path": "skills/dashi-animationstyle/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 74,
+      "bytes": 15952073
+    },
+    {
+      "id": "huashu-art-motion",
+      "name": "huashu-art-motion",
+      "description": "艺术与视频动画：拆解复刻动画；36种既有实做风格＋16种可迁移研究配方；9种解说动画语法，8种可按口播参数渲片段；含口播整片参考代码及框景检查；人用AI生帧；可选已有录音、系统声音与语音复刻，按需配置。",
+      "category": "video-design",
+      "environments": [
+        "claude"
+      ],
+      "status": "bundled",
+      "origin": "third-party",
+      "licenses": [
+        {
+          "file": "LICENSE",
+          "detected": "MIT"
+        }
+      ],
+      "sources": [
+        "https://github.com/alchaincyf",
+        "https://github.com/alchaincyf/huashu-art-motion",
+        "https://github.com/alchaincyf/huashu-art-motion/releases"
+      ],
+      "path": "skills/huashu-art-motion/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 402,
+      "bytes": 17616207
+    },
+    {
+      "id": "lemo-opuscar",
+      "name": "lemo-opuscar",
+      "description": "Direct and produce a short film made entirely in code, in one of the styles of the Lemo-Opuscar library (e.g. Impasto Oil Painting 油画厚涂, Watercolor Brush 水彩笔刷, Ukiyo-e 浮世绘, Satellite Briefing 卫星简报, Exploded Teardown 产品拆解). Use when the user asks for a video, film, short, promo, explainer or animation (视频、短片、动画、宣传片) in a named style, including explainers built from real material such as satellite imagery, laser scans, CAD files or archive scans (数据解说、科普、产品拆解), and new films cut from real archive footage and documents (剪辑与纪实, e.g. 用档案影像剪一支新闻片); when they want a film about their own topic and haven't chosen a style (help them choose); when they want to change a style into their own, make their own style from a blank page, or use a style they saved (改风格、从空白开始、我的风格); when they start the skill without saying what they want; or when they ask which film styles there are. Not for plain editing, trimming or converting the user's existing video files.",
+      "category": "video-design",
+      "environments": [
+        "claude"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [
+        "https://github.com/lemomo-ai/lemo-opuscar"
+      ],
+      "path": "catalog/lemo-opuscar.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "mg-styles-15",
+      "name": "mg-styles-15",
+      "description": "15 种 MG 动态设计风格，每种一支 10 秒成片，附完整提示词与源码，用代码逐帧渲染。用户要做品牌短片、产品动效、MG 动画、动态标题、数据动效，或说「要扁平矢量/等轴 2.5D/3D 渲染/逐帧手绘/拼贴/液态/形变/包豪斯/合成波/弥散玻璃/综艺花字/贴纸人科普/赛博 HUD/像素 风格」，或想照某种动态设计风格做一支短片时使用。也用于「给我看有哪些动效风格」「按这个风格做个宣传片」「模仿 Buck/Pentagram 那种质感」。",
+      "category": "video-design",
+      "environments": [
+        "claude"
+      ],
+      "status": "bundled",
+      "origin": "third-party",
+      "licenses": [
+        {
+          "file": "LICENSE",
+          "detected": "MIT"
+        }
+      ],
+      "sources": [],
+      "path": "skills/mg-styles-15/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 206,
+      "bytes": 28632395
+    },
+    {
+      "id": "sound--claude",
+      "name": "sound",
+      "description": "Find and download sound effects from Freesound for videos, using download counts, ratings, descriptions, and licenses to select clips. 用 Freesound 给视频找音效：按下载量、评分人数、上传者描述、时长和许可证挑选，再下载到工程里。用户说「找个音效」「配个 whoosh / 点击 / 碰撞声」「给这个镜头加音效」「只要 CC0 的」时使用。",
+      "category": "audio",
+      "environments": [
+        "claude"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [
+        "https://github.com/vibe-motion/sound"
+      ],
+      "path": "catalog/sound--claude.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "video-router",
+      "name": "video-router",
+      "description": "用户要做视频、短片、动画、动效、宣传片、科普片、口播动画、品牌片、MG 动画、片头、竖屏短视频、复刻某支参考片，或问「用哪个技能做视频」「有哪些视频风格」时，先读本技能选择器，再加载对应技能。它是八个视频技能的入口，不替代它们的内容。",
+      "category": "video-design",
+      "environments": [
+        "claude"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/video-router.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "video-shotcraft",
+      "name": "video-shotcraft",
+      "description": "Create cinematic product videos from frontend projects or webpages with Remotion, real page captures, shot cards, the Ink Press template, beat sync and sound design. Use for full product promos, reproducing Ink Press, single shot-card effects, or finding, adding, replacing and aligning sound effects in an existing product video or shot, including candidate-only SFX searches. 用真实页面、镜头卡与 Ink Press 模板制作产品宣传片；用户要求用 video-shotcraft 做视频、复刻模板、制作单镜头，或给已完成的产品片/镜头找音效候选、加音效、换音效、对齐声音时使用。",
+      "category": "audio",
+      "environments": [
+        "claude"
+      ],
+      "status": "bundled",
+      "origin": "third-party",
+      "licenses": [
+        {
+          "file": "LICENSE",
+          "detected": "Apache-2.0"
+        }
+      ],
+      "sources": [
+        "https://github.com/remotion-dev/remotion/blob/main/LICENSE.md",
+        "https://github.com/Vincentwei1021/video-shotcraft/issues/new"
+      ],
+      "path": "skills/video-shotcraft/SKILL.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty",
+      "files": 1199,
+      "bytes": 24421721
+    },
+    {
+      "id": "wtt-code-animation-studio",
+      "name": "wtt-code-animation-studio",
+      "description": "将用户的想法、主题、文章或现成剧本制作成前端代码动画，按内容与实际旁白决定时长，交付中文剧本、分镜、可改源码和带声音 MP4。编剧后根据内容推荐风格，由用户选择再制作；覆盖手绘纸纹、复古印刷网点、像素、水彩、沙画、粉笔、粒子、马赛克、黏土外观、MG 与混合画法，新增画法按片实现与验证；默认 Canvas/p5.js 逐帧绘制，经浏览器和 FFmpeg 导出。用户只要剧本或技术分析时只完成指定范围。",
+      "category": "video-design",
+      "environments": [
+        "claude"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/wtt-code-animation-studio.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "xilo-opus-video",
+      "name": "xilo-opus-video",
+      "description": ">-",
+      "category": "video-design",
+      "environments": [
+        "claude"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/xilo-opus-video.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "cursor-best-practices--cursor",
+      "name": "cursor-best-practices",
+      "description": "Best practices for using Cursor—rules, commands, skills, subagents, ignore files, Agent security, workflows, and community resources. Use when setting up Cursor, initializing or creating the .cursor folder, writing .cursor/rules or AGENTS.md, creating commands or skills, configuring .cursorignore, working with Agent, discovering rules or MCPs (e.g. cursor.directory), making codebases cursor-compatible, or asking about Cursor workflows, TDD, git commands, or large codebases.",
+      "category": "video-design",
+      "environments": [
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/cursor-best-practices--cursor.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "finding-dev-server-url--cursor",
+      "name": "finding-dev-server-url",
+      "description": "Scan running terminals for dev server URLs (localhost ports), report them, and optionally open the app in Cursor's built-in browser.",
+      "category": "documents",
+      "environments": [
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/finding-dev-server-url--cursor.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "grinding-until-pass--cursor",
+      "name": "grinding-until-pass",
+      "description": "Keep iterating on code changes until the tests pass, the build succeeds, or linting is clean. Runs in a tight loop of fix → run → check → repeat. Use when you want the agent to autonomously grind through test failures or build errors.",
+      "category": "tools-operations",
+      "environments": [
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/grinding-until-pass--cursor.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "hello-skill--cursor",
+      "name": "hello-skill",
+      "description": ">-",
+      "category": "engineering-workflow",
+      "environments": [
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/hello-skill--cursor.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "parallel-code-review--cursor",
+      "name": "parallel-code-review",
+      "description": "Run four parallel read-only subagents that each review the same diff from a different lens — security, performance, correctness, and readability — then merge findings into one report. Use before merging large or risky PRs.",
+      "category": "documents",
+      "environments": [
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/parallel-code-review--cursor.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "plan--cursor",
+      "name": "plan",
+      "description": "Create restartable, session-spanning project plans with dependency-ordered tasks and verification criteria. Cursor-adapted version of Getting Shit Done. Use when building a plan, creating a task breakdown, planning a feature, or resuming an existing plan.",
+      "category": "engineering-workflow",
+      "environments": [
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/plan--cursor.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "suggesting-cursor-hooks--cursor",
+      "name": "suggesting-cursor-hooks",
+      "description": "When the user keeps asking for the same check to run (lint, tests, type-check), suggest a Cursor hook to automate it.",
+      "category": "tools-operations",
+      "environments": [
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/suggesting-cursor-hooks--cursor.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "suggesting-cursor-rules--cursor",
+      "name": "suggesting-cursor-rules",
+      "description": "When the user repeats the same correction or convention multiple times, suggest a Cursor rule to encode it permanently.",
+      "category": "engineering-workflow",
+      "environments": [
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/suggesting-cursor-rules--cursor.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    },
+    {
+      "id": "visual-qa-testing--cursor",
+      "name": "visual-qa-testing",
+      "description": "Visually QA a web application by launching it in Cursor's built-in browser, taking screenshots, checking console errors, and auditing network requests. Use after making UI changes to verify they look correct.",
+      "category": "design-documents",
+      "environments": [
+        "cursor"
+      ],
+      "status": "catalog-only",
+      "origin": "third-party",
+      "licenses": [],
+      "sources": [],
+      "path": "catalog/visual-qa-testing--cursor.md",
+      "source_verification": "local metadata and prior installed provenance; unknown when empty"
+    }
+  ],
+  "plugins": [
+    {
+      "provider": "lux3d",
+      "plugin": "aholo-lux3d",
+      "version": "0.1.1",
+      "skill_dir": "lux3d",
+      "name": "lux3d",
+      "description": "Use Lux3D to generate or process 3D assets, resume existing tasks, and deliver verified source files with an offline preview. Use when the user requests Lux3D creation, asset delivery or project integration; assemble scenes with local Blender or an available Blender MCP.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "canva",
+      "version": "0722921d",
+      "skill_dir": "canva-brand-check",
+      "name": "canva-brand-check",
+      "description": "Check a Canva design against a brand kit and report where it diverges — off-palette colors, non-brand fonts, logo misuse, and off-tone copy. Read-only; makes no changes. Use when the user asks \"is this on brand\", \"check this against our brand kit\", \"do a brand review\", \"does this match our brand guidelines\", or \"brand-check my design\".",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "canva",
+      "version": "0722921d",
+      "skill_dir": "canva-branded-presentation",
+      "name": "canva-branded-presentation",
+      "description": "Create on-brand Canva presentations from an outline or brief. Use when the user asks to create a branded presentation, make an on-brand deck, turn an outline into slides, or generate a presentation from a brief. Input can be text directly in the message, a Canva design ID, a reference to a Canva doc by name, or a Canva design link (e.g., https://www.canva.com/design/...).",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "canva",
+      "version": "0722921d",
+      "skill_dir": "canva-bulk-create",
+      "name": "canva-bulk-create",
+      "description": "Bulk-create Canva designs from tabular data using a brand template with autofill fields, producing one design per row. Use when users say \"bulk create designs from this CSV\", \"generate one design per row\", \"create a design for each product\", \"batch generate from a template\", or \"autofill a template from a spreadsheet\". Accepts any tabular data source — uploaded files, pasted tables, JSON, or URLs.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "canva",
+      "version": "0722921d",
+      "skill_dir": "canva-design-feedback",
+      "name": "canva-design-feedback",
+      "description": "Read a Canva design and return structured, actionable design feedback — visual hierarchy, copy/messaging, layout & spacing, consistency, readability, and accessibility. Read-only; makes no changes to the design. Use when the user asks to \"review my design\", \"give me feedback on this\", \"critique my deck/poster/flyer\", \"how can I improve this design\", or \"what's wrong with this slide\".",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "canva",
+      "version": "0722921d",
+      "skill_dir": "canva-edit-design",
+      "name": "canva-edit-design",
+      "description": "Make edits to an existing Canva design — change or fix text, replace/insert/delete images and videos, reformat text (size, weight, style, color, alignment, lists, line height), reposition or resize elements, and update the title. Use when the user wants to change, edit, update, fix, translate, replace, or reformat content in a specific Canva design. This is the safe edit engine that other Canva skills (e.g. implement-feedback) build on.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "canva",
+      "version": "0722921d",
+      "skill_dir": "canva-implement-feedback",
+      "name": "canva-implement-feedback",
+      "description": "Implement reviewer feedback on a Canva design. Reads all comment threads, synthesises what reviewers want, makes the clear-cut changes directly, and flags anything that needs a human decision. Use when the user asks to \"implement feedback on my deck\", \"address comments on a design\", \"apply review feedback\", \"fix the comments on my presentation\", or \"implement the feedback\".",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "canva",
+      "version": "0722921d",
+      "skill_dir": "canva-resize-for-social-media",
+      "name": "canva-resize-for-social-media",
+      "description": "Resize a Canva design into multiple social media formats (Facebook post, Facebook story, Instagram post, Instagram story, LinkedIn post). Use this skill when users want to resize Canva designs specifically for multiple social media platforms in one operation, rather than resizing to a single format manually.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "canva",
+      "version": "0722921d",
+      "skill_dir": "canva-translate-design",
+      "name": "canva-translate-design",
+      "description": "Translate all text in a Canva design to another language, creating a translated copy. Faster than manually copying and editing each text box in Canva's editor. Use when users say \"translate my design to [language]\", \"make a Spanish/French/etc version\", or \"localize my Canva design\".",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "figma",
+      "version": "0722921d",
+      "skill_dir": "figma-code-connect",
+      "name": "figma-code-connect",
+      "description": "Creates and maintains Figma Code Connect template files that map Figma components to code snippets. Use when the user mentions Code Connect, Figma component mapping, design-to-code translation, or asks to create/update .figma.ts or .figma.js files.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "figma",
+      "version": "0722921d",
+      "skill_dir": "figma-create-new-file",
+      "name": "figma-create-new-file",
+      "description": "**MANDATORY prerequisite** — you MUST invoke this skill BEFORE every `create_new_file` tool call. NEVER call `create_new_file` directly without loading this skill first. Trigger whenever the user wants a new blank Figma file — a new design, FigJam, or Slides file — or when you need a fresh file before calling `use_figma`. Usage — /figma-create-new-file [editorType] [fileName] (e.g. /figma-create-new-file figjam My Whiteboard, /figma-create-new-file slides Q3 Review)",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "figma",
+      "version": "0722921d",
+      "skill_dir": "figma-design-to-code",
+      "name": "figma-design-to-code",
+      "description": "**MANDATORY prerequisite** — you MUST invoke this skill BEFORE calling the `get_design_context` Figma MCP tool. You MUST trigger this skill whenever the user wants to implement, build, port, or code up a Figma design as code. Example prompts (not exhaustive) are 'implement this Figma design', 'build this screen from Figma', 'turn this Figma into code', 'design to code'. This skill provides critical instructions and steps to the agent on how to correctly implement Figma designs in code and must NOT be skipped.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "figma",
+      "version": "0722921d",
+      "skill_dir": "figma-generate-design",
+      "name": "figma-generate-design",
+      "description": "Use this skill alongside figma-use when the task involves translating an application page, view, or multi-section layout into Figma. Triggers: 'write to Figma', 'create in Figma from code', 'push page to Figma', 'take this app/page and build it in Figma', 'create a screen', 'build a landing page in Figma', 'update the Figma screen to match code', 'convert this modal/dialog/drawer/panel to Figma'. This is the preferred workflow skill whenever the user wants to build or update a full page, modal, dialog, drawer, sidebar, panel, or any composed multi-section view in Figma from code or a description. Discovers design system components, variables, and styles from Code Connect files, existing screens, and library search, then imports them and assembles views incrementally section-by-section using design system tokens instead of hardcoded values.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "figma",
+      "version": "0722921d",
+      "skill_dir": "figma-generate-diagram",
+      "name": "figma-generate-diagram",
+      "description": "MANDATORY prerequisite — load this skill BEFORE every `generate_diagram` tool call. NEVER call `generate_diagram` directly without loading this skill first. Trigger whenever the user asks to create, generate, draw, render, sketch, or build a diagram — flowchart, architecture diagram, sequence diagram, ERD or entity-relationship diagram, state diagram or state machine, gantt chart, or timeline. Also trigger when the user mentions Mermaid syntax or wants a system architecture, decision tree, dependency graph, API call flow, auth handshake, schema, or pipeline visualized in FigJam. Routes to type-specific guidance, sets universal Mermaid constraints, and tells you when to use a different diagram type or skip the tool entirely (mindmaps, pie charts, class diagrams, etc.).",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "figma",
+      "version": "0722921d",
+      "skill_dir": "figma-generate-library",
+      "name": "figma-generate-library",
+      "description": "Build or update a professional-grade design system in Figma from a codebase. Use when the user wants to create variables/tokens, build component libraries, create individual components with proper variant sets and variable bindings, set up theming (light/dark modes), document foundations, or reconcile gaps between code and Figma. Also use when the user asks to create or generate any component in Figma — even a single one — since components require proper variable foundations, variant states, and design token bindings to be production-quality. This skill teaches WHAT to build and in WHAT ORDER — it complements the `figma-use` skill which teaches HOW to call the Plugin API. Both skills should be loaded together.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "figma",
+      "version": "0722921d",
+      "skill_dir": "figma-implement-motion",
+      "name": "figma-implement-motion",
+      "description": "Translates Figma motion and animations into production-ready application code. Use when implementing animation/motion from a Figma design — user mentions \"implement this motion\", \"add animation from Figma\", \"animate this component\", provides a Figma URL whose node is animated, or when `get_design_context` returns motion data or instructs you to call `get_motion_context`.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "figma",
+      "version": "0722921d",
+      "skill_dir": "figma-swiftui",
+      "name": "figma-swiftui",
+      "description": "SwiftUI ↔ Figma translation. Use whenever the user mentions Swift, SwiftUI, iOS, iPhone, or iPad — in EITHER direction — translating a Figma design into SwiftUI (design → code), or pushing SwiftUI views / screens / tokens back into a Figma file (code → design). Triggers on phrases like 'implement this Figma design in SwiftUI', 'build this screen in Swift', 'push this SwiftUI view to Figma', 'mirror my Swift code in a Figma file', or whenever a Figma URL appears alongside `.swift` files / an `.xcodeproj`. Routes to a direction-specific reference doc; loads alongside `figma-use` for the code → design path.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "figma",
+      "version": "0722921d",
+      "skill_dir": "figma-use",
+      "name": "figma-use",
+      "description": "**MANDATORY prerequisite** — you MUST invoke this skill BEFORE every `use_figma` tool call. NEVER call `use_figma` directly without loading this skill first. Skipping it causes common, hard-to-debug failures. Trigger whenever the user wants to perform a write action or a unique read action that requires JavaScript execution in the Figma file context — e.g. create/edit/delete nodes, set up variables or tokens, build components and variants, modify auto-layout or fills, bind variables to properties, or inspect file structure programmatically.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "figma",
+      "version": "0722921d",
+      "skill_dir": "figma-use-figjam",
+      "name": "figma-use-figjam",
+      "description": "This skill helps agents use Figma's use_figma MCP tool in the FigJam context. Can be used alongside figma-use which has foundational context for using the use_figma tool.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "figma",
+      "version": "0722921d",
+      "skill_dir": "figma-use-motion",
+      "name": "figma-use-motion",
+      "description": "Motion / animation context for the `use_figma` MCP tool — animating Figma nodes via manual keyframes, animation styles, easing, and timeline duration. Load alongside figma-use whenever a task involves adding, editing, or inspecting animation on a node.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "figma",
+      "version": "0722921d",
+      "skill_dir": "figma-use-slides",
+      "name": "figma-use-slides",
+      "description": "This skill helps agents use Figma's use_figma MCP tool in the Slides context. Can be used alongside figma-use which has foundational context for using the use_figma tool.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "higgsfield",
+      "version": "0722921d",
+      "skill_dir": "faceless-channel",
+      "name": "faceless-channel",
+      "description": "Use only when the user asks to produce a finished multi-scene narrator-led video and explicitly requests a faceless channel, YouTube automation, narrated explainer/story/education, documentary, storybook or myth retelling, or kids song video. Topic alone is never enough: a generic video of/about something, including a historical topic, uses ordinary video generation. Do not use for planning or ideas, single clips, silent animation, image-to-video, footage edits, ads, product demos, or UGC. This workflow requires a consistent non-photoreal style, reusable assets, narrator voiceover, and burned subtitles.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "higgsfield",
+      "version": "0722921d",
+      "skill_dir": "narrator",
+      "name": "narrator",
+      "description": "Activate when the user explicitly names the narrator skill or requests production-ready narration in either case: (1) numbered takes fitted to fixed video windows, or (2) one continuous long-form story read in a locked voice that must be measured and retried for timbre or internal pauses. Collect missing text, voice_id, or voice_type after activation; their absence is not a reason to skip this workflow. Own pacing, speech-duration gates, retries, and ready audio delivery; never time-stretch. Do not use for ordinary TTS, \"read this aloud\", an unconstrained voiceover, voice browsing, music, SFX, singing, dubbing existing speech, or voice cloning.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "higgsfield",
+      "version": "0722921d",
+      "skill_dir": "subtitles",
+      "name": "subtitles",
+      "description": "Burn timed subtitles onto a finished video or configure Whisper-timed caption burning during faceless-video assembly. Takes video/audio generation jobs or a local finished video, optionally with authored narration text, and returns a captioned video or the exact backend subtitle configuration. Timings always come from Whisper on the video's own audio — never estimated. THREE looks: `paper` (torn cream paper label, handwritten ink), `bold` (UGC ALL-CAPS, white with black stroke, platform safe zones), `clean` (slim white CAPS, no plate, tiny at the bottom — no Pillow needed). Use when: adding/burning subtitles or captions to an existing video, restyling captions, or when a production workflow needs its finished cut subtitled. NOT for: generating the video, translating speech, or live/soft subtitle tracks (this burns them into the picture).",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "hyperframes",
+      "version": "0722921d",
+      "skill_dir": "gsap",
+      "name": "gsap",
+      "description": "GSAP animation reference for HyperFrames. Covers gsap.to(), from(), fromTo(), easing, stagger, defaults, timelines (gsap.timeline(), position parameter, labels, nesting, playback), and performance (transforms, will-change, quickTo). Use when writing GSAP animations in HyperFrames compositions.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "hyperframes",
+      "version": "0722921d",
+      "skill_dir": "hyperframes",
+      "name": "hyperframes",
+      "description": "Create video compositions, animations, title cards, overlays, captions, voiceovers, audio-reactive visuals, and scene transitions in HyperFrames HTML. Use when asked to build any HTML-based video content, add captions or subtitles synced to audio, generate text-to-speech narration, create audio-reactive animation (beat sync, glow, pulse driven by music), add animated text highlighting (marker sweeps, hand-drawn circles, burst lines, scribble, sketchout), or add transitions between scenes (crossfades, wipes, reveals, shader transitions). Covers composition authoring, timing, media, and the full video production workflow. For CLI commands (init, lint, preview, render, transcribe, tts) see the hyperframes-cli skill.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "hyperframes",
+      "version": "0722921d",
+      "skill_dir": "hyperframes-cli",
+      "name": "hyperframes-cli",
+      "description": "HyperFrames CLI tool — hyperframes init, lint, inspect, preview, render, transcribe, tts, doctor, browser, info, upgrade, compositions, docs, benchmark. Use when scaffolding a project, linting, validating, inspecting visual layout in compositions, previewing in the studio, rendering to video, transcribing audio, generating TTS, or troubleshooting the HyperFrames environment.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "hyperframes",
+      "version": "0722921d",
+      "skill_dir": "hyperframes-registry",
+      "name": "hyperframes-registry",
+      "description": "Install and wire registry blocks and components into HyperFrames compositions. Use when running hyperframes add, installing a block or component, wiring an installed item into index.html, or working with hyperframes.json. Covers the add command, install locations, block sub-composition wiring, component snippet merging, and registry discovery.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "hyperframes",
+      "version": "0722921d",
+      "skill_dir": "website-to-hyperframes",
+      "name": "website-to-hyperframes",
+      "description": "Capture a website and create a HyperFrames video from it. Use when: (1) a user provides a URL and wants a video, (2) someone says \"capture this site\", \"turn this into a video\", \"make a promo from my site\", (3) the user wants a social ad, product tour, or any video based on an existing website, (4) the user shares a link and asks for any kind of video content. Even if the user just pastes a URL — this is the skill to use.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "alphafold-skill",
+      "name": "alphafold-skill",
+      "description": "Submit compact AlphaFold Protein Structure Database API requests for prediction, UniProt summary, sequence summary, and annotation lookups. Use when a user wants AlphaFold metadata or concise structure summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "bgee-skill",
+      "name": "bgee-skill",
+      "description": "Submit compact Bgee SPARQL requests for healthy wild-type expression metadata and ontology-aware lookup patterns. Use when a user wants concise Bgee summaries; save raw results only on request.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "bindingdb-skill",
+      "name": "bindingdb-skill",
+      "description": "Submit compact BindingDB REST API requests for ligand-target binding lookups by PDB, UniProt, or similarity search. Use when a user wants concise BindingDB summaries; save raw payloads only on request.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "biobankjapan-phewas-skill",
+      "name": "biobankjapan-phewas-skill",
+      "description": "Fetch compact BioBank Japan PheWAS summaries for single variants by accepting rsID, GRCh38, or GRCh37 input and resolving to the required GRCh37 query. Use when a user wants concise BBJ association results for one variant",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "biorxiv-skill",
+      "name": "biorxiv-skill",
+      "description": "Submit compact bioRxiv and medRxiv API requests for details, publication-linkage, and DOI lookups. Use when a user wants concise preprint metadata summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "biostudies-arrayexpress-skill",
+      "name": "biostudies-arrayexpress-skill",
+      "description": "Submit compact BioStudies and ArrayExpress API requests for free-text search and accession-based study retrieval. Use when a user wants concise BioStudies summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "cbioportal-skill",
+      "name": "cbioportal-skill",
+      "description": "Submit compact cBioPortal API requests for studies, molecular profiles, mutations, clinical data, and samples. Use when a user wants concise cBioPortal summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "cellxgene-skill",
+      "name": "cellxgene-skill",
+      "description": "Submit compact CELLxGENE Discover API requests for public collection and dataset metadata. Use when a user wants concise single-cell collection summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "chebi-skill",
+      "name": "chebi-skill",
+      "description": "Submit compact ChEBI 2.0 API requests for chemical search, compound lookup, ontology traversal, and structure metadata. Use when a user wants concise ChEBI summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "chembl-skill",
+      "name": "chembl-skill",
+      "description": "Submit compact ChEMBL API requests for activity, molecule, target, mechanism, and text-search endpoints. Use when a user wants concise ChEMBL summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "civic-skill",
+      "name": "civic-skill",
+      "description": "Submit compact CIViC GraphQL requests for cancer variant interpretation schema inspection and targeted evidence retrieval. Use when a user wants concise CIViC summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "clinicaltrials-skill",
+      "name": "clinicaltrials-skill",
+      "description": "Submit compact ClinicalTrials.gov API v2 requests for study search, metadata, enums, search areas, and field statistics. Use when a user wants concise ClinicalTrials.gov summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "clinvar-variation-skill",
+      "name": "clinvar-variation-skill",
+      "description": "Submit compact ClinVar Clinical Tables and NCBI Variation requests for search, VCV, RCV, SCV, and RefSNP lookups. Use when a user wants variant-level summaries or identifier mapping",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "efo-ontology-skill",
+      "name": "efo-ontology-skill",
+      "description": "Submit compact EFO OLS4 requests for search, term lookup, children, and descendants. Use when a user wants concise EFO resolution or ontology-expansion summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "encode-skill",
+      "name": "encode-skill",
+      "description": "Submit compact ENCODE REST API requests for object lookups, portal-style search, and metadata retrieval. Use when a user wants concise ENCODE summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "ensembl-skill",
+      "name": "ensembl-skill",
+      "description": "Submit compact Ensembl REST API requests for lookup, overlap, cross-reference, and variation endpoints. Use when a user wants concise Ensembl summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "epigraphdb-skill",
+      "name": "epigraphdb-skill",
+      "description": "Submit compact EpiGraphDB API requests for ontology, literature, MR, gene-drug, and support-path evidence. Use when a user wants concise EpiGraphDB summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "eqtl-catalogue-skill",
+      "name": "eqtl-catalogue-skill",
+      "description": "Submit compact eQTL Catalogue API requests for association retrieval and documented metadata endpoints. Use when a user wants concise public eQTL Catalogue summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "eva-skill",
+      "name": "eva-skill",
+      "description": "Submit compact EVA REST requests for species metadata and archived variant lookups. Use when a user wants concise European Variation Archive summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "finngen-phewas-skill",
+      "name": "finngen-phewas-skill",
+      "description": "Fetch compact FinnGen PheWAS summaries for single variants by accepting rsID, GRCh37, or GRCh38 input and resolving to the required GRCh38 query. Use when a user wants concise FinnGen association results for one variant",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "genebass-gene-burden-skill",
+      "name": "genebass-gene-burden-skill",
+      "description": "Submit compact Genebass gene burden requests for one Ensembl gene ID and one burden set. Use when a user wants concise Genebass PheWAS summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "gnomad-graphql-skill",
+      "name": "gnomad-graphql-skill",
+      "description": "Submit compact gnomAD GraphQL requests for frequency, gene constraint, and variant context queries. Use when a user wants concise gnomAD summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "gtex-eqtl-skill",
+      "name": "gtex-eqtl-skill",
+      "description": "Fetch GTEx single-tissue eQTL associations from one variant input by accepting rsID, GRCh37, or GRCh38 input and resolving to the required GRCh38 query for the GTEx v2 API. Use when a user wants eQTL associations returned as JSON.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "gwas-catalog-skill",
+      "name": "gwas-catalog-skill",
+      "description": "Submit compact GWAS Catalog REST API v2 requests for studies, associations, SNPs, EFO traits, genes, publications, loci, and metadata. Use when a user wants concise GWAS Catalog summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "hmdb-skill",
+      "name": "hmdb-skill",
+      "description": "Submit compact HMDB search requests for metabolites, proteins, diseases, and pathways. Use when a user wants concise HMDB summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "human-protein-atlas-skill",
+      "name": "human-protein-atlas-skill",
+      "description": "Submit compact Human Protein Atlas requests for gene JSON, search downloads, and page-level tissue or cell-line lookups. Use when a user wants concise Human Protein Atlas summaries; save raw JSON or HTML only on request.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "ipd-skill",
+      "name": "ipd-skill",
+      "description": "Submit compact IPD REST requests for HLA allele and cell-level metadata using the public IPD query API. Use when a user wants concise IPD summaries; save raw JSON or text only on request.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "locus-to-gene-mapper-skill",
+      "name": "locus-to-gene-mapper-skill",
+      "description": "Map GWAS loci to ranked candidate genes using a deterministic multi-skill chain (EFO -> GWAS -> coordinates -> Open Targets L2G/coloc -> eQTL -> burden/coding context), with reproducible tables and optional figures. Use when a user provides a trait/EFO term and/or lead variants and needs locus-to-gene prioritization for downstream biology decisions.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "metabolights-skill",
+      "name": "metabolights-skill",
+      "description": "Submit compact MetaboLights requests for study discovery and study-level metabolomics metadata. Use when a user wants concise MetaboLights summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "mgnify-skill",
+      "name": "mgnify-skill",
+      "description": "Submit compact MGnify API requests for microbiome studies, samples, and biome metadata. Use when a user wants concise MGnify summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "ncbi-blast-skill",
+      "name": "ncbi-blast-skill",
+      "description": "Submit, poll, and summarize NCBI BLAST Common URL API jobs (Blast.cgi) for nucleotide or protein sequences. Use when a user wants RID status, BLAST results, or compact top-hit summaries; fetch raw Text/JSON2 only on request.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "ncbi-clinicaltables-skill",
+      "name": "ncbi-clinicaltables-skill",
+      "description": "Submit compact Clinical Tables NCBI Gene requests for human gene lookup, pagination, and field selection. Use when a user wants concise autocomplete-style human gene search results",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "ncbi-datasets-skill",
+      "name": "ncbi-datasets-skill",
+      "description": "Submit compact NCBI Datasets v2 requests for assembly, genome, taxonomy, and related metadata endpoints. Use when a user wants concise NCBI Datasets summaries; save raw JSON or text only on request.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "ncbi-entrez-skill",
+      "name": "ncbi-entrez-skill",
+      "description": "Submit compact NCBI Entrez E-Utilities requests for PubMed, Gene, Protein, Nucleotide, PMC metadata, and GEO metadata workflows. Use when a user wants concise Entrez search, fetch, summary, or link results; save raw JSON or XML only on request.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "ncbi-pmc-skill",
+      "name": "ncbi-pmc-skill",
+      "description": "Submit compact NCBI PMC Open Access requests for article/file availability metadata. Use when a user wants concise PMC Open Access summaries; save raw XML only on request.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "opentargets-skill",
+      "name": "opentargets-skill",
+      "description": "Submit compact Open Targets Platform GraphQL requests for target, disease, drug, variant, study, and search data, including associated-disease datasource heatmap matrices. Use when a user wants concise Open Targets summaries or per-datasource evidence context",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "pharmgkb-skill",
+      "name": "pharmgkb-skill",
+      "description": "Submit compact PharmGKB API requests for genes, variants, clinical annotations, dosing guidelines, and search. Use when a user wants concise PharmGKB summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "pride-skill",
+      "name": "pride-skill",
+      "description": "Submit compact PRIDE Archive API requests for proteomics project discovery and project-level metadata. Use when a user wants concise PRIDE summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "proteomexchange-skill",
+      "name": "proteomexchange-skill",
+      "description": "Submit compact ProteomeXchange PROXI requests for datasets, libraries, peptidoforms, proteins, PSMs, spectra, and USI examples. Use when a user wants concise PROXI summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "pubchem-pug-skill",
+      "name": "pubchem-pug-skill",
+      "description": "Submit compact PubChem PUG REST requests for compound properties, descriptions, assay summaries, and substance metadata. Use when a user wants concise PubChem summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "quickgo-skill",
+      "name": "quickgo-skill",
+      "description": "Submit compact QuickGO requests for GO terms, annotations, and ontology traversal. Use when a user wants concise QuickGO summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "rcsb-pdb-skill",
+      "name": "rcsb-pdb-skill",
+      "description": "Submit compact RCSB PDB requests for core metadata, Search API queries, and FASTA downloads. Use when a user wants concise RCSB summaries; save raw JSON or FASTA only on request.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "reactome-skill",
+      "name": "reactome-skill",
+      "description": "Submit compact Reactome ContentService requests for pathway, event, participant, search, and diagram-related data. Use when a user wants concise Reactome summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "research-router-skill",
+      "name": "research-router-skill",
+      "description": "Route broad or ambiguous life-sciences research requests to the right skills, normalize core entities, optionally parallelize independent evidence gathering with subagents when available, and synthesize a concise evidence-backed answer. Use when a user asks a general life-sciences question that could span multiple sources or analysis types.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "rhea-skill",
+      "name": "rhea-skill",
+      "description": "Submit compact Rhea reaction search requests for biochemical reactions and reaction IDs. Use when a user wants concise Rhea summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "rnacentral-skill",
+      "name": "rnacentral-skill",
+      "description": "Submit compact RNAcentral API requests for RNA entry browsing, single-entry lookup, and cross-reference retrieval. Use when a user wants concise RNAcentral summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "string-skill",
+      "name": "string-skill",
+      "description": "Submit compact STRING API requests for network, interaction partner, and enrichment endpoints. Use when a user wants concise STRING summaries",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "tpmi-phewas-skill",
+      "name": "tpmi-phewas-skill",
+      "description": "Fetch compact TPMI PheWAS summaries for single variants by accepting rsID, GRCh37, or GRCh38 input and resolving to the required GRCh38 query. Use when a user wants concise TPMI association results for one variant",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "ukb-topmed-phewas-skill",
+      "name": "ukb-topmed-phewas-skill",
+      "description": "Fetch compact UKB-TOPMed PheWAS summaries for single variants by accepting rsID, GRCh37, or GRCh38 input and resolving to the required GRCh38 query. Use when a user wants concise UKB-TOPMed association results for one variant",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "life-science-research",
+      "version": "0722921d",
+      "skill_dir": "uniprot-skill",
+      "name": "uniprot-skill",
+      "description": "Submit compact UniProt REST API requests for UniProtKB, UniRef, UniParc, and FASTA stream endpoints. Use when a user wants concise UniProt summaries; save raw JSON or FASTA only on request.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "notion",
+      "version": "0722921d",
+      "skill_dir": "notion-knowledge-capture",
+      "name": "notion-knowledge-capture",
+      "description": "Capture conversations and decisions into structured Notion pages; use when turning chats/notes into wiki entries, how-tos, decisions, or FAQs with proper linking.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "notion",
+      "version": "0722921d",
+      "skill_dir": "notion-meeting-intelligence",
+      "name": "notion-meeting-intelligence",
+      "description": "Prepare meeting materials with Notion context and supplemental research; use when gathering context, drafting agendas/pre-reads, and tailoring materials to attendees.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "notion",
+      "version": "0722921d",
+      "skill_dir": "notion-research-documentation",
+      "name": "notion-research-documentation",
+      "description": "Research across Notion and synthesize into structured documentation; use when gathering info from multiple Notion sources to produce briefs, comparisons, or reports with citations.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "notion",
+      "version": "0722921d",
+      "skill_dir": "notion-spec-to-implementation",
+      "name": "notion-spec-to-implementation",
+      "description": "Turn Notion specs into implementation plans, tasks, and progress tracking; use when implementing PRDs/feature specs and creating Notion plans + tasks from them.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "product-design",
+      "version": "0722921d",
+      "skill_dir": "audit",
+      "name": "audit",
+      "description": "Audit or critique a product flow, journey, workflow, funnel, onboarding path, checkout path, settings path, screen, or multi-step product experience by capturing screenshots first, then reporting UX, design, and accessibility findings inline from that evidence. Use Figma only when the user explicitly asks for a board. Use when the user asks to audit, review, critique, inspect, assess, analyze, evaluate, or give feedback on a product experience.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "product-design",
+      "version": "0722921d",
+      "skill_dir": "design-qa",
+      "name": "design-qa",
+      "description": "Internal prototype QA helper. Use only after a Product Design prototype, URL-to-code build, or image-to-code build has a source visual target and a rendered implementation to compare before handoff. Do not use for broad UX critique, design critique, product audits, or flow reviews; route those user-facing requests to audit.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "product-design",
+      "version": "0722921d",
+      "skill_dir": "get-context",
+      "name": "get-context",
+      "description": "Mandatory design-brief gate for clarifying the product and outcome. Use before ideation, image-to-code builds, redesigns, or product UI work to clarify missing product information and play back the brief before proceeding.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "product-design",
+      "version": "0722921d",
+      "skill_dir": "ideate",
+      "name": "ideate",
+      "description": "Generate image-based alternatives, remixes, or new design directions from a Product Design brief. Use when the user asks for design variants, visual exploration, remixes, or image-generated approaches from provided context.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "product-design",
+      "version": "0722921d",
+      "skill_dir": "image-to-code",
+      "name": "image-to-code",
+      "description": "Implement a selected image, screenshot, mockup, or Image Gen reference as a faithful, responsive frontend.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "product-design",
+      "version": "0722921d",
+      "skill_dir": "index",
+      "name": "index",
+      "description": "Use when Product Design is explicitly invoked, or when the user's main goal is to explore a design, research UX, audit or critique a flow, faithfully clone a visual source, check a built design, or share a prototype. Do not use Product Design for ordinary implementation unless the user explicitly asks for it.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "product-design",
+      "version": "0722921d",
+      "skill_dir": "research",
+      "name": "research",
+      "description": "Run fast, source-grounded UX research on the highest-signal problems users are experiencing with a user-specified digital product. Use when the user asks to research user pain, UX friction, onboarding issues, docs/help problems, developer experience friction, support pain, product workflow issues, or current user complaints for a named product.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "product-design",
+      "version": "0722921d",
+      "skill_dir": "share",
+      "name": "share",
+      "description": "Share a runnable prototype using the user's preferred deployment tool.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "product-design",
+      "version": "0722921d",
+      "skill_dir": "url-to-code",
+      "name": "url-to-code",
+      "description": "Clone a live URL as a runnable frontend-only local app.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "product-design",
+      "version": "0722921d",
+      "skill_dir": "user-context",
+      "name": "user-context",
+      "description": "Load or manage Product Design's saved user context. Use when the user asks to set up Product Design, get started, onboard, save product or design sources, see what Product Design remembers, update saved context, or remember Product Design preferences. Examples include product URLs, Figma files, screenshots, reference images, codebase paths, Storybook, tokens, design systems, brand assets, and general product/design notes.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "remotion",
+      "version": "0722921d",
+      "skill_dir": "remotion-best-practices",
+      "name": "remotion-best-practices",
+      "description": "Router for all Remotion skills",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "remotion",
+      "version": "0722921d",
+      "skill_dir": "remotion-captions",
+      "name": "remotion-captions",
+      "description": "Transcribing, displaying and animating captions",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "remotion",
+      "version": "0722921d",
+      "skill_dir": "remotion-create",
+      "name": "remotion-create",
+      "description": "Create a new Remotion video",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "remotion",
+      "version": "0722921d",
+      "skill_dir": "remotion-docs",
+      "name": "remotion-docs",
+      "description": "Search Remotion documentation",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "remotion",
+      "version": "0722921d",
+      "skill_dir": "remotion-interactivity",
+      "name": "remotion-interactivity",
+      "description": "Structure Remotion markup for interactivity",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "remotion",
+      "version": "0722921d",
+      "skill_dir": "remotion-maps",
+      "name": "remotion-maps",
+      "description": "Remotion Map animation knowledge",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "remotion",
+      "version": "0722921d",
+      "skill_dir": "remotion-markup",
+      "name": "remotion-markup",
+      "description": "Content, animation and effects best practices",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "remotion",
+      "version": "0722921d",
+      "skill_dir": "remotion-multimedia",
+      "name": "remotion-multimedia",
+      "description": "Interacting with Mediabunny",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "remotion",
+      "version": "0722921d",
+      "skill_dir": "remotion-render",
+      "name": "remotion-render",
+      "description": "Export a Remotion video",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "remotion",
+      "version": "0722921d",
+      "skill_dir": "remotion-saas",
+      "name": "remotion-saas",
+      "description": "Build an app with Remotion",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "remotion",
+      "version": "0722921d",
+      "skill_dir": "remotion-studio",
+      "name": "remotion-studio",
+      "description": "Preview a Remotion video",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "remotion",
+      "version": "0722921d",
+      "skill_dir": "remotion-upgrade",
+      "name": "remotion-upgrade",
+      "description": "Upgrade Remotion, and related packages",
+      "upstream_urls": [
+        "https://github.com/remotion-dev/remotion/releases"
+      ]
+    },
+    {
+      "provider": "openai-api-curated",
+      "plugin": "zotero",
+      "version": "0722921d",
+      "skill_dir": "zotero",
+      "name": "Zotero",
+      "description": "Use Zotero Desktop from Codex to enable/probe the local API, search a local Zotero library, list items/collections/tags, export BibTeX, insert citation keys into LaTeX or Markdown drafts, read indexed full text when requested, and import BibTeX/RIS records into Zotero through the connector server. Use when the user mentions Zotero, citations, references.bib, BibTeX export, local Zotero API, localhost:23119, or adding citations from a Zotero library.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-bundled",
+      "plugin": "computer-use",
+      "version": "26.1023.50603",
+      "skill_dir": "computer-use",
+      "name": "computer-use",
+      "description": "Control Windows apps from ChatGPT",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-bundled",
+      "plugin": "latex",
+      "version": "0.2.8",
+      "skill_dir": "latex-compile",
+      "name": "latex-compile",
+      "description": "Compile a TeX project from Codex, trying bundled Tectonic for simple projects and falling back to detected TeX Live or MacTeX when needed.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-bundled",
+      "plugin": "latex",
+      "version": "0.2.8",
+      "skill_dir": "latex-doctor",
+      "name": "latex-doctor",
+      "description": "Detect bundled Tectonic plus TeX Live or MacTeX availability, report missing LaTeX tools, and run small compile smoke tests when possible.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-bundled",
+      "plugin": "latex",
+      "version": "0.2.8",
+      "skill_dir": "texlive-runtime-installer",
+      "name": "texlive-runtime-installer",
+      "description": "Detect existing TeX Live or MacTeX first, then optionally install a Codex-managed full TeX Live runtime only when no existing TeX Live installation is detected.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-bundled",
+      "plugin": "visualize",
+      "version": "1.0.57",
+      "skill_dir": "visualize",
+      "name": "visualize",
+      "description": "Create visualizations and interactive tools directly in conversation. Proactively use to show how something works; explore 'what happens when', 'what changes', or 'help me understand'; compare or inspect; create simulations, maps, charts, graphs, and mockups. Use standard tools for static scientific figures.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-curated-remote",
+      "plugin": "plugin-management",
+      "version": "0.1.0",
+      "skill_dir": "plugin-management",
+      "name": "plugin-management",
+      "description": "Discover and suggest relevant plugins, inspect app permissions and dependencies, and manage plugin connections or removal. Use when the user asks about plugins or when a task would materially benefit from an external app, account, service, or data source that available tools cannot access.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-curated-remote",
+      "plugin": "work-pets",
+      "version": "0.1.6",
+      "skill_dir": "create-pet",
+      "name": "create-pet",
+      "description": "Create, repair, validate, preview, upload, or activate an animated v2 pet in ChatGPT Work mode from a character idea, brand cue, or reference image. Use for new ChatGPT Pets, custom mascots, non-pixel styles, and unattached sprite sheets requiring nine animation states plus sixteen look directions. Preserve Library artifacts and Pets MCP lifecycle behavior. Exclude real pets, standalone images, and other-app pets; clarify before invoking.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-curated-remote",
+      "plugin": "work-pets",
+      "version": "0.1.6",
+      "skill_dir": "pets",
+      "name": "pets",
+      "description": "List, inspect, select, download, or delete animated pets in ChatGPT Work mode. Use for an explicit pet in ChatGPT or established ChatGPT Pets context. Exclude real-world and other-app pets; clarify before invoking.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-curated-remote",
+      "plugin": "work-pets",
+      "version": "0.1.6",
+      "skill_dir": "update-pet",
+      "name": "update-pet",
+      "description": "Inspect, validate, preview, repair, or update a custom pet in ChatGPT Work mode, including its name, description, or sprite sheet. Use for a pet in ChatGPT or established ChatGPT Pets context. Exclude real-world and other-app pets; clarify before invoking.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-primary-runtime",
+      "plugin": "documents",
+      "version": "26.1026.10807",
+      "skill_dir": "documents",
+      "name": "documents",
+      "description": "Create, edit, redline, and comment on `.docx`, Word, and Google Docs-targeted document artifacts inside the container, with a strict render-and-verify workflow. Use `render_docx.py` to generate page PNGs (and optional PDF) for visual QA, then iterate until layout is flawless before delivering the final document.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-primary-runtime",
+      "plugin": "pdf",
+      "version": "26.1026.10807",
+      "skill_dir": "pdf",
+      "name": "pdf",
+      "description": "Read, create, inspect, render, and verify PDF files where visual layout matters, including fillable AcroForms. Use Poppler rendering plus Python tools such as reportlab, pdfplumber, and pypdf for generation and extraction.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-primary-runtime",
+      "plugin": "presentations",
+      "version": "26.1026.10807",
+      "skill_dir": "presentations",
+      "name": "Presentations",
+      "description": "Read, create or edit presentations. Default to Spaces; follow the routing rules for PowerPoint/PPT/PPTX, Google Slides, templates and existing decks.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-primary-runtime",
+      "plugin": "spreadsheets",
+      "version": "26.1026.10807",
+      "skill_dir": "excel-live-control",
+      "name": "excel-live-control",
+      "description": "Control an open or active Microsoft Excel workbook through the ChatGPT add-in or connected session. Use when the user tags the Microsoft Excel app in Codex or follows up on an established live Excel task. Do not use for standalone spreadsheet files or Google Sheets.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-primary-runtime",
+      "plugin": "spreadsheets",
+      "version": "26.1026.10807",
+      "skill_dir": "spreadsheets",
+      "name": "Spreadsheets",
+      "description": "Use skill when user requests to create, modify, analyze, visualize, or work with spreadsheet files (`.xlsx`, `.xls`, `.csv`, `.tsv`) or Google Sheets with formulas, formatting, charts, tables, and recalculation. Do not use for live controlling Microsoft Excel app or a live Excel session.",
+      "upstream_urls": []
+    },
+    {
+      "provider": "openai-primary-runtime",
+      "plugin": "template-creator",
+      "version": "26.1026.10807",
+      "skill_dir": "template-creator",
+      "name": "template-creator",
+      "description": "Create or update a reusable personal Codex artifact-template skill. Use when the user invokes $template-creator or asks in natural language to create a reusable template from a reference document, presentation, spreadsheet, Google Docs, Slides, or Sheets link, ImageGen or Product Design image, email, Slack message, or Site project, or explicitly asks to edit or update a passed artifact-template skill. Do not use for one-off creation from an existing template.",
+      "upstream_urls": []
+    }
+  ]
+}

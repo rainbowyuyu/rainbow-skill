@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "assets": [{
+    "id": "bridge-01-attempt-01",
+    "path": "public/generated/bridge-01.mp4",
+    "sha256": null,
+    "kind": "generated-video",
+    "source": {"provider": "Qwen", "model": null, "taskId": null, "inputSha256": [], "promptFile": null, "retrievedAt": null},
+    "rights": {"sourceUrl": null, "license": null, "attribution": null},
+    "status": "not_submitted",
+    "actualUse": {"adopted": false, "visibleFrameRanges": []},
+    "review": {"sourceFrames": "pending", "compositeTransition": "pending", "rejectionReason": null},
+    "notes": "Fill values after the actual task. Exclude keys and signed URLs. Unknown submission status requires lookup before retry."
+  }]
+}

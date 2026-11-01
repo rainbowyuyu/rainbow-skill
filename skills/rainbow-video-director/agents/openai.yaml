@@ -1,0 +1,6 @@
+interface:
+  display_name: "rainbow 成片视频导演"
+  short_description: "写出完整可执行的成片与分段提示词，贯通故事、视觉变化、运镜、文字和声音"
+  default_prompt: "使用 $rainbow-video-director，将我的想法写成全片总提示词和每段可直接执行的完整正文，明确时间链、风格、镜头、字句、声音、实现、前后衔接及预演验收。按本次范围交付提示词或继续制作。"
+policy:
+  allow_implicit_invocation: true

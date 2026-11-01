@@ -1,0 +1,1128 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>复现 · 洗牌 0.6557 s 的重复组织</title>
+<style>
+  :root{
+    --bg:#0c0f13; --panel:#12171c; --line:#222b33; --ink:#dde5ea; --dim:#8595a1;
+    --edge:#7fb0c9; --warm:#cbad5d; --ok:#6fbf8b; --bad:#d9786a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.65 "Inter","Helvetica Neue","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+  code{font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#b7cdd8;
+    background:#080b0e;border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  header{padding:22px 26px 12px;border-bottom:1px solid var(--line)}
+  header h1{margin:0 0 4px;font-size:19px;font-weight:600;letter-spacing:.01em}
+  header p{margin:0;color:var(--dim);font-size:12.5px;max-width:100ch}
+  main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:0;align-items:start}
+  @media (max-width:1120px){main{grid-template-columns:1fr}}
+  .stage{padding:16px 18px 20px;min-width:0}
+  canvas#scene{width:100%;height:auto;display:block;border-radius:8px;background:#000;
+    border:1px solid var(--line)}
+  .transport{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .transport button{background:#171e25;color:var(--ink);border:1px solid var(--line);
+    border-radius:6px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer;min-width:38px}
+  .transport button:hover{background:#1e2831}
+  .transport button[data-on="1"]{background:#1f3a46;border-color:#2f6377;color:#caecf8}
+  #seek{flex:1;min-width:180px;accent-color:#7fb0c9}
+  #tc{font:12.5px ui-monospace,Menlo,Consolas,monospace;color:var(--dim);white-space:nowrap}
+  .marks{position:relative;height:20px;margin:-2px 2px 0;pointer-events:none}
+  .marks span{position:absolute;top:2px;transform:translateX(-50%);
+    font:10.5px ui-monospace,Menlo,Consolas,monospace;color:var(--dim);white-space:nowrap}
+  .marks span::before{content:"";position:absolute;left:50%;top:-3px;width:1px;height:5px;
+    background:#33424d;transform:translateX(-50%)}
+  aside.panel{border-left:1px solid var(--line);padding:18px 18px 40px;background:var(--panel);
+    min-height:100%}
+  @media (max-width:1120px){aside.panel{border-left:0;border-top:1px solid var(--line)}}
+  .panel h2{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);
+    margin:18px 0 8px;font-weight:600}
+  .panel h2:first-child{margin-top:0}
+  .kv{display:grid;grid-template-columns:92px 1fr;gap:2px 10px;
+    font:12.5px ui-monospace,Menlo,Consolas,monospace}
+  .kv dt{color:var(--dim)}
+  .kv dd{margin:0;color:var(--ink)}
+  .ok{color:var(--ok)} .bad{color:var(--bad)} .dim{color:var(--dim)}
+  .row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .row button{flex:1;background:#171e25;border:1px solid var(--line);border-radius:6px;
+    color:var(--ink);padding:6px 8px;font:inherit;font-size:12px;cursor:pointer}
+  .row button:hover{background:#1e2831}
+  table.tl{width:100%;border-collapse:collapse;
+    font:11.5px ui-monospace,Menlo,Consolas,monospace}
+  table.tl th{text-align:left;color:var(--dim);font-weight:500;padding:3px 4px;
+    border-bottom:1px solid var(--line)}
+  table.tl td{padding:3px 4px;border-bottom:1px solid #192129;vertical-align:top}
+  table.tl tr.on td{background:#18232b}
+  pre#log{margin:6px 0 0;padding:8px;background:#080b0e;border:1px solid var(--line);
+    border-radius:6px;font:11px/1.5 ui-monospace,Menlo,Consolas,monospace;color:#9fb4c0;
+    max-height:240px;overflow:auto;white-space:pre-wrap}
+  footer{padding:14px 26px 40px;color:var(--dim);font-size:12px;border-top:1px solid var(--line);
+    max-width:150ch}
+  footer b{color:#b7c8d2;font-weight:600}
+  footer table{border-collapse:collapse;margin:8px 0 12px;
+    font:11.5px ui-monospace,Menlo,Consolas,monospace}
+  footer td,footer th{border-bottom:1px solid #1b2329;padding:3px 8px 3px 0;text-align:left;
+    vertical-align:top}
+  footer th{color:#9fb0bc;font-weight:500}
+</style>
+</head>
+<body>
+<header>
+  <h1>复现 ／ 一次连续镜头、一段 0.6557 秒的重复、一次 23.9 的冲击</h1>
+  <p>按 <code>studies/shuffle.md</code> 2026-10-26 量化补充重建运动组织：单镜不切、交织段被一条连续曲线驱动、
+     压合 0.167 秒、落定 0.233 秒、冲击后 2.767 秒冷场、七次洗牌的主接触延后 0.433 秒加 2–3 个子脉冲。
+     画面与声音全部由本页程序生成，不含原片素材、音轨、水印或商标。加 <code>?t=9.4</code> 定格到指定秒数。</p>
+</header>
+
+<main>
+  <section class="stage">
+    <canvas id="scene" width="1920" height="1080" aria-label="洗牌节奏复现画布"></canvas>
+    <div class="transport">
+      <button id="play" aria-pressed="false">播放</button>
+      <button id="prev" title="上一帧">‹</button>
+      <button id="next" title="下一帧">›</button>
+      <input id="seek" type="range" min="0" max="480" step="1" value="0" aria-label="进度（帧）">
+      <output id="tc">f000 ／ 0.000 s</output>
+      <button id="sound" aria-pressed="false" title="程序化合成：7 Hz 颗粒层 + 0.279 s 呼吸孔">声音</button>
+    </div>
+    <div class="marks" id="marks"></div>
+  </section>
+
+  <aside class="panel">
+    <h2>当前帧</h2>
+    <dl class="kv">
+      <dt>阶段</dt><dd id="vPhase">A 两叠分离</dd>
+      <dt>帧 / 时间</dt><dd id="vTime">0 / 0.000 s</dd>
+      <dt>圆点</dt><dd id="vPips">0 / 7</dd>
+      <dt>pix_diff</dt><dd id="vPix">—</dd>
+      <dt>镜头</dt><dd id="vCam">无剪切</dd>
+    </dl>
+
+    <h2>结构</h2>
+    <table class="tl" id="phaseTable">
+      <thead><tr><th>段</th><th>时间</th><th>长度</th><th>依据</th></tr></thead>
+      <tbody>
+        <tr data-k="A"><td>A</td><td>0.000</td><td>2.333 s</td><td>铺垫</td></tr>
+        <tr data-k="B"><td>B</td><td>2.333</td><td>1.467 s</td><td>44 帧平台 2.19–2.45</td></tr>
+        <tr data-k="C"><td>C</td><td>3.800</td><td>0.167 s</td><td>压合 5 帧</td></tr>
+        <tr data-k="D"><td>D</td><td>3.967</td><td>0.233 s</td><td>落定 0.52–0.72</td></tr>
+        <tr data-k="E"><td>E</td><td>4.200</td><td>0.100 s</td><td>短读定</td></tr>
+        <tr data-k="F"><td>F</td><td>4.300</td><td>0.700 s</td><td>摊开</td></tr>
+        <tr data-k="G"><td>G</td><td>5.000</td><td>0.950 s</td><td>冲击峰值 23.90</td></tr>
+        <tr data-k="H"><td>H</td><td>5.950</td><td>2.767 s</td><td>无尖峰冷场</td></tr>
+        <tr data-k="I"><td>I</td><td>8.717</td><td>4.590 s</td><td>7 次 × 0.633–0.667</td></tr>
+        <tr data-k="J"><td>J</td><td>13.307</td><td>2.693 s</td><td>收尾 / 硬静音 2.51 s</td></tr>
+      </tbody>
+    </table>
+
+    <h2>自检</h2>
+    <div class="row">
+      <button id="mAll">量全片 480 帧</button>
+      <button id="mCyc">量重复段</button>
+    </div>
+    <pre id="log">点「量全片」按 600×338 逐帧渲染，量本页自己的 pix_diff 曲线，再按结构判据（平台平坦度、冲击倍数、冷场衰减、重复周期）核对，不是去凑原片的绝对数值。</pre>
+
+    <h2>导出</h2>
+    <div class="row">
+      <button id="png">保存当前帧 PNG</button>
+    </div>
+    <p class="dim" style="font-size:11.5px;margin:8px 0 0">
+      键盘 <code>空格</code> 播放/暂停、<code>←/→</code> 逐帧、<code>[ / ]</code> 跳 0.5 秒。</p>
+  </aside>
+</main>
+
+<footer>
+  <p><b>参数与出处（全部来自 <code>studies/shuffle.md</code> 本轮量化，未引入无来源数字）。</b></p>
+  <table>
+    <tr><th>复现里的数字</th><th>来源</th></tr>
+    <tr><td>重复周期 0.634 / 0.666 / 0.667 / 0.633 / 0.667 / 0.667</td><td>119.4–124.167 s 七个计数圆点填充时刻的六个间隔</td></tr>
+    <tr><td>第 1 次洗牌取 0.6557 s</td><td>六个间隔的均值；原作第一次的时长没有被测出来，此处按均值补</td></tr>
+    <tr><td>主接触延后 0.433 / 0.400 s；子脉冲间隔 0.167 / 0.134 s 与 0.067 / 0.100 s，两种变体交替</td><td>120.83–123.60 s pix_diff 局部极大值间隔序列</td></tr>
+    <tr><td>交织 1.467 s（44 帧）、压合 0.167 s（5 帧）、落定 0.233 s（7 帧）、短读定 0.100 s（3 帧）</td><td>69.667–71.133 / 71.367–71.533 / 71.567–71.800 / 72.033–72.100 s</td></tr>
+    <tr><td>冲击后冷场 2.767 s</td><td>116.667 s（pix_diff 23.90）之后至 119.7 s 的最长无尖峰间隔</td></tr>
+    <tr><td>圆点 x = 821 起、间距 46、y = 197</td><td>1920×1080 下七个计数圆点的实测圆心</td></tr>
+    <tr><td>声音颗粒 7 Hz、簇内 IOI 0.117–0.186 s、簇间呼吸孔 0.279 s、簇长中位 0.59 s</td><td>全片 398 个簇内 IOI 与 196 个簇的切分统计</td></tr>
+    <tr><td>硬静音 2.51 s</td><td>135.53–138.04 s 全片唯一静音段</td></tr>
+    <tr><td>不做 90 BPM 同拍</td><td>0.667 s 在 112.3 BPM 下是 1.248 拍，非整数倍；本页干脆不给节拍网格</td></tr>
+  </table>
+
+  <p><b>刻意不做的事，以及为什么。</b>
+  全片只有一条连续镜头，没有剪切点——原作 137 秒里只有片尾两个 cut，节奏来自镜头内运动。
+  交织段每张牌的路径是直线、速度恒定，没有逐张弹簧；原作这一段 pix_diff 全程 2.19–2.45，说明它本来就被一条连续曲线驱动。
+  声音不跟圆点、不跟落牌：原作 55 个画面尖峰落在 onset ±50 ms 内只有 44%，低于随机期望 46%，六个圆点填充也找不到对应的敲击。
+  所以本页的颗粒层是独立的一条床，画面停住时它照样跑（原作停留段 4.84/s 与运动段 4.28/s 差不到 0.6），只在结尾真正收掉。</p>
+
+  <p><b>复现里达不到的一项，以及原因。</b>
+  冲击倍数只到 18.7×，原作是 28×（23.90 对中位 0.86）。原作那一帧是「宽矩阵 + 密集字幕 + 高亮计数条」一起被炸散，
+  画面里几乎没有安静的区域；本页是深底 + 深色牌面 + 细彩边，炸散时超过一半的像素仍然停在近黑，
+  分母（全片中位）又因为长时间留白被压得更低。倍数差是画面密度差，不是动作幅度差 —— 所以判据看的是「冲击是不是全片最高、并且之后确实有 2.767 秒近静止」，
+  而不是去凑 28。要凑这个数只能把牌画成大面积亮色，那会偏离原片的实际明度。</p>
+
+  <p><b>不能从复现里判断的部分。</b>
+  绝对亮度差不可比：原作图像密度、编码、缩放都与本页不同，本页只复现「组织的形状」（平台平不平、冲击是几倍、冷场有多长、周期稳不稳），
+  不去凑 2.19–2.45 这样的绝对值。第 7 个圆点是否与其余 6 次同类未经人工确认；圆点填充的灰度阈值是人工选的，第三次判读受影响最大；
+  0.1 秒分箱会抹平小于 100 ms 的错位。原作的音色、乐器、拟音类型全部未知，本页合成的声音只是「7 Hz 连续颗粒 + 0.28 秒呼吸孔」这一层结构的实现。</p>
+</footer>
+
+<script>
+(() => {
+'use strict';
+
+/* ───────────────────── 常量（全部来自研究笔记） ───────────────────── */
+const W = 1920, H = 1080, FPS = 30, DUR = 16.000;
+const FRAMES = Math.round(DUR * FPS);          // 480
+
+const PH = {
+  A: 0.000,   // 铺垫：两叠分离
+  B: 2.333,   // 交织平台开始（1.467 s / 44 帧）
+  C: 3.800,   // 压合（0.167 s / 5 帧）
+  D: 3.967,   // 落定（0.233 s / 7 帧）
+  E: 4.200,   // 短读定（0.100 s / 3 帧）
+  F: 4.300,   // 摊开成矩阵
+  G: 5.000,   // 冲击峰值
+  H: 5.950,   // 冷场开始（2.767 s 无尖峰）
+  I: 8.717,   // 七次重复开始
+};
+
+/* 六条实测间隔 + 一条均值补的第一次。
+   六条间隔之和是 3.934 s（= 120.233 → 124.167），但七个圆点的首尾跨度是 3.934 s 而
+   整段 119.7–124.167 只有 4.467 s；第一次的 0.6557 是从「段起点到第一个圆点」补出来的，
+   原作的这一段时间没有被测到。这里按原样写，并在时间轴上保留这个差值，不摊平。 */
+const WASH_LEN = [0.6557, 0.634, 0.666, 0.667, 0.633, 0.667, 0.667];
+const CYCLES = (() => {
+  const a = []; let s = PH.I;
+  for (let k = 0; k < 7; k++){ a.push({ s, e: s + WASH_LEN[k], L: WASH_LEN[k] }); s += WASH_LEN[k]; }
+  return a;
+})();
+const PIPS = CYCLES.map(c => c.e);             // 七个圆点填充时刻
+const REPEAT_END = PIPS[6];                    // 13.3067
+const SILENCE_START = DUR - 2.51;              // 13.490，硬静音 2.51 s
+
+/* 一个循环内部的指纹，取自 120.83–123.60 s 的间隔序列，两种变体交替：
+   变体 A  0.433 主接触 → +0.167 子脉冲 → +0.067 收尾   = 0.667
+   变体 B  0.400 主接触 → +0.134 子脉冲 → +0.100 收尾   = 0.634
+   这些数是相邻峰之间的间隔，0.433 / 0.400 是循环起点到主接触的距离。 */
+const BEAT = {
+  alt: [
+    { base: 0.667, main: 0.433, gaps: [0.167, 0.067] },
+    { base: 0.634, main: 0.400, gaps: [0.134, 0.100] }
+  ],
+  offsets(kind){
+    const b = this.alt[kind];
+    const offs = [b.main];
+    let acc = b.main;
+    for (const g of b.gaps){ acc += g; offs.push(acc); }
+    /* 第一段较长（0.167 / 0.134）时，中间再插一个子脉冲 → 2–3 个快速子脉冲 */
+    if (b.gaps[0] > 0.14) offs.splice(1, 0, b.main + b.gaps[0] * 0.62);
+    return offs;
+  }
+};
+
+/* ───────────────────── 几何（平躺的牌，桌面上方低机位） ───────────────────── */
+const CX = 960, CY = 726;
+/* 原片实测：交织段牌堆横跨画面 0.83–0.90、静定段叠高 0.14–0.17 画幅。
+   旧版 CARD_W=322 只有画幅 17%，hero 缩在中间，是复现最明显的一处比例错。 */
+const CARD_W = 1180, CARD_H = 250;     // 顶面（长 × 视深），宽高比 4.7:1，斜视下的长牌
+const STEP = 3.10;                     // 每张牌在堆里抬起的像素 → 52 张约 161 px 彩边带（画幅 0.149）
+const SKEW = -0.20;                    // 整组的横向错切，模拟桌面透视
+
+/* ───────────────────── 小工具 ───────────────────── */
+const clamp = (v,a,b) => v < a ? a : v > b ? b : v;
+const lerp  = (a,b,u) => a + (b - a) * u;
+const smooth = u => u * u * (3 - 2 * u);
+function hash(n){ const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); }
+function rnd(i, j){ return hash(i * 1.618 + j * 37.7); }
+
+function roundRect(g, x, y, w, h, r){
+  const rr = Math.min(r, w / 2, h / 2);
+  g.beginPath();
+  g.moveTo(x + rr, y);
+  g.lineTo(x + w - rr, y); g.quadraticCurveTo(x + w, y, x + w, y + rr);
+  g.lineTo(x + w, y + h - rr); g.quadraticCurveTo(x + w, y + h, x + w - rr, y + h);
+  g.lineTo(x + rr, y + h); g.quadraticCurveTo(x, y + h, x, y + h - rr);
+  g.lineTo(x, y + rr); g.quadraticCurveTo(x, y, x + rr, y);
+  g.closePath();
+}
+
+/* 绕枢轴在画面平面内旋转一张牌（抬起/倾侧的简化） */
+function lean(s, ang, px, py){
+  if (!ang) return s;
+  const c = Math.cos(ang), sn = Math.sin(ang);
+  const dx = s.x - px, dy = s.y - py;
+  s.x = px + dx * c - dy * sn;
+  s.y = py + dx * sn + dy * c;
+  s.rot += ang;
+  return s;
+}
+
+/* ───────────────────── 位置生成 ───────────────────── */
+/* 两叠：偶数张在左、奇数张在右；sep 是两叠中心的水平距离 */
+function pilePos(i, sep){
+  const side = i % 2, k = (i - side) / 2;
+  return {
+    x: CX + (side ? 1 : -1) * sep / 2 + (rnd(i, 1) - 0.5) * 3,
+    y: CY - k * STEP,
+    rot: (rnd(i, 3) - 0.5) * 0.006,
+    w: CARD_W, h: CARD_H, z: k * 2 + side * 0.4
+  };
+}
+/* 单叠：完全交织后的顺序，牌 i 落在第 i 层 */
+function deckPos(i){
+  return { x: CX, y: CY - i * STEP, rot: 0, w: CARD_W, h: CARD_H, z: i * 2 };
+}
+/* 13 × 4 矩阵：平铺在桌面上 */
+function matrixPos(i){
+  const c = i % 13, r = (i - c) / 13;
+  return {
+    x: CX + (c - 6) * 132, y: CY - 84 + r * 62,
+    rot: 0, w: 118, h: 50, z: r * 13 + c
+  };
+}
+/* 炸散：从各自的矩阵位置沿确定性角度外抛，牌在桌面平面内翻转。
+   起点就是矩阵的位置与尺寸，接在「摊开」的最后一帧上不跳。
+   r 的量纲是「相对矩阵格距的倍数」，1.0 大约等于一格。 */
+function blastPos(i, r){
+  const m = matrixPos(i);
+  const a = (i / 52) * Math.PI * 2 + (rnd(i, 7) - 0.5) * 0.75;
+  const rr = r * (0.55 + 0.55 * rnd(i, 8));
+  return {
+    x: m.x + Math.cos(a) * rr * 230,
+    y: m.y + Math.sin(a) * rr * 96,
+    /* r = 0 时必须与矩阵完全一致：转角归零、层级沿用矩阵的 i，否则冲击的第一帧会跳 */
+    rot: (rnd(i, 9) - 0.5) * 1.6 * Math.min(1, r),
+    w: m.w, h: m.h,
+    z: m.z + r * 0.8 + rnd(i, 10) * 0.2
+  };
+}
+
+/* ───────────────────── 时间轴 → 每张牌的状态 ───────────────────── */
+function phaseKey(t){
+  if (t < PH.B) return 'A';
+  if (t < PH.C) return 'B';
+  if (t < PH.D) return 'C';
+  if (t < PH.E) return 'D';
+  if (t < PH.F) return 'E';
+  if (t < PH.G) return 'F';
+  if (t < PH.H) return 'G';
+  if (t < PH.I) return 'H';
+  if (t < REPEAT_END) return 'I';
+  return 'J';
+}
+
+/* 压合段六帧的振幅包络：1.44→2.34→1.02→2.36→4.57→2.47 的相对形状 */
+const PRESS_ENV = [1.00, 1.30, 0.90, 1.40, 2.20, 1.30];
+
+function cardsAt(t){
+  const f = Math.round(t * FPS);
+  const out = new Array(52);
+  const ph = phaseKey(t);
+
+  if (ph === 'A'){
+    const u = smooth(clamp((t - 0.30) / 1.70, 0, 1));
+    const sep = lerp(200, 900, u);
+    for (let i = 0; i < 52; i++) out[i] = pilePos(i, sep);
+
+  } else if (ph === 'B'){
+    /* 交织：直线路径 + 恒定速度。没有逐张弹簧。
+       左叠的牌去偶数层、右叠的去奇数层，两者在中间交叉 —— 这就是「交织」。
+       全组同时出发、同速，所以逐帧像素差几乎是常数（对应原作 2.19–2.45 的平平台）。 */
+    const u = clamp((t - PH.B) / (PH.C - PH.B), 0, 1);
+    for (let i = 0; i < 52; i++){
+      const a = pilePos(i, 900), b = deckPos(i);
+      out[i] = {
+        x: lerp(a.x, b.x, u),
+        y: lerp(a.y, b.y, u),
+        rot: lerp((i % 2 ? 1 : -1) * 0.030, 0, u),
+        w: CARD_W, h: CARD_H,
+        z: lerp(a.z, b.z, u)
+      };
+    }
+
+  } else if (ph === 'C'){
+    /* 压合：0.167 s / 5 帧，整叠绕内侧底角前后倾，逐帧翻转方向。
+       原作这一段 pix_diff 1.44→2.34→1.02→2.36→4.57，几乎每帧翻转。 */
+    const f0 = Math.round(PH.C * FPS);
+    const step = clamp(f - f0, 0, 5);
+    const env = PRESS_ENV[Math.min(step, 5)];
+    const sgn = (step % 2) ? -1 : 1;
+    for (let i = 0; i < 52; i++){
+      const b = deckPos(i);
+      const s = { x: b.x + sgn * 34 * env, y: b.y, rot: 0, w: CARD_W, h: CARD_H, z: b.z };
+      out[i] = lean(s, sgn * 0.052 * env * (1 + 0.5 * (i / 52)), CX - 140, CY + 30);
+    }
+
+  } else if (ph === 'D' || ph === 'E'){
+    /* 落定 0.233 s + 短读定 0.100 s：可读停留，只留极小的余摆 */
+    const t0 = ph === 'D' ? PH.D : PH.E;
+    const u = clamp((t - t0) / 0.12, 0, 1);
+    const amp = (1 - u) * (ph === 'D' ? 0.006 : 0.003);
+    for (let i = 0; i < 52; i++){
+      const b = deckPos(i);
+      out[i] = { x: b.x, y: b.y, rot: amp * Math.sin(i * 0.7 + u * 6),
+                 w: CARD_W, h: CARD_H, z: b.z };
+    }
+
+  } else if (ph === 'F'){
+    /* 摊开成矩阵：同样是恒定速度的直线插值 */
+    const u = clamp((t - PH.F) / (PH.G - PH.F), 0, 1);
+    for (let i = 0; i < 52; i++){
+      const a = deckPos(i), b = matrixPos(i);
+      out[i] = {
+        x: lerp(a.x, b.x, u), y: lerp(a.y, b.y, u),
+        rot: 0,
+        w: lerp(CARD_W, 118, u), h: lerp(CARD_H, 50, u),
+        z: lerp(a.z, b.z, u)
+      };
+    }
+
+  } else if (ph === 'G'){
+    /* 冲击：一帧内半径跳到峰值，再在 0.9 s 内缓慢收回两叠。
+       原作 116.667 s 一帧 pix_diff 23.90（中位数的 28 倍），随后 ~1 s 衰减。 */
+    const u = t - PH.G;
+    /* r = 0 时正好是矩阵；两帧内推到 r = 2.6（约 2.6 个格距），再缓慢收回两叠 */
+    const peak = 3.6;
+    let r, k;
+    if (u < 2 / FPS){ r = peak * Math.sqrt(u / (2 / FPS)); k = 0; }
+    else { r = peak; k = clamp((u - 2 / FPS) / (0.95 - 2 / FPS), 0, 1); }
+    const back = smooth(k);
+    for (let i = 0; i < 52; i++){
+      const bl = blastPos(i, r), pl = pilePos(i, 420);
+      out[i] = {
+        x: lerp(bl.x, pl.x, back), y: lerp(bl.y, pl.y, back),
+        rot: lerp(bl.rot, pl.rot, back),
+        w: lerp(bl.w, CARD_W, back),
+        h: lerp(bl.h, CARD_H, back),
+        z: lerp(bl.z, pl.z, back),
+        glow: (1 - back) * 0.85
+      };
+    }
+
+  } else if (ph === 'H'){
+    /* 冷场 2.767 s：先极慢归位到单叠，然后几乎完全不动。
+       原作这段 118.5–119.6 s 的 pix_diff 均值 0.89 —— 是「近乎不动」。 */
+    const u = clamp((t - PH.H) / 0.72, 0, 1);
+    const back = smooth(u);
+    for (let i = 0; i < 52; i++){
+      const pl = pilePos(i, 420), dk = deckPos(i);
+      out[i] = {
+        x: lerp(pl.x, dk.x, back), y: lerp(pl.y, dk.y, back),
+        rot: lerp(pl.rot, 0, back), w: CARD_W, h: CARD_H,
+        z: lerp(pl.z, dk.z, back)
+      };
+    }
+
+  } else if (ph === 'I'){
+    /* 七次洗牌：每次循环 = 两叠分开 → 主接触 → 2–3 个快速子脉冲 → 归零重来 */
+    let k = 0;
+    for (let j = 0; j < 7; j++) if (t >= CYCLES[j].s && t < CYCLES[j].e) k = j;
+    const cy = CYCLES[k];
+    const u = clamp((t - cy.s) / cy.L, 0, 1);
+    /* 变体基准长度 0.667 / 0.634，实测循环 0.633–0.667，按长度等比缩放 */
+    const kind = k % 2;
+    const sc = cy.L / BEAT.alt[kind].base;
+    const offs = BEAT.offsets(kind).map(v => v * sc);
+
+    const split = clamp(u / 0.58, 0, 1);           // 前 58% 匀速分开
+    const tm = cy.s + offs[0];
+    const m = clamp((t - tm) / (2 / FPS), 0, 1);   // 主接触占 2 帧
+
+    let pulse = 0;
+    for (let n = 1; n < offs.length; n++){
+      const rel = offs[n] - offs[n - 1];
+      const dt = t - (cy.s + offs[n]);
+      const win = clamp(rel, 2 / FPS, 0.075);
+      if (dt >= 0 && dt < win) pulse += Math.sin((dt / win) * Math.PI) * (1 - (n - 1) * 0.30);
+    }
+    const open = (1 - m) * split;                  // 1 → 打开，0 → 合上
+
+    for (let i = 0; i < 52; i++){
+      const b = pilePos(i, 55 + 700 * open);
+      const side = i % 2;
+      const s = { x: b.x, y: b.y, rot: b.rot, w: CARD_W, h: CARD_H, z: b.z };
+      /* 分开时两叠各向外倾一点，主接触时拍平 —— 折叠式的洗牌，而不是整块平移 */
+      const tilt = 0.075 * open;
+      lean(s, (side ? 1 : -1) * tilt, b.x + (side ? 1 : -1) * 150, b.y + 40);
+      /* 子脉冲：整叠在桌面平面内的一次轻磕 */
+      s.x += pulse * (side ? 1 : -1) * 18 * (0.6 + 0.7 * rnd(i, 4));
+      s.rot += pulse * 0.012;
+      out[i] = s;
+    }
+
+  } else {
+    /* 收尾：静止，只做曝光收敛，不做新动作 */
+    for (let i = 0; i < 52; i++) out[i] = deckPos(i);
+  }
+
+  return out;
+}
+
+/* ───────────────────── 相机：一条连续镜头，全片无剪切 ───────────────────── */
+/* 原片相位实测的 hero 占幅：交织 0.901 / 压合 0.854 / 冷场 0.854 宽，但冷场那段
+   亮面只占 4.7% 画幅 —— 是一小叠牌被推远，不是一块铺满的板。旧版全片 s≈1.0，
+   冷场仍是 27.5% 的大板，读起来不像「安静下来」。 */
+function camAt(t){
+  const u = t / DUR;
+  let s = 1.00 + 0.045 * u;
+  if (t >= PH.H){
+    /* 冷场推远：0.55 s 过渡，之后再缓慢推回一点。
+       2026-10-27 复查：0.66 只把牌堆从 0.879 W 收到 0.663 W（7.2% 画幅），
+       原片冷场是 0.237 W / 4.0% 画幅 —— 是一小叠被推远，不是近满幅的一块板。
+       按实测斜率 0.657 W/单位收，0.36 → 宽约 0.237 W（原片 0.237），再靠 back 缓慢推回。 */
+    const k = smooth(clamp((t - PH.H) / 0.55, 0, 1));
+    const back = smooth(clamp((t - PH.H - 2.2) / 1.6, 0, 1));
+    s = lerp(s, 0.36, k) + back * 0.03;
+  }
+  return { s: s, x: 16 * u - 8, y: -10 * u + 5 };
+}
+
+/* ───────────────────── 绘制 ───────────────────── */
+const canvas = document.getElementById('scene');
+const ctx = canvas.getContext('2d', { alpha: false });
+
+function drawTable(g, t){
+  const grd = g.createLinearGradient(0, 0, 0, H);
+  grd.addColorStop(0, '#161a22');
+  grd.addColorStop(0.52, '#12151c');
+  grd.addColorStop(1, '#0b0d11');
+  g.fillStyle = grd; g.fillRect(0, 0, W, H);
+
+  const rg = g.createRadialGradient(CX, CY - 120, 80, CX, CY - 120, 880);
+  rg.addColorStop(0, 'rgba(96,124,146,0.16)');
+  rg.addColorStop(0.55, 'rgba(60,80,96,0.06)');
+  rg.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = rg; g.fillRect(0, 0, W, H);
+}
+
+function drawCard(g, s){
+  const w = s.w, h = s.h;
+  const hue = (s.i / 52) * 330;
+  g.save();
+  g.translate(s.x, s.y);
+  g.rotate(s.rot);
+
+  /* 厚度面：下方一条暗色带，让相邻牌之间出现「间隙」。
+     2026-10-27 复查：1.4 px 的暗带比 3.1 px 的层距还窄，52 条边互相贴死，
+     叠出来是一条平滑渐变带（竖切只有 5 条边线），原片同段有 51 条。
+     暗带加宽到 2.2 px，剩余 0.9 px 亮缝 → 每张牌一条可分辨的色线。 */
+  g.fillStyle = 'rgba(4,5,8,0.96)';
+  roundRect(g, -w / 2, -h / 2 + 1.55, w, h, 7); g.fill();
+
+  /* 牌面亮度按原片实测校准：交织段面均值 70.5 / 压合 66.1 / 冷场 54.3。
+     旧版 #252b36→#141821 只到 40，整片比原片暗一档，滚边因此读不出「黑底上的亮牌」。 */
+  const fg = g.createLinearGradient(0, -h / 2, 0, h / 2);
+  fg.addColorStop(0, '#4a5262');
+  fg.addColorStop(0.62, '#333a46');
+  fg.addColorStop(1, '#232833');
+  g.fillStyle = fg;
+  roundRect(g, -w / 2, -h / 2, w, h, 7); g.fill();
+
+  /* 冲击帧的亮面：原片 116.667 s 有 10.5% 画面是亮牌面（facePct），
+     本页同帧只有 0.5% —— 散开的牌全是暗面。用 s.glow 把牌面抬亮，
+     只改亮度不改色相，彩边仍是 52 条。 */
+  if (s.glow > 0 && isFinite(s.glow)){
+    g.fillStyle = 'rgba(236,232,214,' + (0.72 * s.glow).toFixed(3) + ')';
+    roundRect(g, -w / 2, -h / 2, w, h, 7); g.fill();
+  }
+
+  /* 牌边：细彩虹描边 —— 堆叠时 52 条边就是那条彩带。
+     线宽 1.4 / 宽度比例 0.0068 在 1180 px 的大牌上是 8 px，正好盖住整条缝，
+     于是彩带变成一整块，不是 52 条。压到 1.1 px 固定，只留一条边。 */
+  g.strokeStyle = 'hsla(' + hue.toFixed(1) + ' 88% 66% / 0.55)';
+  g.lineWidth = 1.1;
+  roundRect(g, -w / 2, -h / 2 + 0.4, w, h, 7); g.stroke();
+  /* 可见的那一条边：整叠时每张牌只露出底缘 1.55 px，靠描边只留下 0.9 px 半透明线，
+     实测彩边占比因此掉到 4.5%（原片同段 27.5%）。这里把底缘画成一条实色带，
+     宽度小于层距，条数仍是 52 条。 */
+  const edgeH = Math.min(1.7, Math.max(1.1, w * 0.0016));
+  g.fillStyle = 'hsl(' + hue.toFixed(1) + ' 92% 64%)';
+  g.fillRect(-w / 2 + 2, h / 2 - edgeH, w - 4, edgeH);
+
+  /* 面内细线：靠近前缘的一道浅色线，大牌才画 */
+  if (w > 140){
+    /* 面的掠光：原片面内 p10→p90 是 26→104，几乎是一块有方向的亮面，
+       旧版 78 的上限让大牌读成一块均匀的灰板。 */
+    const sheen = g.createLinearGradient(-w / 2, -h / 2, w / 2, h / 2);
+    sheen.addColorStop(0, 'rgba(196,208,222,0.16)');
+    sheen.addColorStop(0.45, 'rgba(150,166,184,0.05)');
+    sheen.addColorStop(0.78, 'rgba(60,72,88,0.10)');
+    sheen.addColorStop(1, 'rgba(20,26,34,0.22)');
+    g.fillStyle = sheen;
+    roundRect(g, -w / 2, -h / 2, w, h, 7); g.fill();
+
+    g.strokeStyle = 'hsla(' + hue.toFixed(1) + ' 46% 74% / 0.13)';
+    g.lineWidth = 1;
+    roundRect(g, -w / 2 + 9, -h / 2 + 9, w - 18, h - 18, 5); g.stroke();
+    g.strokeStyle = 'rgba(214,228,238,0.10)';
+    g.beginPath();
+    g.moveTo(-w / 2 + 16, h / 2 - 16); g.lineTo(w / 2 - 16, h / 2 - 16);
+    g.stroke();
+  }
+  g.restore();
+}
+
+function drawPips(g, t){
+  const y = 197, r = 8, x0 = 821, dx = 46;
+  let filled = 0;
+  for (let k = 0; k < 7; k++) if (t >= PIPS[k]) filled = k + 1;
+
+  for (let k = 0; k < 7; k++){
+    const x = x0 + k * dx;
+    const hue = (k / 7) * 320;
+    g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2);
+    g.strokeStyle = 'hsla(' + hue.toFixed(1) + ' 70% 62% / 0.42)';
+    g.lineWidth = 1.6; g.stroke();
+    if (k < filled){
+      const u = clamp((t - PIPS[k]) / 0.05, 0, 1);
+      g.beginPath(); g.arc(x, y, r * u, 0, Math.PI * 2);
+      g.fillStyle = 'hsl(' + hue.toFixed(1) + ' 78% 62%)';
+      g.fill();
+    }
+  }
+  g.font = '600 21px ui-monospace, Menlo, Consolas, monospace';
+  g.textAlign = 'left'; g.textBaseline = 'middle';
+  g.fillStyle = filled ? 'rgba(226,236,242,0.84)' : 'rgba(226,236,242,0.30)';
+  g.fillText(filled ? '洗 ' + filled + ' 次' : '洗牌计数', x0 + 7 * dx, y + 1);
+}
+
+const PHASE_LABEL = {
+  A: 'A 两叠分离', B: 'B 交织 平台 1.467 s', C: 'C 压合 0.167 s',
+  D: 'D 落定 0.233 s', E: 'E 短读定 0.100 s', F: 'F 摊开',
+  G: 'G 冲击', H: 'H 冷场 2.767 s', I: 'I 重复 0.633–0.667 s',
+  J: 'J 收尾'
+};
+
+function draw(g, t, scale){
+  const k = scale || 1;
+  const cam = camAt(t);
+  g.setTransform(k, 0, 0, k, 0, 0);
+  drawTable(g, t);
+
+  /* 顶部章节条：自拟文字，不是原片文案 */
+  g.save();
+  g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+  g.font = '500 19px ui-monospace, Menlo, Consolas, monospace';
+  g.fillStyle = 'rgba(196,212,224,0.86)';
+  g.fillText('05 ／ 洗牌', 110, 168);
+  g.font = '400 16px ui-monospace, Menlo, Consolas, monospace';
+  g.fillStyle = 'rgba(176,196,210,0.72)';
+  g.fillText('重复 7 次，观察排列是否真的改变了', 110, 132);
+  g.restore();
+
+  if (t >= PH.I - 1.2) drawPips(g, t);
+
+  /* 桌面组：错切 + 极慢推 */
+  g.save();
+  g.translate(W / 2, H / 2);
+  g.scale(cam.s, cam.s);
+  g.translate(-W / 2 - cam.x, -H / 2 - cam.y);
+  g.transform(1, 0, SKEW, 1, -SKEW * CY, 0);
+
+  /* 落影：一条椭圆软影，给牌堆重量 */
+  const sg = g.createRadialGradient(CX, CY + 78, 40, CX, CY + 78, 760);
+  sg.addColorStop(0, 'rgba(0,0,0,0.55)');
+  sg.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = sg;
+  g.beginPath(); g.ellipse(CX, CY + 78, 720, 150, 0, 0, Math.PI * 2); g.fill();
+
+  const list = cardsAt(t);
+  for (let i = 0; i < 52; i++) list[i].i = i;
+  list.sort((a, b) => a.z - b.z);
+  for (let n = 0; n < list.length; n++) drawCard(g, list[n]);
+  g.restore();
+
+  /* 角标：阶段与时间，纯注释，便于定格比对 */
+  const fade = t < SILENCE_START ? 1 : clamp(1 - (t - SILENCE_START) / 0.6, 0, 1);
+  g.save();
+  g.globalAlpha = fade;
+  g.font = '600 19px ui-monospace, Menlo, Consolas, monospace';
+  g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+  g.fillStyle = 'rgba(190,206,218,0.88)';
+  g.fillText(PHASE_LABEL[phaseKey(t)], 110, 962);
+  g.font = '400 16px ui-monospace, Menlo, Consolas, monospace';
+  g.fillStyle = 'rgba(168,186,200,0.74)';
+  g.fillText('t = ' + t.toFixed(3) + ' s   f = ' + String(Math.round(t * FPS)).padStart(3, '0') +
+             '   单镜 · 无剪切', 110, 992);
+  g.fillStyle = 'rgba(150,168,182,0.46)';
+  g.fillRect(110, 1008, 1700 * clamp(t / DUR, 0, 1), 1.5);
+  g.restore();
+
+  /* 冲击瞬间的曝光抬升：原作 116.4 s val 58.3 → 116.7 s 77.1，0.3 s 内回落。
+     用 radial 而不是整幅压白，保留深底与角标的对比。 */
+  if (t >= PH.G && t < PH.G + 0.30){
+    /* 2026-10-27 复查：0.34 / 1080 px 的径向补光把整幅底面抬到 47（原片 31），
+       彩边饱和降到 10.5（原片 32.7），冲击读成一层灰雾而不是「牌炸开」。
+       收成 0.16 / 760 px：只压亮牌堆附近的台面，不动整幅中位。 */
+    const u = (t - PH.G) / 0.30;
+    const a = 0.16 * Math.pow(1 - u, 1.6);
+    const fg = g.createRadialGradient(CX, CY - 90, 60, CX, CY - 90, 760);
+    fg.addColorStop(0, 'rgba(232,238,224,' + a.toFixed(4) + ')');
+    fg.addColorStop(1, 'rgba(232,238,224,0)');
+    g.fillStyle = fg; g.fillRect(0, 0, W, H);
+  }
+
+  /* 结尾压暗（不是切镜，是曝光收敛） */
+  if (t > REPEAT_END){
+    const u = clamp((t - REPEAT_END) / (DUR - REPEAT_END), 0, 1);
+    g.fillStyle = 'rgba(6,8,10,' + (0.78 * smooth(u)).toFixed(3) + ')';
+    g.fillRect(0, 0, W, H);
+  }
+}
+
+/* ───────────────────── 声音：7 Hz 颗粒层 + 0.279 s 呼吸孔 ───────────────────── */
+const GRAINS = (() => {
+  const ev = [];
+  let t = 0.02, k = 0;
+  while (t < SILENCE_START){
+    let ct = t;
+    while (ct < t + 0.59){
+      ev.push({
+        t: ct, kind: 'grain',
+        f: 1200 + 2400 * hash(k * 3.13),
+        q: 6 + 7 * hash(k * 1.71),
+        g: 0.30 + 0.45 * hash(k * 5.37),
+        pan: (hash(k * 9.71) - 0.5) * 0.8
+      });
+      k++;
+      ct += 0.117 + 0.069 * hash(k * 11.3);      // 0.117–0.186 s
+    }
+    t = ct + 0.279;
+  }
+  ev.push({ t: PH.G, kind: 'impact', f: 90, q: 0.7, g: 1.0, pan: 0 });
+  ev.sort((a, b) => a.t - b.t);
+  return ev;
+})();
+
+const Snd = {
+  ac: null, master: null, noise: null, epoch: 0, next: 0, playing: false,
+
+  init(){
+    if (this.ac) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    this.ac = new AC();
+    this.master = this.ac.createGain();
+    this.master.gain.value = 0.45;
+    this.master.connect(this.ac.destination);
+    const len = Math.floor(this.ac.sampleRate * 0.5);
+    this.noise = this.ac.createBuffer(1, len, this.ac.sampleRate);
+    const d = this.noise.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  },
+
+  start(at){
+    this.init();
+    if (!this.ac) return;
+    this.ac.resume();
+    this.epoch = this.ac.currentTime - at;
+    this.next = 0;
+    while (this.next < GRAINS.length && GRAINS[this.next].t < at) this.next++;
+    this.playing = true;
+  },
+
+  stop(){
+    this.playing = false;
+    if (this.ac && this.ac.state === 'running') this.ac.suspend();
+  },
+
+  tick(at){
+    if (!this.playing || !this.ac) return;
+    const horizon = at + 0.35;
+    while (this.next < GRAINS.length && GRAINS[this.next].t <= horizon){
+      const ev = GRAINS[this.next++];
+      this.schedule(ev, this.epoch + ev.t);
+    }
+  },
+
+  schedule(ev, when){
+    const ac = this.ac;
+    if (when < ac.currentTime - 0.05) return;
+    const src = ac.createBufferSource();
+    src.buffer = this.noise;
+    const bp = ac.createBiquadFilter();
+    const gain = ac.createGain();
+    const pan = ac.createStereoPanner ? ac.createStereoPanner() : null;
+
+    if (ev.kind === 'impact'){
+      bp.type = 'lowpass'; bp.frequency.value = 220; bp.Q.value = 0.9;
+      gain.gain.setValueAtTime(0.0001, when);
+      gain.gain.exponentialRampToValueAtTime(ev.g, when + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, when + 0.55);
+    } else {
+      bp.type = 'bandpass'; bp.frequency.value = ev.f; bp.Q.value = ev.q;
+      const d = 0.03 + 0.05 * hash(ev.f);
+      gain.gain.setValueAtTime(0.0001, when);
+      gain.gain.exponentialRampToValueAtTime(ev.g * 0.5, when + 0.006);
+      gain.gain.exponentialRampToValueAtTime(0.0001, when + d);
+    }
+    src.connect(bp); bp.connect(gain);
+    if (pan){ gain.connect(pan); pan.pan.value = ev.pan; pan.connect(this.master); }
+    else gain.connect(this.master);
+    src.start(when);
+    src.stop(when + 0.7);
+  }
+};
+
+/* ───────────────────── 状态与循环 ───────────────────── */
+const state = { t: 0, playing: false, last: 0, soundOn: false };
+function pad3(n){ return String(n).padStart(3, '0'); }
+
+function drawAll(){
+  draw(ctx, state.t);
+  const f = Math.round(state.t * FPS);
+  document.getElementById('tc').textContent = 'f' + pad3(f) + ' ／ ' + state.t.toFixed(3) + ' s';
+  const seek = document.getElementById('seek');
+  if (seek.value !== String(f)) seek.value = String(f);
+
+  const ph = phaseKey(state.t);
+  document.getElementById('vPhase').textContent = PHASE_LABEL[ph];
+  document.getElementById('vTime').textContent = f + ' / ' + state.t.toFixed(3) + ' s';
+  document.getElementById('vCam').textContent = '无剪切 · ' + camAt(state.t).s.toFixed(3) + '×';
+
+  let filled = 0;
+  for (let k = 0; k < 7; k++) if (state.t >= PIPS[k]) filled = k + 1;
+  document.getElementById('vPips').textContent = filled + ' / 7';
+
+  document.querySelectorAll('#phaseTable tr[data-k]').forEach(tr => {
+    tr.classList.toggle('on', tr.dataset.k === ph);
+  });
+  /* 面板的 pix_diff 只在暂停时算：播放时每帧两次低分辨率渲染会拖慢 rAF */
+  if (!state.playing){
+    document.getElementById('vPix').textContent = quickPix(state.t).toFixed(2);
+  } else {
+    document.getElementById('vPix').textContent = '播放中（暂停后量）';
+  }
+}
+
+/* 自检用的低分辨率画布：按自己的尺寸原生渲染，避免每帧缩放 1920 的整幅 */
+const MC = document.createElement('canvas');
+MC.width = 400; MC.height = 225;
+const mctx = MC.getContext('2d', { willReadFrequently: true });
+const MSC = MC.width / W;
+
+function renderSmall(t){
+  mctx.setTransform(1, 0, 0, 1, 0, 0);
+  mctx.globalAlpha = 1; mctx.globalCompositeOperation = 'source-over';
+  mctx.fillStyle = '#000'; mctx.fillRect(0, 0, MC.width, MC.height);
+  draw(mctx, t, MSC);
+  return mctx.getImageData(0, 0, MC.width, MC.height).data;
+}
+
+function grayOf(d, n){
+  const g = new Float32Array(n);
+  for (let i = 0; i < n; i++){
+    const j = i * 4;
+    g[i] = 0.299 * d[j] + 0.587 * d[j + 1] + 0.114 * d[j + 2];
+  }
+  return g;
+}
+/* 与原作度量一致：逐像素灰度差的绝对值均值（0–255 灰阶） */
+function pixDiff(a, b){
+  const n = a.length / 4;
+  let s = 0;
+  for (let i = 0; i < n; i++){
+    const j = i * 4;
+    s += Math.abs((0.299 * a[j] + 0.587 * a[j + 1] + 0.114 * a[j + 2]) -
+                  (0.299 * b[j] + 0.587 * b[j + 1] + 0.114 * b[j + 2]));
+  }
+  return s / n;
+}
+
+/* 整帧降采样后的自相似度：原作在 119.4–124.2 s 上用它得到 0.667 s / r=0.79。
+   这里用同一条方法量本页自己的重复段，作为"是否真的带周期"的判据。 */
+function selfSim(ser, a, b, lagSec){
+  const v = ser.filter(r => r.t > a && r.t <= b).map(r => r.pd);
+  const lag = Math.round(lagSec * FPS);
+  let num = 0, da = 0, db = 0;
+  let ma = 0, mb = 0, m = 0;
+  for (let i = lag; i < v.length; i++){ ma += v[i]; mb += v[i - lag]; m++; }
+  ma /= m; mb /= m;
+  for (let i = lag; i < v.length; i++){
+    const x = v[i] - ma, y = v[i - lag] - mb;
+    num += x * y; da += x * x; db += y * y;
+  }
+  return num / Math.sqrt(da * db);
+}
+
+function quickPix(t){
+  const f = Math.round(t * FPS);
+  const a = renderSmall((f - 1) / FPS);
+  const b = renderSmall(f / FPS);
+  return pixDiff(a, b);
+}
+
+let rafId = null;
+function loop(ts){
+  if (!state.playing) return;
+  if (!state.last) state.last = ts;
+  const dt = (ts - state.last) / 1000;
+  state.last = ts;
+  state.t += Math.min(dt, 0.1);
+  if (state.t >= DUR){ state.t = DUR; setPlaying(false); drawAll(); return; }
+  drawAll();
+  Snd.tick(state.t);
+  rafId = requestAnimationFrame(loop);
+}
+
+function setPlaying(on){
+  state.playing = on;
+  state.last = 0;
+  const b = document.getElementById('play');
+  b.textContent = on ? '暂停' : '播放';
+  b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  if (on){
+    if (state.t >= DUR) state.t = 0;
+    if (state.soundOn) Snd.start(state.t);
+    rafId = requestAnimationFrame(loop);
+  } else {
+    if (rafId) cancelAnimationFrame(rafId);
+    if (state.soundOn) Snd.stop();
+  }
+}
+
+/* ───────────────────── 测量 ───────────────────── */
+let _seriesCache = null;
+function series(force){
+  if (_seriesCache && !force) return _seriesCache;
+  const out = [];
+  let prev = renderSmall(0);
+  for (let f = 1; f <= FRAMES; f++){
+    const cur = renderSmall(f / FPS);
+    out.push({ f, t: f / FPS, pd: pixDiff(prev, cur) });
+    prev = cur;
+  }
+  _seriesCache = out;
+  return out;
+}
+
+function stats(arr){
+  if (!arr.length) return { n: 0, mean: 0, min: 0, max: 0, std: 0 };
+  let s = 0, mn = Infinity, mx = -Infinity;
+  for (const v of arr){ s += v; if (v < mn) mn = v; if (v > mx) mx = v; }
+  const mean = s / arr.length;
+  let q = 0;
+  for (const v of arr) q += (v - mean) * (v - mean);
+  return { n: arr.length, mean, min: mn, max: mx, std: Math.sqrt(q / arr.length) };
+}
+
+function band(ser, a, b){ return ser.filter(r => r.t > a && r.t <= b).map(r => r.pd); }
+
+function autocorrPeak(ser, a, b, lo, hi){
+  const v = ser.filter(r => r.t > a && r.t <= b).map(r => r.pd);
+  const mean = v.reduce((x, y) => x + y, 0) / v.length;
+  const c = v.map(x => x - mean);
+  let den = 0; for (const x of c) den += x * x;
+  const minLag = Math.round(lo * FPS), maxLag = Math.round(hi * FPS);
+  const out = [];
+  for (let lag = minLag; lag <= maxLag; lag++){
+    let s = 0;
+    for (let i = lag; i < c.length; i++) s += c[i] * c[i - lag];
+    out.push({ lag, sec: lag / FPS, r: den ? s / den : 0 });
+  }
+  out.sort((p, q) => q.r - p.r);
+  return out[0];
+}
+
+function measureAll(){
+  const log = document.getElementById('log');
+  log.textContent = '逐帧渲染中…（480 帧）';
+  setTimeout(() => {
+    const ser = series();
+    const all = ser.map(r => r.pd).sort((x, y) => x - y);
+    const med = all[Math.floor(all.length / 2)];
+    const S = {
+      A: stats(band(ser, PH.A, PH.B)),
+      B: stats(band(ser, PH.B, PH.C)),
+      C: stats(band(ser, PH.C, PH.D)),
+      D: stats(band(ser, PH.D, PH.E)),
+      E: stats(band(ser, PH.E, PH.F)),
+      F: stats(band(ser, PH.F, PH.G)),
+      G: stats(band(ser, PH.G, PH.G + 0.10)),
+      Gdec: stats(band(ser, PH.G + 0.10, PH.H)),
+      H: stats(band(ser, PH.H, PH.I)),
+      I: stats(band(ser, PH.I, REPEAT_END)),
+      J: stats(band(ser, REPEAT_END, DUR))
+    };
+    const impactPeak = Math.max.apply(null, band(ser, PH.G, PH.G + 0.10));
+    const braidFlat = S.B.max / Math.max(S.B.mean, 1e-6);
+    const ac = autocorrPeak(ser, PH.I, REPEAT_END, 0.40, 1.00);
+    const nSpikeCold = band(ser, PH.H + 0.8, PH.I).filter(v => v > 3).length;
+
+    const NAME = { A:'A 分离', B:'B 交织', C:'C 压合', D:'D 落定', E:'E 短读', F:'F 摊开',
+                   G:'G 冲击', Gdec:'G 衰减', H:'H 冷场', I:'I 重复', J:'J 收尾' };
+    const lines = [];
+    lines.push('段        n   mean    min    max    std');
+    for (const k of ['A','B','C','D','E','F','G','Gdec','H','I','J']){
+      const s = S[k];
+      lines.push((NAME[k] + '        ').slice(0, 8) + ' ' +
+        String(s.n).padStart(4) + ' ' + s.mean.toFixed(2).padStart(6) + ' ' +
+        s.min.toFixed(2).padStart(6) + ' ' + s.max.toFixed(2).padStart(6) + ' ' +
+        s.std.toFixed(2).padStart(6));
+    }
+    lines.push('');
+    lines.push('判据（形状，不是绝对值）');
+    lines.push('  交织平台 max/mean = ' + braidFlat.toFixed(2) + '  ' +
+               (braidFlat < 1.60 ? 'OK' : '偏抖') + '   （原作 2.45/2.32 = 1.06）');
+    lines.push('  压合峰值 / 交织均值 = ' + (S.C.max / S.B.mean).toFixed(2) + '  ' +
+               (S.C.max / S.B.mean > 1.05 ? 'OK' : '偏弱') + '   （原作 4.57/2.32 = 1.97）');
+    lines.push('  落定 / 交织均值 = ' + (S.D.mean / S.B.mean).toFixed(2) + '  ' +
+               (S.D.mean / S.B.mean < 0.50 ? 'OK' : '偏动') + '   （原作 0.64/2.32 = 0.28）');
+    const impX = impactPeak / Math.max(1e-6, med);
+    lines.push('  冲击峰值 ' + impactPeak.toFixed(2) + ' / 全片中位 ' + med.toFixed(2) +
+               ' = ' + impX.toFixed(1) + '×   （原作 28×；本页达不到，见页脚说明）');
+    lines.push('  冷场段 >3 的尖峰数 = ' + nSpikeCold + '  ' + (nSpikeCold === 0 ? 'OK' : '有尖峰'));
+    lines.push('  冷场长度 = ' + (PH.I - PH.H).toFixed(3) + ' s   （原作 2.767 s）');
+    lines.push('  重复段自相关主峰 ' + ac.sec.toFixed(3) + ' s，r = ' + ac.r.toFixed(2) +
+               '   （原作 0.667 s，r = 0.21）');
+    /* 自相似度：原作在 119.4–124.2 s 用同一方法得到 0.667 s / r=0.79；对照窗口应单调衰减 */
+    const ss = [];
+    for (let lag = 0.2; lag <= 1.2001; lag += 1 / FPS){
+      ss.push({ lag, r: selfSim(ser, PH.I, REPEAT_END, lag) });
+    }
+    const ssPeak = ss.reduce((p2, q) => q.r > p2.r ? q : p2);
+    const ssAt = lag => selfSim(ser, PH.I, REPEAT_END, lag);
+    lines.push('  重复段自相似度主峰 ' + ssPeak.lag.toFixed(3) + ' s，r = ' + ssPeak.r.toFixed(2) +
+               '   （原作 0.667 s，r = 0.79）；邻值 0.600 s = ' + ssAt(0.600).toFixed(2) +
+               '、0.833 s = ' + ssAt(0.833).toFixed(2));
+    const ctrl = [
+      ['0.0–3.6 ', 0.20, 3.60],
+      ['5.9–8.6 ', PH.H + 0.2, PH.I],
+      ['13.4–15.9', REPEAT_END + 0.2, DUR - 0.05]
+    ];
+    lines.push('  对照窗口自相似度（0.25 s → 1.05 s，应单调衰减）');
+    for (const c of ctrl){
+      lines.push('    ' + c[0] + '  ' + selfSim(ser, c[1], c[2], 0.25).toFixed(2) +
+                 ' → ' + selfSim(ser, c[1], c[2], 1.05).toFixed(2));
+    }
+    log.textContent = lines.join('\n');
+    window.__lastMeasure = { S, braidFlat, impactPeak, med, ac, nSpikeCold, ssPeak };
+  }, 20);
+}
+
+function measureCycles(){
+  const log = document.getElementById('log');
+  log.textContent = '逐帧渲染中…';
+  setTimeout(() => {
+    const ser = series();
+    const lines = ['七次洗牌：循环边界与周期'];
+    for (let k = 0; k < 7; k++){
+      const c = CYCLES[k];
+      lines.push('  #' + (k + 1) + '  ' + c.s.toFixed(3) + ' → ' + c.e.toFixed(3) +
+                 '   L = ' + c.L.toFixed(4) + ' s   变体 ' + (k % 2 ? 'B' : 'A'));
+    }
+    const diffs = [];
+    for (let k = 1; k < 7; k++) diffs.push(PIPS[k] - PIPS[k - 1]);
+    lines.push('  间隔 ' + diffs.map(v => v.toFixed(3)).join(' / '));
+    const avg = diffs.reduce((a, b) => a + b, 0) / diffs.length;
+    lines.push('  均值 ' + avg.toFixed(4) + ' s → ' + (60 / avg).toFixed(1) + ' 次/分');
+    const ac = autocorrPeak(ser, PH.I, REPEAT_END, 0.40, 1.00);
+    lines.push('  pix_diff 自相关主峰 ' + ac.sec.toFixed(3) + ' s，r = ' + ac.r.toFixed(2));
+    let best = { lag: 0, r: -1 };
+    for (let lag = 0.4; lag <= 1.0001; lag += 1 / FPS){
+      const r = selfSim(ser, PH.I, REPEAT_END, lag);
+      if (r > best.r) best = { lag, r };
+    }
+    lines.push('  自相似度主峰 ' + best.lag.toFixed(3) + ' s，r = ' + best.r.toFixed(2));
+    const inCyc = ser.filter(r => r.t > PH.I && r.t <= REPEAT_END);
+    const hold = inCyc.filter(r => r.pd < 1).length;
+    lines.push('  静止帧占比（pd<1）= ' + (100 * hold / inCyc.length).toFixed(0) + '%');
+    log.textContent = lines.join('\n');
+  }, 20);
+}
+
+/* ───────────────────── 交互 ───────────────────── */
+document.getElementById('play').addEventListener('click', () => setPlaying(!state.playing));
+document.getElementById('prev').addEventListener('click', () => {
+  setPlaying(false);
+  state.t = clamp((Math.round(state.t * FPS) - 1) / FPS, 0, DUR); drawAll();
+});
+document.getElementById('next').addEventListener('click', () => {
+  setPlaying(false);
+  state.t = clamp((Math.round(state.t * FPS) + 1) / FPS, 0, DUR); drawAll();
+});
+document.getElementById('seek').addEventListener('input', e => {
+  setPlaying(false);
+  state.t = clamp(Number(e.target.value) / FPS, 0, DUR); drawAll();
+});
+document.getElementById('sound').addEventListener('click', e => {
+  state.soundOn = !state.soundOn;
+  e.currentTarget.setAttribute('aria-pressed', state.soundOn ? 'true' : 'false');
+  e.currentTarget.textContent = state.soundOn ? '声音开' : '声音';
+  if (state.soundOn && state.playing) Snd.start(state.t);
+  if (!state.soundOn) Snd.stop();
+});
+document.getElementById('mAll').addEventListener('click', measureAll);
+document.getElementById('mCyc').addEventListener('click', measureCycles);
+document.getElementById('png').addEventListener('click', () => {
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = 'repro-shuffle-' + state.t.toFixed(3).replace('.', 'p') + '.png';
+  a.click();
+});
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.code === 'Space'){ e.preventDefault(); setPlaying(!state.playing); }
+  if (e.code === 'ArrowLeft'){ setPlaying(false); state.t = clamp((Math.round(state.t * FPS) - 1) / FPS, 0, DUR); drawAll(); }
+  if (e.code === 'ArrowRight'){ setPlaying(false); state.t = clamp((Math.round(state.t * FPS) + 1) / FPS, 0, DUR); drawAll(); }
+  if (e.key === '['){ setPlaying(false); state.t = clamp(state.t - 0.5, 0, DUR); drawAll(); }
+  if (e.key === ']'){ setPlaying(false); state.t = clamp(state.t + 0.5, 0, DUR); drawAll(); }
+});
+
+/* 时间轴刻度 */
+(function marks(){
+  const box = document.getElementById('marks');
+  [[PH.B, '交织'], [PH.C, '压合'], [PH.G, '冲击'], [PH.H, '冷场'], [PH.I, '重复'], [REPEAT_END, '收尾']]
+    .forEach(item => {
+      const s = document.createElement('span');
+      s.textContent = item[1];
+      s.style.left = (item[0] / DUR * 100) + '%';
+      box.appendChild(s);
+    });
+})();
+
+/* 定格参数 */
+(function boot(){
+  const p = new URLSearchParams(location.search);
+  if (p.has('t')){
+    const v = parseFloat(p.get('t'));
+    state.t = isFinite(v) ? clamp(v, 0, DUR) : 0;
+  }
+  if (p.get('sound') === '1'){
+    state.soundOn = true;
+    const sb = document.getElementById('sound');
+    sb.setAttribute('aria-pressed', 'true'); sb.textContent = '声音开';
+  }
+  drawAll();
+})();
+
+/* 供验证脚本调用 */
+window.__repro = {
+  get duration(){ return DUR; },
+  get fps(){ return FPS; },
+  get pips(){ return PIPS.slice(); },
+  get cycles(){ return CYCLES.map(c => ({ s: c.s, e: c.e, L: c.L })); },
+  get phases(){ return Object.assign({}, PH); },
+  setTime(t){ state.t = clamp(t, 0, DUR); state.playing = false; drawAll(); return state.t; },
+  canvas,
+  toDataURL(){ return canvas.toDataURL('image/png'); },
+  measureAll, measureCycles, series,
+  /* 只扫一个时间窗，用于在浏览器里逐帧看某一段，避免整片重算 */
+  scan(a, b){
+    const out = [];
+    let prev = renderSmall(a);
+    const f0 = Math.ceil(a * FPS), f1 = Math.floor(b * FPS);
+    for (let f = f0 + 1; f <= f1; f++){
+      const cur = renderSmall(f / FPS);
+      out.push({ t: f / FPS, pd: +pixDiff(prev, cur).toFixed(2) });
+      prev = cur;
+    }
+    return out;
+  },
+  ready: true
+};
+})();
+</script>
+</body>
+</html>

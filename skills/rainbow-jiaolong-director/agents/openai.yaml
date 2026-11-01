@@ -1,0 +1,6 @@
+interface:
+  display_name: "蛟龙号电影科普导演"
+  short_description: "蛟龙号深海科普片电影化导演与逐段验收"
+  default_prompt: "使用 $rainbow-jiaolong-director 重新设计一部科学严谨、电影化且可验收的蛟龙号深海科普片。"
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,9 @@
+{
+  "repository": "https://github.com/Vincentwei1021/video-shotcraft",
+  "commit": "1266a3ec4831289c4d893d42dd5102723658039a",
+  "commit_date": "2026-10-30T00:17:26+08:00",
+  "license": "Apache-2.0",
+  "installed_at": "2026-10-30",
+  "installed_by": "Claude Code on user request",
+  "notes": "Full clone minus .git. gallery mp4 samples are not in git; fetch with gallery/fetch-media.sh if needed."
+}

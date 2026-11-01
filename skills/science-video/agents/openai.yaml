@@ -1,0 +1,4 @@
+interface:
+  display_name: "科普视频"
+  short_description: "故事化科普视频制作：连续运镜、科学可视化、首尾帧转场与逐镜验收"
+  default_prompt: "使用 $science-video 制作或优化一部故事清楚、画面精致、运镜连贯的科普视频。"

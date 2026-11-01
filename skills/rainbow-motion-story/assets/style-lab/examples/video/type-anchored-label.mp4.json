@@ -1,0 +1,11 @@
+{
+  "id": "type-anchored-label",
+  "width": 1280,
+  "height": 720,
+  "fps": 30,
+  "frames": 360,
+  "duration": 12,
+  "audio": false,
+  "method": "absolute-time frames; no real-time capture",
+  "source": "D:\\projects\\manim_extend_rainbow\\research\\motion_atelier\\lab\\modules"
+}

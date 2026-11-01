@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "contract_version": "example-v1",
+  "duration_seconds": 12,
+  "fps": 30,
+  "note": "12秒设计例，非真实成片。声音素材、同步点和试听尚未选择或验证。gain_db和pan仅演示字段，未绑定源电平和实体位置，不可当成已验证混音预设。音乐接手段无旁白不等于全静音。review中null为未查、true为已查通过、false为已查需修复。",
+  "events": {
+    "latch-contact": {"time": 4.4, "description": "两个机械组件真实接触并锁定"},
+    "flyby-nearest": {"time": 8, "description": "实体从听者身旁掠过最近点，非摄影机绕静止物体"},
+    "music-takes-focus": {"time": 10.2, "description": "画面揭示已完成，原音乐乐句接手"}
+  },
+  "assets": {},
+  "cues": [
+    {
+      "id": "latch-body",
+      "event_id": "latch-contact",
+      "source_class": "diegetic",
+      "method": "existing-library-or-freesound",
+      "asset_id": null,
+      "asset_sync_seconds": null,
+      "offset_ms": 0,
+      "start_seconds": null,
+      "gain_db": -14,
+      "pan": 0.1,
+      "tail_policy": "natural-decay",
+      "exit_seconds": 4.9,
+      "layer_role": "body",
+      "decision": "include",
+      "reason": "用一次清楚但轻的金属卡锁接触确认装配成立；素材要短、干，接触峰对齐4.4秒。若原音乐已明确给出同一落点可删此cue。",
+      "review": {"sourceFitListened": null, "visualSyncListened": null, "speechProtectionListened": null, "finalMixListened": null}
+    },
+    {
+      "id": "flyby-air",
+      "event_id": "flyby-nearest",
+      "source_class": "diegetic",
+      "method": "existing-library-or-freesound",
+      "asset_id": null,
+      "asset_sync_seconds": null,
+      "offset_ms": 0,
+      "start_seconds": null,
+      "gain_db": -19,
+      "pan": 0,
+      "tail_policy": "fade",
+      "exit_seconds": 8.7,
+      "layer_role": "texture",
+      "decision": "include",
+      "reason": "表现实体相对听者的真实掠过。选渐入渐出的空气/机械纹理，最近点对齐8秒，下一句术语开始前退出；单一pan只是待选素材的计划值，不能冒充动态声像。",
+      "review": {"sourceFitListened": null, "visualSyncListened": null, "speechProtectionListened": null, "finalMixListened": null}
+    },
+    {
+      "id": "reveal-impact-omitted",
+      "event_id": "music-takes-focus",
+      "source_class": "designed",
+      "method": "omit",
+      "asset_id": null,
+      "asset_sync_seconds": null,
+      "offset_ms": 0,
+      "start_seconds": null,
+      "gain_db": 0,
+      "pan": 0,
+      "tail_policy": "omit",
+      "exit_seconds": null,
+      "layer_role": "primary",
+      "decision": "omit",
+      "reason": "原音乐在10.2秒接手，已有足够的揭示能量，省略额外冲击音，为完整乐句留空间。该决定属于设计，仍需在实际混音听审。",
+      "review": {"musicHandoffListened": null}
+    }
+  ]
+}

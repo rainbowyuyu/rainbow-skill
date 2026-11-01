@@ -1,0 +1,16 @@
+{
+  "iterationId": null,
+  "request": null,
+  "references": [{"url": null, "author": null, "accessedAt": null, "inspectedScope": null, "usefulTechnique": null, "adoptedAt": null}],
+  "skills": [{"source": null, "versionOrCommit": null, "read": false, "decision": null, "reason": null, "appliedAt": null, "validationEvidence": []}],
+  "version": {"artifact": null, "sha256": null, "acceptanceStatus": "pending", "evidence": []},
+  "cleanup": {
+    "scopeRoot": null,
+    "recoveryArtifact": null,
+    "candidates": [{"path": null, "reason": null, "dependencyChecked": false, "action": "pending", "actualRemovedBytes": 0}],
+    "retained": [],
+    "removedBytes": 0,
+    "postCleanupValidation": "pending"
+  },
+  "notes": "Record actual research, use and deletion. Unknown dependencies are retained; do not store credentials or signed URLs."
+}

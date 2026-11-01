@@ -1,0 +1,152 @@
+{
+  "id": "contact-sync",
+  "title": "声音落在接触的哪一帧",
+  "question": "同一个落定动作，晚180毫秒和对准接触有什么区别？",
+  "duration": 8,
+  "variants": [
+    {
+      "id": "A",
+      "title": "延后180ms",
+      "description": "只改变接触声的时间，材料、增益、声像保持相同。"
+    },
+    {
+      "id": "B",
+      "title": "对准接触",
+      "description": "短攻击段从接触时刻开始；主要瞬态另行测量。"
+    }
+  ],
+  "events": [
+    {
+      "id": "metal-seat",
+      "kind": "metal",
+      "onset": 0.9,
+      "peak": 1.65,
+      "contact": 2,
+      "end": 2.65,
+      "priority": 1
+    },
+    {
+      "id": "wood-seat",
+      "kind": "wood",
+      "onset": 3.8,
+      "peak": 4.55,
+      "contact": 4.9,
+      "end": 5.5,
+      "priority": 1
+    }
+  ],
+  "speechWindows": [],
+  "readWindows": [],
+  "variant": "A",
+  "options": {
+    "sampleRate": 48000,
+    "offsetMs": 0,
+    "gainDb": 0,
+    "intensity": 1,
+    "includeSpeechPlaceholder": false
+  },
+  "cues": [
+    {
+      "id": "environment",
+      "sound": "room-air",
+      "eventId": null,
+      "anchor": "onset",
+      "anchorTime": 0,
+      "anchorOffset": 0,
+      "start": 0,
+      "duration": 8,
+      "priority": 0.1,
+      "gain": 0.026,
+      "pan": 0,
+      "seed": 45671,
+      "params": {},
+      "policy": "space",
+      "designSyncDelta": 0,
+      "end": 8
+    },
+    {
+      "id": "metal-seat:metal-contact",
+      "sound": "metal-contact",
+      "eventId": "metal-seat",
+      "anchor": "contact",
+      "anchorTime": 2,
+      "anchorOffset": 0,
+      "start": 2.18,
+      "duration": 0.55,
+      "priority": 1,
+      "gain": 0.28,
+      "pan": 0,
+      "seed": 1709,
+      "params": {
+        "peakFraction": 0,
+        "motionStart": 0.9,
+        "motionEnd": 2.65,
+        "mapping": false
+      },
+      "policy": "full",
+      "designSyncDelta": 0.18000000000000016,
+      "end": 2.7300000000000004
+    },
+    {
+      "id": "wood-seat:wood-contact",
+      "sound": "wood-contact",
+      "eventId": "wood-seat",
+      "anchor": "contact",
+      "anchorTime": 4.9,
+      "anchorOffset": 0,
+      "start": 5.08,
+      "duration": 0.28,
+      "priority": 1,
+      "gain": 0.28,
+      "pan": 0,
+      "seed": 9628,
+      "params": {
+        "peakFraction": 0,
+        "motionStart": 3.8,
+        "motionEnd": 5.5,
+        "mapping": false
+      },
+      "policy": "full",
+      "designSyncDelta": 0.17999999999999972,
+      "end": 5.36
+    }
+  ],
+  "excludedCues": [],
+  "masterGain": 0.82,
+  "placeholderNotice": "Optional surrogate is amplitude-modulated synthetic tones/noise, NOT voice, TTS or proof of intelligibility.",
+  "soundOrigin": "Original deterministic synthesis; no third-party samples.",
+  "cueMeasurements": [
+    {
+      "id": "metal-seat:metal-contact",
+      "sound": "metal-contact",
+      "designAnchor": "contact",
+      "designAnchorTime": 2,
+      "designAnchorOffset": 0,
+      "designedSyncDelta": 0.18000000000000016,
+      "measuredThreshold10PercentTime": 2.1807083333333335,
+      "measuredAbsolutePeakTime": 2.182375,
+      "measured8msRmsPeakTime": 2.1853125,
+      "peakDelayFromAnchor": 0.18237499999999995,
+      "thresholdDelayFromAnchor": 0.18070833333333347,
+      "sourcePeak": 0.7500036358833313,
+      "firstSample": 0,
+      "lastSample": 0
+    },
+    {
+      "id": "wood-seat:wood-contact",
+      "sound": "wood-contact",
+      "designAnchor": "contact",
+      "designAnchorTime": 4.9,
+      "designAnchorOffset": 0,
+      "designedSyncDelta": 0.17999999999999972,
+      "measuredThreshold10PercentTime": 5.0804583333333335,
+      "measuredAbsolutePeakTime": 5.083520833333333,
+      "measured8msRmsPeakTime": 5.0870625,
+      "peakDelayFromAnchor": 0.1835208333333327,
+      "thresholdDelayFromAnchor": 0.18045833333333317,
+      "sourcePeak": 0.8163986802101135,
+      "firstSample": 0,
+      "lastSample": 0
+    }
+  ]
+}

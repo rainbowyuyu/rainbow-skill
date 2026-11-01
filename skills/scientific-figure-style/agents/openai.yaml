@@ -1,0 +1,4 @@
+interface:
+  display_name: "科研绘图 · 蓝绿陶土配色"
+  short_description: "参考指定图文的七色体系，统一论文图表配色、版式与可编辑导出"
+  default_prompt: "使用 $scientific-figure-style 为我的科研图表统一配色和版式，保留真实数据与统计含义。"
