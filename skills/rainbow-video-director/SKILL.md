@@ -40,6 +40,8 @@ description: 将视频想法、参考片或旧稿变成完整可执行的导演�
 
 用一句话写观众承诺，选一个能贯穿的对象。先核实会影响叙事的事实，再决定怎样展示。科学数据可来自可信来源或可复算教学模型，两者在画面中分清。
 
+在 [开场决策卡](references/hook-and-spectacle.md) 中写一条可检验假设：采用怎样的信息顺序，预期观众能理解什么，用哪段画面检查，不成立时改哪里。深度教程先展示最终成果与学习价值，再展开学习路线；不必硬套短视频的悬念、时长或切镜节奏。
+
 科普从生活里一次有思考空间的判断切入：先让观众猜，再给能改变判断的对照。开头允许大幅变换尺度和视角，但保留同一个主体、目标或问题。中段在需要时做短而完整的推导，把实体中的量送进符号，再将结论用回场景；结尾回答开场，留下一个可迁移、有条件的追问。产品片从可见价值出发，音乐或艺术片从可辨认的意象出发，不硬套科普结构。见 [叙事与编排](references/story-and-editing.md)。
 
 ### 2. 让形式来自内容
@@ -81,6 +83,8 @@ description: 将视频想法、参考片或旧稿变成完整可执行的导演�
 |当前难点|按需手册|
 |---|---|
 |开场抓人、结尾有余味|[开场与视觉张力](references/hook-and-spectacle.md)、[浪漫线索](references/romantic-continuity.md)|
+|标题、封面与第一镜的期待失配|[观众期待与开场兑现](references/viewer-expectation-and-opening.md)|
+|文案拗口、相邻段落失去因果|[自然文案与对话接力](references/story-language.md)|
 |文字、公式或标签抢戏|[文字与焦点](references/expressive-typography.md)|
 |运镜、镜头接力与案例选用|[镜头卡](references/shot-card-template.md)、[选卡适配](references/shotcraft-adapter.md)|
 |语音割裂、术语不顺|[连贯配音](references/connected-narration.md)|

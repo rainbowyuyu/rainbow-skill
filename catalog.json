@@ -593,7 +593,7 @@
     {
       "id": "rainbow-science-promo-copy",
       "name": "rainbow-science-promo-copy",
-      "description": "为“每天5分钟知识”系列科普视频生成适配抖音、小红书、B站和微信视频号的标题、简介、话题、首评与封面短文案；适用于发布前的跨平台宣传文案，不负责视频脚本或画面制作。",
+      "description": "为科普视频生成适配抖音、小红书、B站和微信视频号的标题、简介、话题、首评与封面短文案；适用于发布前的跨平台宣传文案，不负责视频脚本或画面制作。",
       "category": "video-design",
       "environments": [
         "codex"
@@ -605,7 +605,7 @@
       "path": "skills/rainbow-science-promo-copy/SKILL.md",
       "source_verification": "local metadata and prior installed provenance; unknown when empty",
       "files": 3,
-      "bytes": 6376
+      "bytes": 7618
     },
     {
       "id": "rainbow-science-short",
@@ -656,13 +656,13 @@
       "sources": [],
       "path": "skills/rainbow-video-cover/SKILL.md",
       "source_verification": "local metadata and prior installed provenance; unknown when empty",
-      "files": 21,
-      "bytes": 104492
+      "files": 22,
+      "bytes": 108782
     },
     {
       "id": "rainbow-video-director",
       "name": "rainbow-video-director",
-      "description": "把视频想法、参考片或旧稿写成可直接执行的完整成片提示词：先确定故事与视觉变化链，再写每段的动作、运镜、文字、声音、实现和交接，并用预演验证。适用于科普、产品、UI动效、角色、三维场景与整片重构；也能按明确要求继续制作。",
+      "description": "将视频想法、参考片或旧稿写成可执行的导演提示词；覆盖故事、视觉变化、运镜、文字、声音与交接，并补充自然文案、观众期待和开场兑现的诊断方法。",
       "category": "video-design",
       "environments": [
         "codex"
@@ -673,8 +673,8 @@
       "sources": [],
       "path": "skills/rainbow-video-director/SKILL.md",
       "source_verification": "local metadata and prior installed provenance; unknown when empty",
-      "files": 35,
-      "bytes": 218101
+      "files": 37,
+      "bytes": 237953
     },
     {
       "id": "research-implement-feature",
