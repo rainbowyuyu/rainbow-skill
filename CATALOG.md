@@ -3,6 +3,8 @@
 2026-11-02 快照。按内容去重，保留同名不同版本。**源码**表示本库收录了公开整理版；**索引**表示只记录来源，不假称已包含或可一键安装。
 
 2026-11-12 局部增补：视频导演的自然文案与开场兑现参考；本轮补充可检验开场假设、深度教程分支、同底图双标题比较与承诺对应检查，标明系列名和尺寸待统一项。环境统计仍为上述快照；未将新增本机版本视为完整公开更新。
+2026-11-13 局部增补（工作日期11月12日）：封面展示位置映射、自然文案与平台字段预检。未覆盖投稿技能后续新版本；以上环境统计仍为原快照。
+
 [返回 README](README.md) · [机器可读目录](catalog.json) · [来源与许可](THIRD_PARTY.md)
 
 ## 视频、动画与导演
@@ -31,9 +33,9 @@
 |[rainbow-jiaolong-director](skills/rainbow-jiaolong-director/SKILL.md)|源码|用于重新设计或制作蛟龙号、深海载人潜水器等科学科普片：把电影化叙事、真实结构与物理动作、深海光影水体、旁白音乐音效、动态可视化和逐段抽帧验收组织成一套完整导演流程。|
 |[rainbow-motion-story](skills/rainbow-motion-story/SKILL.md)|源码|把视频参考、文案、情感配音、音乐音效、运镜、机械拆解、文字配色、网页审美、Motionface 动效、Lemo Opuscar 风格和 WaterPro 等成熟制作方案串成可执行流程与代码候选；用于技能研究、分…|
 |[rainbow-publish](skills/rainbow-publish/SKILL.md)|源码|根据用户提供的视频发布文件夹，读取成片、文案和封面，通过 Ego Lite 向微信视频号、抖音、bilibili 和小红书填写并发布，选择已有相关合集，保存各平台回执并防止重复投稿。适用于“发布这个文件夹”“四…|
-|[rainbow-science-promo-copy](skills/rainbow-science-promo-copy/SKILL.md)|源码|为科普视频生成适配抖音、小红书、B站和微信视频号的标题、简介、话题、首评与封面短文案；适用于发布前的跨平台宣传文案，不负责视频脚本或画面制作。|
+|[rainbow-science-promo-copy](skills/rainbow-science-promo-copy/SKILL.md)|源码|为科普视频生成或修订抖音、小红书、B站、微信视频号的标题、正文、话题和封面短文案，按当前平台字段与活动要求校验，保留同版本事实、来源和AI声明。适用于发布前的跨平台文案，不负责视频制作。|
 |[rainbow-science-short](skills/rainbow-science-short/SKILL.md)|源码|制作或升级约3—6分钟的中文科普短片，以真实生活或工程问题引入，通过真实仿真、Three.js、可操作网页和逐句音画叙述讲清机制；避免文字堆砌和PPT翻页感，并在验收后清理本片旧版无用产物。|
-|[rainbow-video-cover](skills/rainbow-video-cover/SKILL.md)|源码|为 rainbow鱼 制作电影感视频与合集封面，以及微信视频号、公众号、抖音、B站的发布标题、正文和首评；支持多比例构图、品牌排版、平台研究与 GitHub 配套资料引导。适用于封面和发布文案，不负责渲染正片或…|
+|[rainbow-video-cover](skills/rainbow-video-cover/SKILL.md)|源码|为 rainbow鱼 制作适配抖音、小红书、B站、微信视频号不同展示位置的视频与合集封面，以及平台标题、正文和首评；支持多比例构图、品牌排版和配套资料引导，公众号图文按需扩展。适用于封面和发布文案，不负责渲染正片或自动发布。|
 |[rainbow-video-director](skills/rainbow-video-director/SKILL.md)|源码|将视频想法、参考片或旧稿写成可执行的导演提示词；覆盖故事、视觉变化、运镜、文字、声音与交接，并补充自然文案、观众期待和开场兑现的诊断方法。|
 |[remotion-best-practices](catalog/remotion-best-practices.md)|索引|Best practices for Remotion - Video creation in React|
 |[requirements-requirements-pipeline](catalog/requirements-requirements-pipeline.md)|索引|A 9-stage discovery and analysis pipeline that takes messy, early-stage inputs — rough ideas, transcripts…|

@@ -1,4 +1,4 @@
 interface:
   display_name: "rainbow鱼 · 封面与发布文案"
-  short_description: "制作电影感多比例封面，撰写四平台标题、正文和首评，并核对 GitHub 配套资料入口"
-  default_prompt: "使用 $rainbow-video-cover，按我的要求制作或修改视频封面与发布文案，沿用 rainbow鱼 品牌规范，核实视频内容和资料仓库，交付可直接使用的图片或四平台文案。"
+  short_description: "按四平台展示位置制作多比例封面与自然文案，交付图片对应表并核对配套资料"
+  default_prompt: "使用 $rainbow-video-cover，按目标平台的封面展示位置制作或适配封面，沿用 rainbow鱼 品牌与已确认排版，交付图片对应表和所需发布文案。"

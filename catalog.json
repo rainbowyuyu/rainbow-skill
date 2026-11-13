@@ -593,7 +593,7 @@
     {
       "id": "rainbow-science-promo-copy",
       "name": "rainbow-science-promo-copy",
-      "description": "为科普视频生成适配抖音、小红书、B站和微信视频号的标题、简介、话题、首评与封面短文案；适用于发布前的跨平台宣传文案，不负责视频脚本或画面制作。",
+      "description": "为科普视频生成或修订抖音、小红书、B站、微信视频号的标题、正文、话题和封面短文案，按当前平台字段与活动要求校验，保留同版本事实、来源和AI声明。适用于发布前的跨平台文案，不负责视频制作。",
       "category": "video-design",
       "environments": [
         "codex"
@@ -604,8 +604,10 @@
       "sources": [],
       "path": "skills/rainbow-science-promo-copy/SKILL.md",
       "source_verification": "local metadata and prior installed provenance; unknown when empty",
-      "files": 3,
-      "bytes": 7618
+      "files": 4,
+      "bytes": 15753,
+      "updated_at": "2026-11-13",
+      "source_work_date": "2026-11-12"
     },
     {
       "id": "rainbow-science-short",
@@ -645,7 +647,7 @@
     {
       "id": "rainbow-video-cover",
       "name": "rainbow-video-cover",
-      "description": "为 rainbow鱼 制作电影感视频与合集封面，以及微信视频号、公众号、抖音、B站的发布标题、正文和首评；支持多比例构图、品牌排版、平台研究与 GitHub 配套资料引导。适用于封面和发布文案，不负责渲染正片或自动发布。",
+      "description": "为 rainbow鱼 制作适配抖音、小红书、B站、微信视频号不同展示位置的视频与合集封面，以及平台标题、正文和首评；支持多比例构图、品牌排版和配套资料引导，公众号图文按需扩展。适用于封面和发布文案，不负责渲染正片或自动发布。",
       "category": "video-design",
       "environments": [
         "codex"
@@ -656,8 +658,10 @@
       "sources": [],
       "path": "skills/rainbow-video-cover/SKILL.md",
       "source_verification": "local metadata and prior installed provenance; unknown when empty",
-      "files": 22,
-      "bytes": 108782
+      "files": 23,
+      "bytes": 116553,
+      "updated_at": "2026-11-13",
+      "source_work_date": "2026-11-12"
     },
     {
       "id": "rainbow-video-director",
